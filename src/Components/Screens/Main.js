@@ -1,0 +1,23 @@
+import { View, Text } from 'react-native';
+import React from 'react';
+import { styles } from './MainScreenStyle';
+
+function Main() {
+  return (
+    <View style={styles.body}>
+      <View>
+        <Text style={styles.MainTitle}>Англо-русский и русско-английский словарь</Text>
+      </View>
+      <View>
+        <Text style={styles.MainDescription}>125 000 статей англо-русского словаря</Text>
+        <Text style={styles.MainDescription}>Английская и британская озвучка слов</Text>
+        <Text style={styles.MainDescription}>Транскрипции</Text>
+        <Text style={styles.MainDescription}>Частотность употребления слова</Text>
+        <Text style={styles.MainDescription}>Около 5 000 000 примеров употребления слов</Text>
+        <Text style={styles.MainDescription}>Фразовые глаголы и формы слов.</Text>
+      </View>
+    </View>
+  )
+}
+
+export default Main
