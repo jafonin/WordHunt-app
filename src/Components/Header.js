@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Button, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { styles } from '../Styles/Header';
 import { useNavigation } from '@react-navigation/native';
-import Icon  from 'react-native-vector-icons/SimpleLineIcons';
-import MenuIcon from './Icons/MenuIcon';
 
 
 export default function Header() {
@@ -16,5 +14,14 @@ export default function Header() {
     </View>
   )
 }
+
+function MenuIcon() {
+  return (
+    <View>
+      <Text style={styles.lines}>≡</Text>
+    </View>
+  )
+}
+
 
 
