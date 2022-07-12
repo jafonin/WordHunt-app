@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
-import { styles } from '../Styles/HeaderStyle';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Main from './src/Components/Screens/Main';
+import Main from './src/Screens/Main';
 import Header from './src/Components/Header';
 
 function HomeScreen({ navigation }) {
@@ -21,7 +20,7 @@ function SideMenu(){
   return(
     <NavigationContainer>
       <Drawer.Navigator>
-        <Drawer.Screen name="Home" component={HomeScreen} 
+        <Drawer.Screen name="Главная" component={HomeScreen}
           options={{
             drawerStyle: {
               backgroundColor: '#ffffef',

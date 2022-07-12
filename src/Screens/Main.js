@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native';
 import React from 'react';
-import { styles } from './MainScreenStyle';
+import { View, Text } from 'react-native';
+import { styles } from '../Styles/MainScreen';
 
 function Main() {
   return (
