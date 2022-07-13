@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     Rectangle: {
-        height: 47,
+        height: 55,
         width: '100%',
         backgroundColor: '#1d415d'
     },
@@ -10,5 +10,10 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 35,
         color: 'white'
+    },
+    button: {
+        height: '100%',
+        width: 55,
+        justifyContent: 'center'
     }
 })

@@ -1,17 +1,17 @@
 import * as React from 'react';
+
 import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Main from './src/Screens/Main';
-import Header from './src/Components/Header';
 
-function HomeScreen({ navigation }) {
+import Main from './src/Screens/Main';
+
+function HomeScreen() {
   return (
     <View>
-      <Header />
       <Main />
     </View>     
-  );
+  )
 }
 
 const Drawer = createDrawerNavigator();
@@ -27,8 +27,10 @@ function SideMenu(){
             },
             drawerType: 'slide',
             gestureEnabled: 'true',
-            swipeEdgeWidth: 300,
-            headerShown: false
+            swipeEdgeWidth: 450,
+            headerShown: false,
+            drawerActiveBackgroundColor: '#ffefbe',
+            drawerActiveTintColor: '#583627'
 
           }}
         />
@@ -37,10 +39,8 @@ function SideMenu(){
   )
 }
 
-function App() {
-  return (     
-        <SideMenu />
+export default function App() {
+  return (
+    <SideMenu />
   );
 }
-
-export default App;
