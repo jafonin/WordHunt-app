@@ -1,19 +1,26 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    Rectangle: {
-        height: 55,
+    rectangle: {
+        height: 54,
         width: '100%',
         backgroundColor: '#1d415d'
     },
-    lines: {  
+    lines: {
         textAlign: 'center',
         fontSize: 35,
         color: 'white'
     },
     button: {
         height: '100%',
-        width: 55,
+        width: 54,
         justifyContent: 'center'
+    },
+    input: {
+        height: 38,
+        width: "72%",
+        maxWidth: 500,
+        backgroundColor: '#fff',
+        borderRadius: 6,
     }
 })
