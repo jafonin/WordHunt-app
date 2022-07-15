@@ -1,27 +1,22 @@
-import * as React from 'react';
+import React from 'react';
 
 import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import Main from './src/Screens/Main';
+import History from './src/Screens/History';
+import UserDictionary from './src/Screens/UserDictionary';
 
-function HomeScreen() {
-  return (
-    <View>
-      <Main />
-    </View>     
-  )
-}
 
 const Drawer = createDrawerNavigator();
 
 function SideMenu(){
   return(
     <NavigationContainer>
-      <Drawer.Navigator>
-        <Drawer.Screen name="Главная" component={HomeScreen}
-          options={{
+      <Drawer.Navigator
+        initialRouteName="Вся история"
+        screenOptions={{
             drawerStyle: {
               backgroundColor: '#ffffef',
             },
@@ -31,9 +26,10 @@ function SideMenu(){
             headerShown: false,
             drawerActiveBackgroundColor: '#ffefbe',
             drawerActiveTintColor: '#583627'
-
-          }}
-        />
+        }}>
+        <Drawer.Screen name="Main" component={Main} options={{ drawerLabel: 'Главная'}} />
+        <Drawer.Screen name="History" component={History} options={{ drawerLabel: 'Вся история' }}/>
+        <Drawer.Screen name="UserDictionary" component={UserDictionary} options={{ drawerLabel: 'Мой словарь' }}/>
       </Drawer.Navigator>
     </NavigationContainer>
   )

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../Styles/MainScreen';
 import Header from '../Components/Header';
+import { styles } from '../Styles/MainScreen';
+
 
 function Main() {
   return (

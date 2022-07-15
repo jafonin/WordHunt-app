@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     rectangle: {
-        height: 54,
+        height: 58,
         width: '100%',
         backgroundColor: '#1d415d'
     },

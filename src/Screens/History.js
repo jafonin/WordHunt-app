@@ -1,0 +1,35 @@
+import React from 'react'
+import { View, Text, Pressable, ScrollView } from "react-native"
+import { styles } from "../Styles/UserCollections"
+
+import HistoryContent from '../Components/HistoryContent'
+import Header from '../Components/Header'
+
+function History({navigation}) {
+    const onPressHandler = () => {
+        navigation.jumpTo("UserDictionary");
+    }
+
+  return (
+    <View >
+        <Header />
+        <View style={styles.body}>
+            <View style={styles.rectangle}>
+                <Pressable style={styles.button}>
+                    <Text style={styles.title}>
+                        История запросов
+                    </Text>
+                </Pressable>
+                <Pressable style={styles.button} onPress={onPressHandler}>
+                    <Text style={styles.title}>
+                        Мой словарь
+                    </Text>
+                </Pressable>
+            </View>
+        </View>
+        <HistoryContent />
+    </View>
+  )
+}
+
+export default History

@@ -1,25 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { View, Text, Pressable } from 'react-native';
-import { Input, Button, Box, NativeBaseProvider} from "native-base";
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { styles } from '../Styles/Header';
 import { SearchBar } from "@rneui/themed";
-import { Icon } from "@rneui/themed";
 import { Platform} from 'react-native'
 
 export default function Header() {
   const navigation = useNavigation();
-  const [searchValue, setSearchValue] = React.useState('');
-
-  const updateSearch = (searchValue) => {
-    setSearchValue(searchValue);
-  };
+  
   const inputProps = Platform.select({
     android: "android",
     ios: "ios",
   });
-
+  
+  const [searchValue, setSearchValue] = React.useState('');
+  
+  const updateSearch = (searchValue) => {
+    setSearchValue(searchValue);}
+      
   return (
     <View style={styles.rectangle}>
       <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
@@ -47,6 +46,16 @@ export default function Header() {
     </View>
   )
 }
+
+
+
+
+
+
+
+
+
+
 
 /*
 function Search() {
