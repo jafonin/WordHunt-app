@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+
+export const Headerstyles = StyleSheet.create({
     rectangle: {
         height: 58,
         width: '100%',

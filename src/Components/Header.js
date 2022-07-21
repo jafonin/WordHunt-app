@@ -1,91 +1,208 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, FlatList } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { styles } from '../Styles/Header';
+import { Headerstyles } from '../Styles/Header';
 import { SearchBar } from "@rneui/themed";
-import { Platform} from 'react-native'
+import { Platform} from 'react-native';
+import SearchDropDown from './SearchDropDown';
+import Main from '../Screens/Main';
 
-export default function Header() {
-  const navigation = useNavigation();
+const DATA = [
+  {
+    id: "1",
+    title: "Data Structures",
+  },
+  {
+    id: "2",
+    title: "STL",
+  },
+  {
+    id: "3",
+    title: "C++",
+  },
+  {
+    id: "4",
+    title: "Java",
+  },
+  {
+    id: "5",
+    title: "Python",
+  },
+  {
+    id: "6",
+    title: "CP",
+  },
+  {
+    id: "7",
+    title: "ReactJs",
+  },
+  {
+    id: "8",
+    title: "NodeJs",
+  },
+  {
+    id: "9",
+    title: "MongoDb",
+  },
+  {
+    id: "10",
+    title: "ExpressJs",
+  },
+  {
+    id: "11",
+    title: "PHP",
+  },
+  {
+    id: "12",
+    title: "MySql",
+  },
+];
+
+
+const Item = ({ title }) => {
+  return (
+    <View>
+      <Text>{title}</Text>
+    </View>
+  );
+};
+
+const renderItem = ({ item }) => <Item title={item.title} />;
+
+class Search extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      data: DATA,
+      error: null,
+      searchValue: "",
+    };
+    this.arrayholder = DATA;
+  }
   
+  searchFunction = (text) => {
+    const updatedData = this.arrayholder.filter((item) => {
+      const item_data = `${item.title.toUpperCase()})`;
+      const text_data = text.toUpperCase();
+      return item_data.indexOf(text_data) > -1;
+    });
+    this.setState({ data: updatedData, searchValue: text });
+  };
+
+  
+  
+  
+  render() {
+    return (
+      <View>
+        <View style={Headerstyles.rectangle}>
+        <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+          <Pressable
+            onPress={() => navigation.openDrawer()}
+            style={Headerstyles.button}>
+            <Text style={Headerstyles.lines}>≡</Text>
+          </Pressable>
+          <SearchBar
+            placeholder="Поиск по словарю"
+            platform="android"
+            placeholderTextColor="#888"
+            containerStyle={{
+              width: "75%",
+              height: "78%",
+              justifyContent: 'center',
+              borderRadius: 5,
+              marginLeft: "2%",
+              
+            }}
+            value={this.state.searchValue}
+            onChangeText={(text) => this.searchFunction(text)}
+            onPress={() => navigation.navigate()}
+          />
+          
+        </View>
+        
+      </View>
+      
+      <FlatList
+            data={this.state.data}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            style={{borderColor: 'black', borderWidth: 1, flexWrap: 'wrap'}}
+            
+          />
+          <Main />
+
+      
+    </View>
+    );
+  }
+}
+
+export default function Header(props) {
+  const navigation = useNavigation();
   const inputProps = Platform.select({
     android: "android",
     ios: "ios",
   });
+  const [dataSource] = useState(['apple', 'banana', 'cow', 'dex', 'zee', 'orange', 'air', 'bottle']);
   
-  const [searchValue, setSearchValue] = React.useState('');
+
+  const [filtered, setFiltered] = useState(dataSource);
+  const [searching, setSearching] = useState(false);
+  const onSearch = (text) => {
+    if (text) {
+      setSearching(true)
+      const temp = text.toLowerCase()  
+      const tempList = dataSource.filter(item => {
+        if (item.match(temp))
+          return item
+      })
+      setFiltered(tempList)
+    }
+    else {
+      setSearching(false)
+      setFiltered(dataSource)
+    }
+  };
   
-  const updateSearch = (searchValue) => {
-    setSearchValue(searchValue);}
       
   return (
-    <View style={styles.rectangle}>
-      <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-        <Pressable
-          onPress={() => navigation.openDrawer()}
-          style={styles.button}>
-          <Text style={styles.lines}>≡</Text>
-        </Pressable>
-        <SearchBar
-          placeholder="Поиск по словарю"
-          platform={inputProps}
-          placeholderTextColor="#888"
-          containerStyle={{
-            width: "75%",
-            height: "78%",
-            justifyContent: 'center',
-            borderRadius: 5,
-            marginLeft: "2%",
-            
-          }}
-          onChangeText={updateSearch}
-          onPress={console.log(searchValue)}  
-        />
+    <View>
+      <View style={Headerstyles.rectangle}>
+        <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+          <Pressable
+            onPress={() => navigation.openDrawer()}
+            style={Headerstyles.button}>
+            <Text style={Headerstyles.lines}>≡</Text>
+          </Pressable>
+          <SearchBar
+            placeholder="Поиск по словарю"
+            platform={inputProps}
+            placeholderTextColor="#888"
+            containerStyle={{
+              width: "75%",
+              height: "78%",
+              justifyContent: 'center',
+              borderRadius: 5,
+              marginLeft: "2%",
+              
+            }}
+            onChangeText={onSearch}
+             
+          />
+        </View>
       </View>
+        <Main />
+        {
+          searching &&
+          <SearchDropDown
+            onPress={() => setSearching(false)}
+            dataSource={filtered} />
+        }
+        
     </View>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-/*
-function Search() {
-  const [searchValue, setSearchValue] = React.useState('');
-  const updateSearch = (searchValue) => {
-    setSearchValue(searchValue);
-  };
-  return(
-    <NativeBaseProvider>
-      <Box>
-        <Input w="92%" maxW="500px" py="1.5" borderWidth="0" backgroundColor="#fff" onChangeText={updateSearch} value={searchValue}
-          InputRightElement={   
-            <Button size="xs" rounded="none" w="1/5" h="full" onPress={console.log(searchValue)}>
-                
-              </Button>         
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: "center", height: "100%", marginLeft: 0}}>
-              <Button size="md" rounded="none" w="1/5" h="full" padding="0" marginRight="0.5" backgroundColor="">
-                <CloseIcon color="#040"/>
-              </Button>
-              <Button size="xs" rounded="none" w="1/3" h="full" padding="0" onPress={console.log(searchValue)}>
-                <SearchIcon color="#fff"/>
-              </Button>
-              
-            </View>
-          }
-           placeholder="Поиск по словарю"/>
-      </Box>
-    </NativeBaseProvider>
-  )
-}
-*/
-
 

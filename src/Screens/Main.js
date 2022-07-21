@@ -1,13 +1,17 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import Header from '../Components/Header';
+import React, { Component, useState } from 'react';
+import { View, Text, Pressable, FlatList } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import { styles } from '../Styles/MainScreen';
+import { Headerstyles } from '../Styles/Header';
+import { SearchBar } from "@rneui/themed";
+import { Platform} from 'react-native';
+import SearchDropDown from '../Components/SearchDropDown';
 
 
 function Main() {
   return (
     <View>
-      <Header />
       <View style={styles.body}>
         <View>
           <Text style={styles.MainTitle}>Англо-русский и русско-английский словарь</Text>
