@@ -7,6 +7,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Header from './src/Components/Header';
 import History from './src/Screens/History';
 import UserDictionary from './src/Screens/UserDictionary';
+import Main from './src/Screens/Main';
 
 
 const Drawer = createDrawerNavigator();
@@ -27,7 +28,7 @@ function SideMenu(){
             drawerActiveBackgroundColor: '#ffefbe',
             drawerActiveTintColor: '#583627'
         }}>
-        <Drawer.Screen name="Main" component={Header} options={{ drawerLabel: 'Главная'}} />
+        <Drawer.Screen name="Main" component={Main} options={{ drawerLabel: 'Главная'}} />
         <Drawer.Screen name="History" component={History} options={{ drawerLabel: 'Вся история' }}/>
         <Drawer.Screen name="UserDictionary" component={UserDictionary} options={{ drawerLabel: 'Мой словарь' }}/>
       </Drawer.Navigator>

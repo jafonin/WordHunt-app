@@ -6,7 +6,7 @@ import { Headerstyles } from '../Styles/Header';
 import { SearchBar } from "@rneui/themed";
 import { Platform} from 'react-native';
 import SearchDropDown from './SearchDropDown';
-import Main from '../Screens/Main';
+import { styles } from '../Styles/UserCollections';
 
 const DATA = [
   {
@@ -62,8 +62,8 @@ const DATA = [
 
 const Item = ({ title }) => {
   return (
-    <View>
-      <Text>{title}</Text>
+    <View style={Headerstyles.searchResultItem}>
+      <Text style={{color: '#000', fontSize: 16}}>{title}</Text>
     </View>
   );
 };
@@ -71,6 +71,7 @@ const Item = ({ title }) => {
 const renderItem = ({ item }) => <Item title={item.title} />;
 
 class Search extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -78,11 +79,19 @@ class Search extends Component {
       data: DATA,
       error: null,
       searchValue: "",
+      searching: false
     };
-    this.arrayholder = DATA;
+    this.arrayholder = DATA;  
   }
   
   searchFunction = (text) => {
+    if (text) {
+      this.setState({searching: true})
+    }
+    else {
+      this.setState({searching: false})
+    }
+
     const updatedData = this.arrayholder.filter((item) => {
       const item_data = `${item.title.toUpperCase()})`;
       const text_data = text.toUpperCase();
@@ -90,13 +99,12 @@ class Search extends Component {
     });
     this.setState({ data: updatedData, searchValue: text });
   };
-
-  
-  
   
   render() {
+    const { navigation } = this.props;
+    const {inputProps} = this.props;
     return (
-      <View>
+      <View style={{flexWrap: 'wrap'}}>
         <View style={Headerstyles.rectangle}>
         <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
           <Pressable
@@ -106,41 +114,44 @@ class Search extends Component {
           </Pressable>
           <SearchBar
             placeholder="Поиск по словарю"
-            platform="android"
+            platform={inputProps}
             placeholderTextColor="#888"
             containerStyle={{
               width: "75%",
               height: "78%",
               justifyContent: 'center',
               borderRadius: 5,
-              marginLeft: "2%",
-              
+              marginLeft: "2%",              
             }}
             value={this.state.searchValue}
-            onChangeText={(text) => this.searchFunction(text)}
-            onPress={() => navigation.navigate()}
-          />
-          
-        </View>
-        
+            onChangeText={(text) => this.searchFunction(text)}          
+          />                  
+        </View>        
       </View>
-      
-      <FlatList
-            data={this.state.data}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            style={{borderColor: 'black', borderWidth: 1, flexWrap: 'wrap'}}
-            
+      {this.state.searching &&
+        <FlatList
+              data={this.state.data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              style={{height: '100%', marginTop: 20}}
           />
-          <Main />
-
-      
+        }
     </View>
     );
   }
 }
 
-export default function Header(props) {
+export default function(props) {
+  const navigation = useNavigation();
+  const inputProps = Platform.select({
+    android: "android",
+    ios: "ios",
+  });
+  return <Search {...props} navigation={navigation} inputProps={inputProps}/>;
+}
+
+
+ function Header() {
   const navigation = useNavigation();
   const inputProps = Platform.select({
     android: "android",
@@ -194,12 +205,12 @@ export default function Header(props) {
           />
         </View>
       </View>
-        <Main />
-        {
+        
+        {/*
           searching &&
           <SearchDropDown
             onPress={() => setSearching(false)}
-            dataSource={filtered} />
+            dataSource={filtered} />*/
         }
         
     </View>

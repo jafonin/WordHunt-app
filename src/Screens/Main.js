@@ -1,17 +1,18 @@
 import React, { Component, useState } from 'react';
-import { View, Text, Pressable, FlatList } from 'react-native';
+import { View, Text, Pressable, FlatList, StyleSheet } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { styles } from '../Styles/MainScreen';
-import { Headerstyles } from '../Styles/Header';
-import { SearchBar } from "@rneui/themed";
-import { Platform} from 'react-native';
-import SearchDropDown from '../Components/SearchDropDown';
+import Search from '../Components/Header';
+
+
 
 
 function Main() {
   return (
     <View>
+      <Search/>
+      
       <View style={styles.body}>
         <View>
           <Text style={styles.MainTitle}>Англо-русский и русско-английский словарь</Text>
@@ -25,6 +26,10 @@ function Main() {
           <Text style={styles.MainDescription}>Фразовые глаголы и формы слов.</Text>
         </View>
       </View>
+      {/*<View style={{height: 50, width: "90%", backgroundColor: "#fff", flexWrap: 'wrap', position: 'absolute',
+        top: 59,
+        left: 0, right: 0, bottom: 0, paddingTop: 10,
+  marginHorizontal: 20,}}/>*/}
     </View>
   )
 }

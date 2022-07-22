@@ -23,5 +23,9 @@ export const Headerstyles = StyleSheet.create({
         maxWidth: 500,
         backgroundColor: '#fff',
         borderRadius: 6,
+    },
+    searchResultItem: {
+        marginVertical: 12,
+        marginHorizontal: 15,
     }
 })

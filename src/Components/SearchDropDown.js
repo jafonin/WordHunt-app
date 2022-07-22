@@ -22,11 +22,8 @@ export default function SearchDropDown(props) {
 
                         dataSource.map(item => {
                             return (
-                                <View style={styles.itemView}>
-                                    <Pressable onPress={console.log({item})}>
-                                        <Text style={styles.itemText}>{item}</Text>
-                                    </Pressable>
-                                    
+                                <View style={styles.itemView}>                                   
+                                    <Text style={styles.itemText}>{item}</Text>
                                 </View>
                             )
                         })
@@ -59,8 +56,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingTop: 10,
         marginHorizontal: 20,
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
         flexWrap: 'wrap',
         borderRadius: 6,
         justifyContent: 'center',

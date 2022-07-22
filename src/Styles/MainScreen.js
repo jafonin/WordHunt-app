@@ -15,5 +15,6 @@ export const styles = StyleSheet.create({
     body: {
         marginTop: 20,
         marginLeft: 25,
+        flexWrap: "wrap"
     }
 })
