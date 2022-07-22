@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+export const Mainstyles = StyleSheet.create({
     MainTitle: {
         fontSize: 20,
         color: '#004150',

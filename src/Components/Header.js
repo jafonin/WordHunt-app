@@ -150,7 +150,7 @@ export default function(props) {
   return <Search {...props} navigation={navigation} inputProps={inputProps}/>;
 }
 
-
+/*
  function Header() {
   const navigation = useNavigation();
   const inputProps = Platform.select({
@@ -206,14 +206,14 @@ export default function(props) {
         </View>
       </View>
         
-        {/*
+        {
           searching &&
           <SearchDropDown
             onPress={() => setSearching(false)}
-            dataSource={filtered} />*/
+            dataSource={filtered} />
         }
         
     </View>
   )
 }
-
+*/
