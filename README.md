@@ -1,7 +1,7 @@
 
                                     ФИКСЫ ОШИБОК
 
-При установке библиотеки react navigator:   it worked with me after adding
+При установке библиотеки react navigator:
 
                                             plugins: [
                                             'react-native-reanimated/plugin',
@@ -23,17 +23,7 @@
                                             and in the function ReactNative Host () I added
                                             @Override protected JSIModulePackage getJSIModulePackage() { return new ReanimatedJSIModulePackage(); }
 
-Для отображения векторных иконок на ios читай документацию:                                    C:\Test\WordHunt\node_modules\react-native-vector-icons\README.md
-
-
-==============================================================================================
-                                ИДЕИ "НА БУДУЩЕЕ"
-
-В src\Components\Header.js используется <Pressable></Pressable>, в дальнейшем можно будет сделать дополнительные функции(напр.: действие по долгому нажатию)
-
-
-
-
+Для отображения векторных иконок на ios:                                    C:\Test\WordHunt\node_modules\react-native-vector-icons\README.md
 
 ==============================================================================================
                                     БИБЛИОТКИ
