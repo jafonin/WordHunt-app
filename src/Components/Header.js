@@ -5,8 +5,6 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Headerstyles } from '../Styles/Header';
 import { SearchBar } from "@rneui/themed";
 import { Platform} from 'react-native';
-import SearchDropDown from './SearchDropDown';
-import { styles } from '../Styles/UserCollections';
 
 const DATA = [
   {
@@ -60,16 +58,6 @@ const DATA = [
 ];
 
 
-const Item = ({ title }) => {
-  return (
-    <View style={Headerstyles.searchResultItem}>
-      <Text style={{color: '#000', fontSize: 16}}>{title}</Text>
-    </View>
-  );
-};
-
-const renderItem = ({ item }) => <Item title={item.title} />;
-
 class Search extends Component {
   
   constructor(props) {
@@ -99,10 +87,25 @@ class Search extends Component {
     });
     this.setState({ data: updatedData, searchValue: text });
   };
+
+  _renderItem = ({item}) => {
+    const { navigation } = this.props;
+    const title = item.title;
+    return(
+    <View style={Headerstyles.searchResultItem}>
+      <Pressable  onPress={() => (
+           navigation.navigate("WordPage", {word: {title}}),
+           this.setState({searching: false}))
+        }>      
+          <Text style={{color: '#000', fontSize: 16}}>{title}</Text>
+      </Pressable>
+    </View>  
+  )};
+
   
   render() {
     const { navigation } = this.props;
-    const {inputProps} = this.props;
+    const { inputProps } = this.props;
     return (
       <View style={{flexWrap: 'wrap'}}>
         <View style={Headerstyles.rectangle}>
@@ -131,7 +134,7 @@ class Search extends Component {
       {this.state.searching &&
         <FlatList
               data={this.state.data}
-              renderItem={renderItem}
+              renderItem={this._renderItem}
               keyExtractor={(item) => item.id}
               style={{height: '100%', marginTop: 20}}
           />
@@ -139,16 +142,16 @@ class Search extends Component {
     </View>
     );
   }
-}
+};
 
-export default function(props) {
+export default function Header(props) {
   const navigation = useNavigation();
   const inputProps = Platform.select({
     android: "android",
     ios: "ios",
   });
   return <Search {...props} navigation={navigation} inputProps={inputProps}/>;
-}
+};
 
 /*
  function Header() {

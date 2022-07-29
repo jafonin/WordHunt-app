@@ -4,7 +4,7 @@ import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import Header from './src/Components/Header';
+
 import History from './src/Screens/History';
 import UserDictionary from './src/Screens/UserDictionary';
 import Main from './src/Screens/Main';
@@ -26,7 +26,8 @@ function SideMenu(){
             swipeEdgeWidth: 450,
             headerShown: false,
             drawerActiveBackgroundColor: '#ffefbe',
-            drawerActiveTintColor: '#583627'
+            drawerActiveTintColor: '#583627',
+            
         }}>
         <Drawer.Screen name="Main" component={Main} options={{ drawerLabel: 'Главная'}} />
         <Drawer.Screen name="History" component={History} options={{ drawerLabel: 'Вся история' }}/>
