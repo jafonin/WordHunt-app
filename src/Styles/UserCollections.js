@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     rectangle: {
         height: 42,
         width: '92%',
-        backgroundColor: '#ffdca9',
+        backgroundColor: '#ffefbe',
         borderRadius: 6,
         flexDirection: "row"
     },
@@ -25,8 +25,18 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: "2%",
+        paddingHorizontal: "2%",
         width: "46%",
         height: "100%"
+    },
+    thisButton: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: "2%",
+        width: "46%",
+        height: "100%",
+        backgroundColor: "#ffdca9",
+        borderRadius: 6
     }
 })

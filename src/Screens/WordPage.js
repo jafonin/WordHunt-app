@@ -4,7 +4,7 @@ import Header from '../Components/Header';
 
 
 function WordPage({route}) {
-    const {title} = route.params.word
+  const {title} = route.params.word
   return (
     <View>
         <Header />

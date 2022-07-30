@@ -8,6 +8,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import History from './src/Screens/History';
 import UserDictionary from './src/Screens/UserDictionary';
 import Main from './src/Screens/Main';
+import WordPage from './src/Screens/WordPage';
 
 
 const Drawer = createDrawerNavigator();
@@ -16,7 +17,7 @@ function SideMenu(){
   return(
     <NavigationContainer>
       <Drawer.Navigator
-        initialRouteName="Вся история"
+        backBehavior="history"
         screenOptions={{
             drawerStyle: {
               backgroundColor: '#ffffef',
@@ -25,13 +26,16 @@ function SideMenu(){
             gestureEnabled: 'true',
             swipeEdgeWidth: 450,
             headerShown: false,
-            drawerActiveBackgroundColor: '#ffefbe',
+            drawerActiveBackgroundColor: '#ffffef',
             drawerActiveTintColor: '#583627',
+            drawerInactiveTintColor: '#583627',
+            
             
         }}>
         <Drawer.Screen name="Main" component={Main} options={{ drawerLabel: 'Главная'}} />
         <Drawer.Screen name="History" component={History} options={{ drawerLabel: 'Вся история' }}/>
         <Drawer.Screen name="UserDictionary" component={UserDictionary} options={{ drawerLabel: 'Мой словарь' }}/>
+        <Drawer.Screen name="WordPage" component={WordPage} options={{ drawerItemStyle: { display: 'none' }}} />
       </Drawer.Navigator>
     </NavigationContainer>
   )

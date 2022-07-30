@@ -9,13 +9,12 @@ function History({navigation}) {
     const onPressHandler = () => {
         navigation.jumpTo("UserDictionary");
     }
-
   return (
     <View >
         <Header />
         <View style={styles.body}>
             <View style={styles.rectangle}>
-                <Pressable style={styles.button}>
+                <Pressable style={styles.thisButton}>
                     <Text style={styles.title}>
                         История запросов
                     </Text>

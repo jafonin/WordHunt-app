@@ -20,7 +20,7 @@ function UserDictionary({navigation}) {
                         История запросов
                     </Text>
                 </Pressable>
-                <Pressable style={styles.button}>
+                <Pressable style={styles.thisButton}>
                     <Text style={styles.title}>
                         Мой словарь
                     </Text>

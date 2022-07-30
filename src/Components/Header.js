@@ -67,9 +67,11 @@ class Search extends Component {
       data: DATA,
       error: null,
       searchValue: "",
-      searching: false
+      searching: false,
+      clean: null
     };
-    this.arrayholder = DATA;  
+    this.arrayholder = DATA;
+    
   }
   
   searchFunction = (text) => {
@@ -78,7 +80,7 @@ class Search extends Component {
     }
     else {
       this.setState({searching: false})
-    }
+    };
 
     const updatedData = this.arrayholder.filter((item) => {
       const item_data = `${item.title.toUpperCase()})`;
@@ -91,16 +93,20 @@ class Search extends Component {
   _renderItem = ({item}) => {
     const { navigation } = this.props;
     const title = item.title;
+    
     return(
-    <View style={Headerstyles.searchResultItem}>
-      <Pressable  onPress={() => (
-           navigation.navigate("WordPage", {word: {title}}),
-           this.setState({searching: false}))
+      <View style={Headerstyles.searchResultItem}>
+        <Pressable  
+          onPress={() => (
+            navigation.jumpTo("WordPage", {word: {title}}),
+            this.setState({searching: false, searchValue: ""})            
+          )
         }>      
-          <Text style={{color: '#000', fontSize: 16}}>{title}</Text>
-      </Pressable>
-    </View>  
-  )};
+            <Text style={{color: '#000', fontSize: 16}}>{title}</Text>
+        </Pressable>
+      </View>
+    );
+  };
 
   
   render() {
@@ -127,7 +133,7 @@ class Search extends Component {
               marginLeft: "2%",              
             }}
             value={this.state.searchValue}
-            onChangeText={(text) => this.searchFunction(text)}          
+            onChangeText={(text) => this.searchFunction(text)} 
           />                  
         </View>        
       </View>
