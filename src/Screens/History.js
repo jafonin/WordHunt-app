@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Pressable, ScrollView } from "react-native"
+import { View, Text, Pressable} from "react-native"
 import { styles } from "../Styles/UserCollections"
 
 import HistoryContent from '../Components/HistoryContent'
@@ -7,7 +7,7 @@ import Header from '../Components/Header'
 
 function History({navigation}) {
     const onPressHandler = () => {
-        navigation.jumpTo("UserDictionary");
+        navigation.jumpTo('UserDictionary');
     }
   return (
     <View >

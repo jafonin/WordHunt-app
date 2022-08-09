@@ -1,14 +1,12 @@
 import React from 'react'
-import { View, Text, Pressable } from "react-native"
-import { StyleSheet } from 'react-native'
-import { styles } from "../Styles/UserCollections"
-import { NavigationContainer } from "@react-navigation/native"
+import { View, Text, Pressable } from 'react-native'
+import { styles } from '../Styles/UserCollections'
 import Header from '../Components/Header'
 
 
 function UserDictionary({navigation}) {
     const onPressHandler = () => {
-        navigation.jumpTo("History");
+        navigation.jumpTo('History');
     }
   return (
     <View>
@@ -27,7 +25,7 @@ function UserDictionary({navigation}) {
                 </Pressable>
             </View>
             <View>
-                <Text style={{color: "#000"}}>
+                <Text style={{color: '#000'}}>
                     UserDictionary
                 </Text>
             </View>
