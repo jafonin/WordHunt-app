@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component} from 'react';
 
 import { View, Text, Pressable, FlatList, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -31,6 +31,12 @@ class Search extends Component {
   async componentDidMount() { 
     await this.fetchData(this.state.searchValue);
   }
+  // Попробовать 
+  // componentDidMount(prevProps) { 
+    // if (this.prevProps !== this.props){
+
+    // }
+  // } для очистки поля поиска(сейчас остается крестик, при возврате назад)
 
   async handleSearch(text) {
     if (text) {
@@ -45,7 +51,6 @@ class Search extends Component {
 
   fetchData(searchValue) {
     var query = "SELECT * FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 10";
-    // var query = "SELECT * FROM test WHERE word = 'one'";
     db.transaction((tx) => {
       tx.executeSql(query, [], (tx, results) => {
         var temp = [];
@@ -55,39 +60,22 @@ class Search extends Component {
             this.setState({
               data: temp,
             });
-        // console.log(temp);
       }),
       function (tx, err) {
         Alert.alert('not found')
       }
     })
   }
-  
-  // searchFunction = (text) => {
-  //   if (text) {
-  //     this.setState({searching: true})
-  //   }
-  //   else {
-  //     this.setState({searching: false})
-  //   }
-
-  //   const updatedData = this.arrayholder.filter((item) => {
-  //     const item_data = `${item.title.toUpperCase()})`;
-  //     const text_data = text.toUpperCase();
-  //     return item_data.indexOf(text_data) > -1;
-  //   });
-  //   this.setState({ data: updatedData, searchValue: text });
-  // }
 
   _renderItem = ({item}) =>{
     const { navigation } = this.props;
-    const word = item.word;
+    const { word } = item;
     return(
       <View key={item.id}>
         <View  style={Headerstyles.searchResultItem}>
           <Pressable  
               onPress={() => (
-                navigation.jumpTo('Result', {_word: {word}}),
+                navigation.jumpTo('Result', {word: word}),
                 this.setState({searching: false, searchValue: ''})            
               )
             }>      
@@ -100,20 +88,6 @@ class Search extends Component {
   render() {
     const { navigation } = this.props;
     const { inputProps } = this.props;
-    // const _renderItem = this.state.data.map((item) =>
-      // <View key={item.id}>
-      //   <View  style={Headerstyles.searchResultItem}>
-      //     <Pressable  
-      //       onPress={() => (
-      //         navigation.jumpTo('WordPage', {word: {title}}),
-      //         this.setState({searching: false, searchValue: ''})            
-      //       )
-      //     }>      
-      //       <Text style={{color: '#000', fontSize: 16}}>{item.title}</Text>              
-      //     </Pressable>
-      //   </View>
-      // </View>
-    // );
 
     return (
       <View style={{flexWrap: 'wrap'}}>
@@ -161,71 +135,3 @@ export default function Header(props) {
   });
   return <Search {...props} navigation={navigation} inputProps={inputProps}/>;
 };
-
-/*
- function Header() {
-  const navigation = useNavigation();
-  const inputProps = Platform.select({
-    android: "android",
-    ios: "ios",
-  });
-  const [dataSource] = useState(['apple', 'banana', 'cow', 'dex', 'zee', 'orange', 'air', 'bottle']);
-  
-
-  const [filtered, setFiltered] = useState(dataSource);
-  const [searching, setSearching] = useState(false);
-  const onSearch = (text) => {
-    if (text) {
-      setSearching(true)
-      const temp = text.toLowerCase()  
-      const tempList = dataSource.filter(item => {
-        if (item.match(temp))
-          return item
-      })
-      setFiltered(tempList)
-    }
-    else {
-      setSearching(false)
-      setFiltered(dataSource)
-    }
-  };
-  
-      
-  return (
-    <View>
-      <View style={Headerstyles.rectangle}>
-        <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-          <Pressable
-            onPress={() => navigation.openDrawer()}
-            style={Headerstyles.button}>
-            <Text style={Headerstyles.lines}>≡</Text>
-          </Pressable>
-          <SearchBar
-            placeholder="Поиск по словарю"
-            platform={inputProps}
-            placeholderTextColor="#888"
-            containerStyle={{
-              width: "75%",
-              height: "78%",
-              justifyContent: 'center',
-              borderRadius: 5,
-              marginLeft: "2%",
-              
-            }}
-            onChangeText={onSearch}
-             
-          />
-        </View>
-      </View>
-        
-        {
-          searching &&
-          <SearchDropDown
-            onPress={() => setSearching(false)}
-            dataSource={filtered} />
-        }
-        
-    </View>
-  )
-}
-*/

@@ -18,6 +18,7 @@ function SideMenu(){
     <NavigationContainer>
       <Drawer.Navigator
         backBehavior='history'
+        initialRouteName='Main'
         screenOptions={{
             drawerStyle: {
               backgroundColor: '#ffffef',

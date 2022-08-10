@@ -60,4 +60,5 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-android/app/src/main/assets/www
+#SQLite3 DB
+android/app/src/main/assets/www/*.db
