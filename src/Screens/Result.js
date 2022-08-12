@@ -56,7 +56,7 @@ class ResultPage extends Component {
         <Header />
         <View style={ResultStyles.wd}>
           <View style={ResultStyles.wd_title}>
-            <Text style={{color: '#213646', fontSize: 20, fontFamily: 'Open Sans'}}>
+            <Text style={{color: '#213646', fontSize: 24, fontFamily: 'RobotoSlab-Medium'}}>
                 {word.charAt(0).toUpperCase() + word.slice(1)}
             </Text>
           </View>

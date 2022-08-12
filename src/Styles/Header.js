@@ -24,8 +24,13 @@ export const Headerstyles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 6,
     },
-    searchResultItem: {
-        marginVertical: 12,
+    ResultItem: {
+        marginVertical: 8,
         marginHorizontal: 15,
+    },
+    resultButton: {
+        height: 35,
+        justifyContent: "center",
+        flex: 1
     }
 })

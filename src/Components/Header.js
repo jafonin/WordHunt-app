@@ -1,96 +1,116 @@
-import React, { Component} from 'react';
-
-import { View, Text, Pressable, FlatList, Alert } from 'react-native';
+import React, { PureComponent } from 'react';
+import { View, Text, Pressable, FlatList, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Headerstyles } from '../Styles/Header';
 import { SearchBar } from '@rneui/themed';
 import { Platform} from 'react-native';
 import { openDatabase } from 'react-native-sqlite-storage';
 
-
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+// const DATA = [];
 
-const DATA = [];
+class Search extends PureComponent {
 
-
-class Search extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      data: DATA,
-      error: null,
+      data: [],
+      // error: null,
       searchValue: '',
       searching: false,
-      clean: null
+      updateItem: false
     };
-    this.arrayholder = DATA;
+    // this.arrayholder = DATA;
   }
 
-  async componentDidMount() { 
-    await this.fetchData(this.state.searchValue);
-  }
+  // componentDidMount() {
+  //   if (this.state.searchValue) {
+  //     this.fetchData(this.state.searchValue);
+  //   } 
+  // }
   // Попробовать 
-  // componentDidMount(prevProps) { 
-    // if (this.prevProps !== this.props){
+  // componentDidUpdate(prevProps, prevState) { 
+  //   if (prevState.searchValue !== this.state.searchValue){
+  //     this.setState({updateItem: true});
+  //     // this.fetchData(this.state.searchValue);
+  //   }
+  //   // else {
+  //   //   this.setState({updateItem: false});
+  //   // }
+  // } 
+  // для очистки поля поиска(сейчас остается крестик, при возврате назад)
 
-    // }
-  // } для очистки поля поиска(сейчас остается крестик, при возврате назад)
-
-  async handleSearch(text) {
+  handleSearch(text) {
+    // console.log(text);
     if (text) {
-      this.setState({searching: true})
+      this.setState({searching: true});
+      this.setState({searchValue: text});
+      this.fetchData(text);
     }
     else {
-      this.setState({searching: false})
+      this.setState({searching: false});
+      this.setState({searchValue: ''});
+      // debugger;
     };
-    this.setState({searchValue: text});
-    await this.fetchData(text);
   }
 
   fetchData(searchValue) {
-    var query = "SELECT * FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 10";
-    db.transaction((tx) => {
-      tx.executeSql(query, [], (tx, results) => {
-        var temp = [];
-            for (let i = 0; i < results.rows.length; ++i) {
-              temp.push(results.rows.item(i));
-            }
-            this.setState({
-              data: temp,
-            });
-      }),
-      function (tx, err) {
-        Alert.alert('not found')
-      }
-    })
+    // debugger;
+    if (searchValue) {
+      var query = "SELECT id, word FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 3";
+      db.transaction((tx) => {
+        tx.executeSql(query, [], (tx, results) => {
+          let temp = [];
+              for (let i = 0; i < results.rows.length; ++i) {
+                temp.push(results.rows.item(i));
+              }
+              this.setState({
+                data: temp,
+              });
+              // debugger;
+        }),
+        function (tx, err) {
+          Alert.alert('not found')
+        }
+      })
+    }
   }
+  
+  // shouldComponentUpdate(nextProps, nextState, {item}) {
+  //   if (nextProps.item !== item) {
+  //     return true
+  //   }
+  //   else {
+  //     return false
+  //   }
+  // }
 
-  _renderItem = ({item}) =>{
+  _renderItem = ({item}) => {
     const { navigation } = this.props;
     const { word } = item;
-    return(
-      <View key={item.id}>
-        <View  style={Headerstyles.searchResultItem}>
-          <Pressable  
-              onPress={() => (
-                navigation.jumpTo('Result', {word: word}),
-                this.setState({searching: false, searchValue: ''})            
-              )
-            }>      
-                <Text style={{color: '#000', fontSize: 16}}>{word}</Text>
-            </Pressable>
-          </View>
-      </View>        
-    )};
- 
+    const { id } = item;
+    // debugger;
+      return(
+        <View key={id} style={Headerstyles.ResultItem}>
+            <Pressable
+              style={Headerstyles.resultButton}
+                onPress={() => (
+                  navigation.jumpTo('Result', {word: word}),
+                  this.setState({searching: false, searchValue: ''})
+                )
+              }>
+                  <Text style={{color: '#000', fontSize: 16}}>{word}</Text>
+              </Pressable>
+        </View>
+      )
+  };
+
   render() {
     const { navigation } = this.props;
     const { inputProps } = this.props;
-
     return (
-      <View style={{flexWrap: 'wrap'}}>
+      <View>
         <View style={Headerstyles.rectangle}>
         <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
           <Pressable
@@ -107,21 +127,22 @@ class Search extends Component {
               height: '78%',
               justifyContent: 'center',
               borderRadius: 5,
-              marginLeft: '2%',              
+              marginLeft: '2%',
             }}
             value={this.state.searchValue}
-            onChangeText={(text) => this.handleSearch(text)} 
-          />                  
-        </View>        
-      </View>
-      {this.state.searching &&
-        <FlatList
-              data={this.state.data}
-              renderItem={this._renderItem}
-              keyExtractor={(item) => item.id}
-              style={{height: '100%', marginTop: 20}}
+            onChangeText={(text) => this.handleSearch(text)}
           />
-        }
+        </View>
+      </View>
+        {this.state.searching &&
+          <FlatList
+            data={this.state.data}
+            keyExtractor={(item) => item.id}
+            windowSize={1}
+            renderItem={this._renderItem}
+            style={{height: '100%', marginTop: 20}}
+            />
+          }
     </View>
     );
   }
