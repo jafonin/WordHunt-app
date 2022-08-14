@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, Text, Pressable, FlatList, Alert, ScrollView } from 'react-native';
+import { View, Text, Pressable, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Headerstyles } from '../Styles/Header';
 import { SearchBar } from '@rneui/themed';
@@ -7,7 +7,6 @@ import { Platform} from 'react-native';
 import { openDatabase } from 'react-native-sqlite-storage';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
-// const DATA = [];
 
 class Search extends PureComponent {
 
@@ -16,12 +15,10 @@ class Search extends PureComponent {
     this.state = {
       loading: false,
       data: [],
-      // error: null,
       searchValue: '',
       searching: false,
       updateItem: false
     };
-    // this.arrayholder = DATA;
   }
 
   // componentDidMount() {
@@ -42,68 +39,56 @@ class Search extends PureComponent {
   // для очистки поля поиска(сейчас остается крестик, при возврате назад)
 
   handleSearch(text) {
-    // console.log(text);
     if (text) {
       this.setState({searching: true});
-      this.setState({searchValue: text});
-      this.fetchData(text);
     }
     else {
-      this.setState({searching: false});
-      this.setState({searchValue: ''});
-      // debugger;
+      this.setState({searching: false, data: []});
     };
+    this.setState({searchValue: text});
+    this.fetchData(text);
   }
 
   fetchData(searchValue) {
-    // debugger;
     if (searchValue) {
-      var query = "SELECT id, word FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 3";
+      var query = "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 3";
       db.transaction((tx) => {
         tx.executeSql(query, [], (tx, results) => {
           let temp = [];
-              for (let i = 0; i < results.rows.length; ++i) {
-                temp.push(results.rows.item(i));
-              }
-              this.setState({
-                data: temp,
-              });
-              // debugger;
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(results.rows.item(i));
+          }
+          this.setState({ data: temp });
         }),
         function (tx, err) {
-          Alert.alert('not found')
+          alert('not found')
         }
       })
     }
   }
-  
-  // shouldComponentUpdate(nextProps, nextState, {item}) {
-  //   if (nextProps.item !== item) {
-  //     return true
-  //   }
-  //   else {
-  //     return false
-  //   }
-  // }
 
   _renderItem = ({item}) => {
     const { navigation } = this.props;
     const { word } = item;
     const { id } = item;
-    // debugger;
-      return(
-        <View key={id} style={Headerstyles.ResultItem}>
-            <Pressable
-              style={Headerstyles.resultButton}
-                onPress={() => (
-                  navigation.jumpTo('Result', {word: word}),
-                  this.setState({searching: false, searchValue: ''})
-                )
-              }>
-                  <Text style={{color: '#000', fontSize: 16}}>{word}</Text>
-              </Pressable>
-        </View>
-      )
+    const { t_inline } = item;
+    return(
+      <View key={id} style={Headerstyles.ResultItem}>
+          <Pressable
+            style={Headerstyles.resultButton}
+              onPress={() => (
+                navigation.jumpTo('Result', {word: word}),
+                this.setState({searching: false, searchValue: ''})
+              )
+            }>
+                <Text
+                  style={{color: '#000', fontSize: 18}}
+                  numberOfLines={1}>
+                    {word} - {t_inline}
+                </Text>
+          </Pressable>
+      </View>
+    )
   };
 
   render() {
@@ -134,15 +119,15 @@ class Search extends PureComponent {
           />
         </View>
       </View>
-        {this.state.searching &&
-          <FlatList
-            data={this.state.data}
-            keyExtractor={(item) => item.id}
-            windowSize={1}
-            renderItem={this._renderItem}
-            style={{height: '100%', marginTop: 20}}
-            />
-          }
+          {this.state.searching &&
+            <FlatList
+              data={this.state.data}
+              keyExtractor={(item) => item.id}
+              windowSize={1}
+              renderItem={this._renderItem}
+              style={{height: '100%', marginTop: 20}}
+              />
+            }
     </View>
     );
   }

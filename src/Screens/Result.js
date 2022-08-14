@@ -1,32 +1,29 @@
 import React, { Component } from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, Image } from 'react-native'
 import Header from '../Components/Header';
 import { ResultStyles } from '../Styles/ResultScreen';
 import { openDatabase } from 'react-native-sqlite-storage';
-
+import { ScrollView } from 'react-native-gesture-handler';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
 
 class ResultPage extends Component {
+
   constructor(props) {
     super(props);
     this.state = { data: [] };
   }
 
   componentDidMount() {
-    const { word } = this.props;
-    // console.log(word);
-    this.fetchData(word);
+
+    this.fetchData(this.props._word);
   }
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.word !== this.props.word) {
-      const { word } = this.props;
-      // console.log(word);
-      this.fetchData(word);
+
+  componentDidUpdate(prevProps) {
+    if (prevProps._word !== this.props._word) {
+      this.fetchData(this.props._word);
     }
-
     // this.setState({_word: word})
-
     // await this.fetchData(word);
   }
   // async handleSearch() {
@@ -35,10 +32,9 @@ class ResultPage extends Component {
   //   await this.fetchData(text);
   // }
 
-  fetchData() {
-    const { word } = this.props;
-    
-    var query = "SELECT * FROM en_ru_word WHERE word = '" + word + "'";
+  fetchData(_word) {
+    // const { word } = this.props;
+    var query = "SELECT * FROM en_ru_word WHERE word = '" + _word + "'";
     db.transaction((tx) => {
       tx.executeSql(query, [], (tx, results) => {
         var temp = [];          
@@ -50,17 +46,27 @@ class ResultPage extends Component {
   }
 
   render() {
-    const { word } = this.props;
+    // const { word } = this.props;
+    const renderPage = this.state.data.map((item) =>
+      <ScrollView style={ResultStyles.wd} key={item.id}>
+        <View style={ResultStyles.wd_title}>
+          <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+            <Text style={ResultStyles.wd_title_text}>
+                {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+            </Text>
+            <Text style={ResultStyles.rank}>
+              {item.rank}
+            </Text>
+            
+          </View>
+          <Image source={require('../img/pd_00.png')} style={{width: 16, height: 21, alignItems: 'flex-end'}}/>
+        </View>
+      </ScrollView>
+    )
     return(
       <View>
         <Header />
-        <View style={ResultStyles.wd}>
-          <View style={ResultStyles.wd_title}>
-            <Text style={{color: '#213646', fontSize: 24, fontFamily: 'RobotoSlab-Medium'}}>
-                {word.charAt(0).toUpperCase() + word.slice(1)}
-            </Text>
-          </View>
-        </View>
+        {renderPage}
     </View>
     )
   }
@@ -72,5 +78,5 @@ class ResultPage extends Component {
 export default function Result({route, props}) {
   const { word } = route.params;
   // const word = 'Hello';
-  return <ResultPage {...props} word={word}/>;
+  return <ResultPage {...props} _word={word}/>;
 };
