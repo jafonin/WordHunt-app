@@ -50,16 +50,28 @@ class ResultPage extends Component {
     const renderPage = this.state.data.map((item) =>
       <ScrollView style={ResultStyles.wd} key={item.id}>
         <View style={ResultStyles.wd_title}>
-          <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+          <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={ResultStyles.wd_title_text}>
                 {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
             <Text style={ResultStyles.rank}>
               {item.rank}
             </Text>
-            
           </View>
-          <Image source={require('../img/pd_00.png')} style={{width: 16, height: 21, alignItems: 'flex-end'}}/>
+          <Image source={require('../img/pd_00.png')} style={ResultStyles.img}/>
+        </View>
+        <View style={ResultStyles.wd_transcription}>
+          <Text style={ResultStyles.wd_transcription_text}>
+            амер.   |{item.transcription_us}|
+          </Text>
+          <Text style={ResultStyles.wd_transcription_text}>
+            брит.    |{item.transcription_uk}|
+          </Text>
+        </View>
+        <View>
+          <Text style={ResultStyles.wd_translation_text}>
+            {item.t_inline}
+          </Text>
         </View>
       </ScrollView>
     )

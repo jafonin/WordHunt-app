@@ -51,7 +51,7 @@ class Search extends PureComponent {
 
   fetchData(searchValue) {
     if (searchValue) {
-      var query = "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 3";
+      var query = "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" + searchValue.toLowerCase() + "%' ORDER BY rank LIMIT 10";
       db.transaction((tx) => {
         tx.executeSql(query, [], (tx, results) => {
           let temp = [];
@@ -61,7 +61,7 @@ class Search extends PureComponent {
           this.setState({ data: temp });
         }),
         function (tx, err) {
-          alert('not found')
+          alert('not found') // НЕ РАБОТАЕТ
         }
       })
     }
@@ -84,6 +84,7 @@ class Search extends PureComponent {
                 <Text
                   style={{color: '#000', fontSize: 18}}
                   numberOfLines={1}>
+                    {/* НЕ ДЛЯ ВСЕХ СЛОВ ЕСТЬ ПЕРЕВОД, НАПР 4g */}
                     {word} - {t_inline}
                 </Text>
           </Pressable>
