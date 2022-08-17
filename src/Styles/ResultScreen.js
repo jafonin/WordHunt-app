@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const ResultStyles = StyleSheet.create({
     wd: {
@@ -8,7 +8,7 @@ export const ResultStyles = StyleSheet.create({
     },
     wd_title: {
         marginBottom: 15,
-        flexDirection: "row"
+        flexDirection: 'row'
     },
     wd_title_text: {
         color: '#213646',
@@ -16,17 +16,30 @@ export const ResultStyles = StyleSheet.create({
         fontFamily: 'RobotoSlab-Medium',
     },
     wd_transcription: {
-        marginBottom: 15
+        flex: 1,
+        flexDirection: 'row'
     },
-    wd_transcription_text: {
-        fontStyle: "italic",
+    wd_transcription_text_i: {
+        fontStyle: 'italic',
         color: '#213646',
         fontSize: 20,
     },
+    wd_transcription_text: {
+        color: '#213646',
+        fontSize: 20,
+        marginLeft: 7
+    },
+    wd_translation: {
+        marginVertical: 15
+    },
     wd_translation_text: {
         color: '#213646',
-        fontStyle: "italic",
         fontSize: 17
+    },
+    wd_translation_text_i: {
+        color: '#213646',
+        fontStyle: 'italic',
+        fontSize: 18
     },
     rank: {
         color: '#213646',

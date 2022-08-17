@@ -15,7 +15,6 @@ class ResultPage extends Component {
   }
 
   componentDidMount() {
-
     this.fetchData(this.props._word);
   }
 
@@ -23,8 +22,6 @@ class ResultPage extends Component {
     if (prevProps._word !== this.props._word) {
       this.fetchData(this.props._word);
     }
-    // this.setState({_word: word})
-    // await this.fetchData(word);
   }
   // async handleSearch() {
   //   // this.setState({searchValue: text});
@@ -40,8 +37,7 @@ class ResultPage extends Component {
         var temp = [];          
         temp.push(results.rows.item(0));        
         this.setState({ data: temp });
-        console.log(results.rows.item(0));
-      })   
+      }) 
     })
   }
 
@@ -61,17 +57,54 @@ class ResultPage extends Component {
           <Image source={require('../img/pd_00.png')} style={ResultStyles.img}/>
         </View>
         <View style={ResultStyles.wd_transcription}>
-          <Text style={ResultStyles.wd_transcription_text}>
-            амер.   |{item.transcription_us}|
-          </Text>
-          <Text style={ResultStyles.wd_transcription_text}>
-            брит.    |{item.transcription_uk}|
-          </Text>
+          <View>
+            <Text style={ResultStyles.wd_transcription_text_i}>
+              амер. 
+            </Text>
+            <Text style={ResultStyles.wd_transcription_text_i}>
+              брит.
+            </Text>
+          </View>
+          <View>
+            <Text style={ResultStyles.wd_transcription_text}>
+              |{item.transcription_us}|
+            </Text>
+            <Text style={ResultStyles.wd_transcription_text}>
+              |{item.transcription_uk}|
+            </Text>
+          </View>
         </View>
-        <View>
+        <View style={ResultStyles.wd_translation}>
           <Text style={ResultStyles.wd_translation_text}>
             {item.t_inline}
           </Text>
+        </View>
+       
+        <View>
+             {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+                return (
+                  <View key={index}>
+                    <Text style={ResultStyles.wd_translation_text_i}>
+                      {Object.values(word)[0].w} {'\n'}
+                      {/* {Object.values(word)[0].t[0]} */}
+                      {/* for (let i= 0; i < 3; ++i ) {
+                        Object.values(word)[0].t[i] + '\n'
+                      } */}
+                    </Text>
+                    {Object.values(Object.values(word)[0].t).map((translation, index) => {
+                        return(
+                          <View key={index}>
+                            <Text style={ResultStyles.wd_translation_text}>
+                              {translation} {'\n'}
+                            </Text>
+                          </View>
+                        )
+                      })
+                    }
+                  </View>
+                  )
+              })
+            }
         </View>
       </ScrollView>
     )
