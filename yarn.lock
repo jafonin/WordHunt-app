@@ -6636,6 +6636,13 @@ react-native-sqlite-storage@^6.0.1:
   resolved "https://registry.yarnpkg.com/react-native-sqlite-storage/-/react-native-sqlite-storage-6.0.1.tgz#ce6a6b852f07abbea68658d5363818c8bef45dfb"
   integrity sha512-1tDFjrint6X6qSYKf3gDyz+XB+X79jfiL6xTugKHPRtF0WvqMtVgdLuNqZunIXjNEvNtNVEbXaeZ6MsguFu00A==
 
+react-native-styled-text@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-styled-text/-/react-native-styled-text-2.0.0.tgz#da68f6a2a24ffcc267c3625eb4d900bb63979a4c"
+  integrity sha512-p2ooBklMAy02QJnNH2RuwqEHGrs8CTSwOiqSmIUz+rbMNo9jcJFU0uSjRxORZGhXUN2ZZJ2Gqi8U/TQko0GOtw==
+  dependencies:
+    prop-types "*"
+
 react-native-svg@^12.3.0:
   version "12.3.0"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.3.0.tgz#40f657c5d1ee366df23f3ec8dae76fd276b86248"

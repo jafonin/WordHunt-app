@@ -4,6 +4,7 @@ import Header from '../Components/Header';
 import { ResultStyles } from '../Styles/ResultScreen';
 import { openDatabase } from 'react-native-sqlite-storage';
 import { ScrollView } from 'react-native-gesture-handler';
+import StyledText from 'react-native-styled-text';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
 
@@ -81,30 +82,32 @@ class ResultPage extends Component {
         </View>
        
         <View>
-             {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-                return (
-                  <View key={index}>
-                    <Text style={ResultStyles.wd_translation_text_i}>
-                      {Object.values(word)[0].w} {'\n'}
-                      {/* {Object.values(word)[0].t[0]} */}
-                      {/* for (let i= 0; i < 3; ++i ) {
-                        Object.values(word)[0].t[i] + '\n'
-                      } */}
-                    </Text>
-                    {Object.values(Object.values(word)[0].t).map((translation, index) => {
-                        return(
-                          <View key={index}>
-                            <Text style={ResultStyles.wd_translation_text}>
-                              {translation} {'\n'}
-                            </Text>
-                          </View>
-                        )
-                      })
-                    }
-                  </View>
-                  )
-              })
-            }
+          {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+            return (
+              <View key={index}>
+                <Text style={ResultStyles.wd_translation_text}>
+                  {Object.values(word)[0].w} {'\n'}
+                  {/* {Object.values(word)[0].t[0]} */}
+                  {/* for (let i= 0; i < 3; ++i ) {
+                    Object.values(word)[0].t[i] + '\n'
+                  } */}
+                </Text>
+                {Object.values(Object.values(word)[0].t).map((translation, index) => {
+                    return(
+                      <View key={index}>
+                        {/* <Text style={ResultStyles.wd_translation_text}>
+                          {translation} {'\n'}
+                        </Text> */}
+                        <StyledText style={ResultStyles.wd_translation_text}>{translation}</StyledText>
+                        <Text></Text>
+                      </View>
+                    )
+                  })
+                }
+              </View>
+              )
+            })
+          }
         </View>
       </ScrollView>
     )
@@ -112,7 +115,7 @@ class ResultPage extends Component {
       <View>
         <Header />
         {renderPage}
-    </View>
+      </View>
     )
   }
 };
