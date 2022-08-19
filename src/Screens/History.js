@@ -1,34 +1,30 @@
-import React from 'react'
-import { View, Text, Pressable} from "react-native"
-import { styles } from "../Styles/UserCollections"
+import React from 'react';
+import {View, Text, Pressable} from 'react-native';
+import {styles} from '../Styles/UserCollections';
 
-import HistoryContent from '../Components/HistoryContent'
-import Header from '../Components/Header'
+import HistoryContent from '../Components/HistoryContent';
+import Header from '../Components/Header';
 
 function History({navigation}) {
-    const onPressHandler = () => {
-        navigation.jumpTo('UserDictionary');
-    }
+  const onPressHandler = () => {
+    navigation.jumpTo('UserDictionary');
+  };
   return (
-    <View >
-        <Header />
-        <View style={styles.body}>
-            <View style={styles.rectangle}>
-                <Pressable style={styles.thisButton}>
-                    <Text style={styles.title}>
-                        История запросов
-                    </Text>
-                </Pressable>
-                <Pressable style={styles.button} onPress={onPressHandler}>
-                    <Text style={styles.title}>
-                        Мой словарь
-                    </Text>
-                </Pressable>
-            </View>
+    <View>
+      <Header />
+      <View style={styles.body}>
+        <View style={styles.rectangle}>
+          <Pressable style={styles.thisButton}>
+            <Text style={styles.title}>История запросов</Text>
+          </Pressable>
+          <Pressable style={styles.button} onPress={onPressHandler}>
+            <Text style={styles.title}>Мой словарь</Text>
+          </Pressable>
         </View>
-        <HistoryContent />
+      </View>
+      <HistoryContent />
     </View>
-  )
+  );
 }
 
-export default History
+export default History;
