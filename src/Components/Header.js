@@ -6,7 +6,8 @@ import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+const dbEn = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+const dbRu = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
 class Search extends PureComponent {
   constructor(props) {
@@ -17,6 +18,7 @@ class Search extends PureComponent {
       searchValue: '',
       searching: false,
       updateItem: false,
+      goTo: '',
     };
   }
 
@@ -49,10 +51,25 @@ class Search extends PureComponent {
 
   fetchData(searchValue) {
     if (searchValue) {
-      var query =
+      // let langEnCheck = /[A-Za-z]/;
+      if (/[A-Za-z]/.test(searchValue)){
+        var query =
         "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" +
         searchValue.toLowerCase() +
         "%' ORDER BY rank LIMIT 10";
+        var db = dbEn;
+        this.setState({goTo: 'ResultEn'})
+      }
+      else {
+        // var query = "SELECT id, word, t_inline FROM ru_en_word WHERE word <> lemma LIMIT 10";
+        var query =
+        "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
+        searchValue.toLowerCase() +
+        "%' ORDER BY rank LIMIT 10";
+        var db = dbRu;
+        this.setState({goTo: 'ResultRu'})
+      }
+      
       db.transaction(tx => {
         tx.executeSql(query, [], (tx, results) => {
           let temp = [];
@@ -68,26 +85,29 @@ class Search extends PureComponent {
     }
   }
 
+
   _renderItem = ({item}) => {
     const {navigation} = this.props;
     const {word} = item;
     const {id} = item;
     const {t_inline} = item;
-    return (
-      <View key={id} style={Headerstyles.resultItem}>
-        <Pressable
-          style={Headerstyles.resultButton}
-          onPress={() => (
-            navigation.jumpTo('Result', {word: word}),
-            this.setState({searching: false, searchValue: '', data: []})
-          )}>
-          <Text style={Headerstyles.resultText} numberOfLines={1}>
-            {/* НЕ ДЛЯ ВСЕХ СЛОВ ЕСТЬ ПЕРЕВОД, НАПР 4g */}
-            {word} - {t_inline}
-          </Text>
-        </Pressable>
-      </View>
-    );
+    if (t_inline) {
+      return (
+        <View key={id} style={Headerstyles.resultItem}>
+          <Pressable
+            style={Headerstyles.resultButton}
+            onPress={() => (
+              navigation.jumpTo(this.state.goTo, {word: word}),
+              this.setState({searching: false, searchValue: '', data: []})
+            )}>
+            <Text style={Headerstyles.resultText} numberOfLines={1}>
+              {/* НЕ ДЛЯ ВСЕХ СЛОВ ЕСТЬ ПЕРЕВОД, НАПР 4g */}
+              {word} - {t_inline}
+            </Text>
+          </Pressable>
+        </View>
+      );
+    }
   };
 
   render() {

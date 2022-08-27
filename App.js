@@ -6,7 +6,8 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import History from './src/Screens/History';
 import UserDictionary from './src/Screens/UserDictionary';
 import Main from './src/Screens/Main';
-import Result from './src/Screens/Result';
+import ResultEn from './src/Screens/ResultEn';
+import ResultRu from './src/Screens/ResultRu';
 
 const Drawer = createDrawerNavigator();
 
@@ -44,8 +45,13 @@ function SideMenu() {
           options={{drawerLabel: 'Мой словарь'}}
         />
         <Drawer.Screen
-          name="Result"
-          component={Result}
+          name="ResultEn"
+          component={ResultEn}
+          options={{drawerItemStyle: {display: 'none'}}}
+        />
+        <Drawer.Screen
+          name="ResultRu"
+          component={ResultRu}
           options={{drawerItemStyle: {display: 'none'}}}
         />
       </Drawer.Navigator>

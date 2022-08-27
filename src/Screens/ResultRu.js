@@ -4,9 +4,8 @@ import Header from '../Components/Header';
 import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
-import StyledText from 'react-native-styled-text';
 
-const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
 class ResultPage extends Component {
   constructor(props) {
@@ -25,15 +24,10 @@ class ResultPage extends Component {
       this.setState({data: []});
     }
   }
-  // async handleSearch() {
-  //   // this.setState({searchValue: text});
-  //   console.log(word);
-  //   await this.fetchData(text);
-  // }
 
   fetchData(_word) {
     // const { word } = this.props;
-    var query = "SELECT * FROM en_ru_word WHERE word = '" + _word + "'";
+    var query = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
     db.transaction(tx => {
       tx.executeSql(query, [], (tx, results) => {
         var temp = [];
@@ -43,8 +37,17 @@ class ResultPage extends Component {
     });
   }
 
+  renderLemma(lemma, word) {
+    if (lemma != word) {
+      return (
+        <View>
+          <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
+        </View>
+      );
+    }
+  }
+
   render() {
-    // const { word } = this.props;
     const renderPage = this.state.data.map(item => (
       <ScrollView key={item.id}>
         <View style={ResultStyles.wd}>
@@ -60,46 +63,14 @@ class ResultPage extends Component {
               style={ResultStyles.img}
             />
           </View>
-          <View style={ResultStyles.wd_transcription}>
-            <View>
-              <Text style={ResultStyles.wd_transcription_text_i}>амер.</Text>
-              <Text style={ResultStyles.wd_transcription_text_i}>брит.</Text>
-            </View>
-            <View>
-              <Text style={ResultStyles.wd_transcription_text}>
-                |{item.transcription_us}|
-              </Text>
-              <Text style={ResultStyles.wd_transcription_text}>
-                |{item.transcription_uk}|
-              </Text>
-            </View>
-          </View>
           <View style={ResultStyles.wd_translation}>
             <Text style={ResultStyles.wd_translation_text}>
               {item.t_inline}
             </Text>
           </View>
-
-          <View>
-            {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-              return (
-                <View key={index}>
-                  {Object.values(word).map((translation, index) => {
-                    return (
-                      <View key={index} style={ResultStyles.wd_translation}>
-                        <StyledText style={ResultStyles.wd_translation_text_i}>
-                          {translation.w}
-                        </StyledText>
-                        <StyledText style={ResultStyles.wd_translation_text}>
-                          {'- ' + translation.t.join('\n\n- ')}
-                        </StyledText>
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            })}
-          </View>
+          
+            {this.renderLemma(item.lemma, item.word)}
+          
         </View>
       </ScrollView>
     ));
@@ -112,7 +83,7 @@ class ResultPage extends Component {
   }
 }
 
-export default function Result({route, props}) {
+export default function ResultRu({route, props}) {
   const {word} = route.params;
   // const word = 'Hello';
   return <ResultPage {...props} _word={word} />;
