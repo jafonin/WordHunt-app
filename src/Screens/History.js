@@ -5,7 +5,7 @@ import {styles} from '../Styles/UserCollections';
 import HistoryContent from '../Components/HistoryContent';
 import Header from '../Components/Header';
 
-function History() {
+function History({navigation}) {
   const onPressHandler = () => {
     navigation.jumpTo('UserDictionary');
   };

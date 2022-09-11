@@ -4,7 +4,6 @@ import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 
-
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class _renderHistory extends PureComponent {
@@ -63,7 +62,7 @@ class _renderHistory extends PureComponent {
     const {id} = item;
     const {t_inline} = item;
     if (t_inline) {
-      // console.log(word);
+      console.log(word);
       return (
         <View key={id}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
@@ -78,10 +77,8 @@ class _renderHistory extends PureComponent {
     }
   };
   render() {
-    const {navigation} = this.props;
     return (
       <View style={{flex: 1}}>
-
         <FlatList
           contentContainerStyle={{flexGrow: 1}}
           data={this.state.data}
@@ -96,7 +93,5 @@ class _renderHistory extends PureComponent {
 
 export default function HistoryContent(props) {
   const isFocused = useIsFocused();
-  return (
-    <_renderHistory {...props} isFocused={isFocused} />
-  );
+  return <_renderHistory {...props} isFocused={isFocused} />;
 }
