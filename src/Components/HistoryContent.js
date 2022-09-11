@@ -1,29 +1,30 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
 import React from 'react';
-import {Component} from 'react';
-import {StyleSheet, View, Text, FlatList, Pressable} from 'react-native';
+import {PureComponent} from 'react';
+import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
+
 
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
-class HistoryContent extends Component {
+class _renderHistory extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {data: []};
   }
 
-  async componentDidMount() {
-    await this.fetchData();
+  componentDidMount() {
+    this.fetchData();
   }
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchValue !== this.state.searchValue) {
-      await this.fetchData();
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.isFocused !== this.props.isFocused) {
+      this.fetchData();
     }
   }
 
   fetchData() {
-    var query = 'SELECT * FROM History LIMIT 10';
+    var query = 'SELECT * FROM History ORDER BY id DESC';
     dbHistory.transaction(tx => {
       tx.executeSql(query, [], (tx, results) => {
         let temp = [];
@@ -31,6 +32,7 @@ class HistoryContent extends Component {
           temp.push(results.rows.item(i));
         }
         this.setState({data: temp});
+        console.log(data);
       }),
         function (tx, err) {
           alert('not found'); // НЕ РАБОТАЕТ
@@ -51,7 +53,7 @@ class HistoryContent extends Component {
       console.log(error);
     }
     return (
-      navigation.jumpTo(this.state.goTo, {word: word}),
+      navigation.jumpTo(this.state.goTo, {word: word}), //Исправить state.goTO
       this.setState({searching: false, searchValue: '', data: []})
     );
   };
@@ -61,11 +63,13 @@ class HistoryContent extends Component {
     const {id} = item;
     const {t_inline} = item;
     if (t_inline) {
-      console.log(word);
+      // console.log(word);
       return (
         <View key={id}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
-            <Text style={{color: '#000'}} numberOfLines={1}>
+            <Text
+              style={{color: '#213646', fontFamily: 'georgia', fontSize: 18}}
+              numberOfLines={1}>
               {word} - {t_inline}
             </Text>
           </Pressable>
@@ -74,18 +78,25 @@ class HistoryContent extends Component {
     }
   };
   render() {
+    const {navigation} = this.props;
     return (
-      <View style={{marginTop: 2}}>
+      <View style={{flex: 1}}>
+
         <FlatList
+          contentContainerStyle={{flexGrow: 1}}
           data={this.state.data}
           keyExtractor={item => item.id}
-          windowSize={1}
           renderItem={this._renderItem}
-          style={{height: '100%', marginTop: 20}}
+          style={{marginTop: 20}}
         />
       </View>
     );
   }
 }
 
-export default HistoryContent;
+export default function HistoryContent(props) {
+  const isFocused = useIsFocused();
+  return (
+    <_renderHistory {...props} isFocused={isFocused} />
+  );
+}

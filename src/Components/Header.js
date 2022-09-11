@@ -52,7 +52,6 @@ class Search extends PureComponent {
 
   fetchData(searchValue) {
     if (searchValue) {
-      // let langEnCheck = /[A-Za-z]/;
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
           "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" +
@@ -85,18 +84,18 @@ class Search extends PureComponent {
     }
   }
 
-  setData = (word, t_inline) => {
+  setData = async (word, t_inline) => {
     try {
-      dbHistory.transaction(tx => {
-          tx.executeSql('INSERT INTO History (word, t_inline) VALUES (?,?)', [
-          word,
-          t_inline,
-        ]);
+      await dbHistory.transaction(async tx => {
+        await tx.executeSql(
+          'INSERT INTO History (word, t_inline) VALUES (?,?)',
+          [word, t_inline],
+        );
       });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   navigateOnPress = (word, t_inline) => {
     const {navigation} = this.props;

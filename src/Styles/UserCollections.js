@@ -2,10 +2,8 @@ import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
   body: {
-    flex: 1,
     alignItems: 'center',
     marginTop: 30,
-    marginBottom: 60,
   },
   rectangle: {
     height: 42,

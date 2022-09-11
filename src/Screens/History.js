@@ -5,12 +5,12 @@ import {styles} from '../Styles/UserCollections';
 import HistoryContent from '../Components/HistoryContent';
 import Header from '../Components/Header';
 
-function History({navigation}) {
+function History() {
   const onPressHandler = () => {
     navigation.jumpTo('UserDictionary');
   };
   return (
-    <View>
+    <View style={{flex: 1}}>
       <Header />
       <View style={styles.body}>
         <View style={styles.rectangle}>
@@ -22,9 +22,6 @@ function History({navigation}) {
           </Pressable>
         </View>
       </View>
-      <Text> 
-        opja
-      </Text>
       <HistoryContent />
     </View>
   );
