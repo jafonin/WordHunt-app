@@ -22,6 +22,9 @@ function History({navigation}) {
           </Pressable>
         </View>
       </View>
+      <Text> 
+        opja
+      </Text>
       <HistoryContent />
     </View>
   );

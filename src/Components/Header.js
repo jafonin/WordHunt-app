@@ -8,6 +8,7 @@ import {openDatabase} from 'react-native-sqlite-storage';
 
 const dbEn = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
 const dbRu = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class Search extends PureComponent {
   constructor(props) {
@@ -52,24 +53,23 @@ class Search extends PureComponent {
   fetchData(searchValue) {
     if (searchValue) {
       // let langEnCheck = /[A-Za-z]/;
-      if (/[A-Za-z]/.test(searchValue)){
+      if (/[A-Za-z]/.test(searchValue)) {
         var query =
-        "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" +
-        searchValue.toLowerCase() +
-        "%' ORDER BY rank LIMIT 10";
+          "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" +
+          searchValue.toLowerCase() +
+          "%' ORDER BY rank LIMIT 10";
         var db = dbEn;
-        this.setState({goTo: 'ResultEn'})
-      }
-      else {
+        this.setState({goTo: 'ResultEn'});
+      } else {
         // var query = "SELECT id, word, t_inline FROM ru_en_word WHERE word <> lemma LIMIT 10";
         var query =
-        "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
-        searchValue.toLowerCase() +
-        "%' ORDER BY rank LIMIT 10";
+          "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
+          searchValue.toLowerCase() +
+          "%' ORDER BY rank LIMIT 10";
         var db = dbRu;
-        this.setState({goTo: 'ResultRu'})
+        this.setState({goTo: 'ResultRu'});
       }
-      
+
       db.transaction(tx => {
         tx.executeSql(query, [], (tx, results) => {
           let temp = [];
@@ -85,9 +85,29 @@ class Search extends PureComponent {
     }
   }
 
+  setData = (word, t_inline) => {
+    try {
+      dbHistory.transaction(tx => {
+          tx.executeSql('INSERT INTO History (word, t_inline) VALUES (?,?)', [
+          word,
+          t_inline,
+        ]);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  navigateOnPress = (word, t_inline) => {
+    const {navigation} = this.props;
+    this.setData(word, t_inline);
+    return (
+      navigation.jumpTo(this.state.goTo, {word: word}),
+      this.setState({searching: false, searchValue: '', data: []})
+    );
+  };
 
   _renderItem = ({item}) => {
-    const {navigation} = this.props;
     const {word} = item;
     const {id} = item;
     const {t_inline} = item;
@@ -96,12 +116,8 @@ class Search extends PureComponent {
         <View key={id} style={Headerstyles.resultItem}>
           <Pressable
             style={Headerstyles.resultButton}
-            onPress={() => (
-              navigation.jumpTo(this.state.goTo, {word: word}),
-              this.setState({searching: false, searchValue: '', data: []})
-            )}>
+            onPress={() => this.navigateOnPress(word, t_inline)}>
             <Text style={Headerstyles.resultText} numberOfLines={1}>
-              {/* НЕ ДЛЯ ВСЕХ СЛОВ ЕСТЬ ПЕРЕВОД, НАПР 4g */}
               {word} - {t_inline}
             </Text>
           </Pressable>
