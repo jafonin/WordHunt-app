@@ -20,6 +20,7 @@ class Search extends PureComponent {
       searching: false,
       updateItem: false,
       goTo: '',
+      currentDate: new Date().toLocaleString(),
     };
   }
 
@@ -54,7 +55,7 @@ class Search extends PureComponent {
     if (searchValue) {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
-          "SELECT id, word, t_inline FROM en_ru_word WHERE word LIKE '" +
+          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         var db = dbEn;
@@ -84,12 +85,20 @@ class Search extends PureComponent {
     }
   }
 
-  setData = async (word, t_inline) => {
+  setData = async (word, t_inline, transcription_us, transcription_uk) => {
     try {
       await dbHistory.transaction(async tx => {
         await tx.executeSql(
-          'INSERT INTO History (word, t_inline) VALUES (?,?)',
-          [word, t_inline],
+          "SELECT COUNT (word) AS wordExist FROM History WHERE word = '" +
+            word +
+            "LIMIT 1'",
+          [],
+          (tx, results) => {
+            let temp = [];
+            temp.push(results.rows.item(0));
+          },
+          'INSERT INTO History (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
+          [word, t_inline, transcription_us, transcription_uk],
         );
       });
     } catch (error) {
@@ -97,9 +106,9 @@ class Search extends PureComponent {
     }
   };
 
-  navigateOnPress = (word, t_inline) => {
+  navigateOnPress = (word, t_inline, transcription_us, transcription_uk) => {
     const {navigation} = this.props;
-    this.setData(word, t_inline);
+    this.setData(word, t_inline, transcription_us, transcription_uk);
     return (
       navigation.jumpTo(this.state.goTo, {word: word}),
       this.setState({searching: false, searchValue: '', data: []})
@@ -110,12 +119,21 @@ class Search extends PureComponent {
     const {word} = item;
     const {id} = item;
     const {t_inline} = item;
+    const {transcription_us} = item;
+    const {transcription_uk} = item;
     if (t_inline) {
       return (
         <View key={id} style={Headerstyles.resultItem}>
           <Pressable
             style={Headerstyles.resultButton}
-            onPress={() => this.navigateOnPress(word, t_inline)}>
+            onPress={() =>
+              this.navigateOnPress(
+                word,
+                t_inline,
+                transcription_us,
+                transcription_uk,
+              )
+            }>
             <Text style={Headerstyles.resultText} numberOfLines={1}>
               {word} - {t_inline}
             </Text>

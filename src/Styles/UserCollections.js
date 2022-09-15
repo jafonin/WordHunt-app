@@ -36,4 +36,13 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ffdca9',
     borderRadius: 6,
   },
+  list: {
+    marginHorizontal: 15,
+    flex: 1,
+  },
+  listItem: {
+    marginVertical: 5,
+    flexDirection: 'row',
+    flex: 1
+  },
 });

@@ -3,13 +3,14 @@ import React from 'react';
 import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
+import {styles} from '../Styles/UserCollections';
 
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class _renderHistory extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: []};
+    this.state = {data: [], goTo: ''};
   }
 
   componentDidMount() {
@@ -31,7 +32,6 @@ class _renderHistory extends PureComponent {
           temp.push(results.rows.item(i));
         }
         this.setState({data: temp});
-        console.log(data);
       }),
         function (tx, err) {
           alert('not found'); // НЕ РАБОТАЕТ
@@ -40,7 +40,7 @@ class _renderHistory extends PureComponent {
   }
 
   navigateOnPress = (word, t_inline) => {
-    const navigation = useNavigation();
+    const {navigation} = this.props;
     try {
       dbHistory.transaction(async tx => {
         tx.executeSql('INSERT INTO History (word, t_inline) VALUES (?,?)', [
@@ -52,8 +52,9 @@ class _renderHistory extends PureComponent {
       console.log(error);
     }
     return (
-      navigation.jumpTo(this.state.goTo, {word: word}), //Исправить state.goTO
-      this.setState({searching: false, searchValue: '', data: []})
+      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}),//Исправить state.goTO
+      /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word}),
+      this.setState({data: []})
     );
   };
 
@@ -61,16 +62,59 @@ class _renderHistory extends PureComponent {
     const {word} = item;
     const {id} = item;
     const {t_inline} = item;
+    const {transcription_us} = item;
+    const {transcription_uk} = item;
     if (t_inline) {
-      console.log(word);
+      // console.log(word);
       return (
-        <View key={id}>
+        <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
-            <Text
-              style={{color: '#213646', fontFamily: 'georgia', fontSize: 18}}
-              numberOfLines={1}>
-              {word} - {t_inline}
-            </Text>
+            {(transcription_us || transcription_uk) && (
+              <View style={{flexDirection: 'row', flex: 1}}>
+              <Text>
+                <Text
+                  style={{
+                    color: '#213646',
+                    fontFamily: 'georgia',
+                    fontSize: 17,
+                    textDecorationLine: 'underline',
+                  }}>
+                  {word}
+                </Text>
+                <Text
+                  style={{
+                    color: '#213646',
+                    fontFamily: 'georgia',
+                    fontSize: 17,
+                  }}>
+                  {'\ '}|{transcription_us}| - {t_inline}
+                </Text>
+              </Text>
+            </View>
+            )}
+            {!(transcription_us || transcription_uk) && (
+              <View style={{flexDirection: 'row', flex: 1}}>
+                <Text>
+                  <Text
+                    style={{
+                      color: '#213646',
+                      fontFamily: 'georgia',
+                      fontSize: 17,
+                      textDecorationLine: 'underline',
+                    }}>
+                    {word}
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#213646',
+                      fontFamily: 'georgia',
+                      fontSize: 17,
+                    }}>
+                    {'\ '}- {t_inline}
+                  </Text>
+                </Text>
+              </View>
+            )}
           </Pressable>
         </View>
       );
@@ -78,13 +122,14 @@ class _renderHistory extends PureComponent {
   };
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.list}>
         <FlatList
           contentContainerStyle={{flexGrow: 1}}
           data={this.state.data}
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
           style={{marginTop: 20}}
+          // windowSize={21}
         />
       </View>
     );
@@ -93,5 +138,6 @@ class _renderHistory extends PureComponent {
 
 export default function HistoryContent(props) {
   const isFocused = useIsFocused();
-  return <_renderHistory {...props} isFocused={isFocused} />;
+  const navigation = useNavigation();
+  return <_renderHistory {...props} isFocused={isFocused} navigation={navigation}/>;
 }
