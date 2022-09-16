@@ -19,8 +19,7 @@ class Search extends PureComponent {
       searchValue: '',
       searching: false,
       updateItem: false,
-      goTo: '',
-      currentDate: new Date().toLocaleString(),
+      goTo: ''
     };
   }
 
@@ -61,7 +60,6 @@ class Search extends PureComponent {
         var db = dbEn;
         this.setState({goTo: 'ResultEn'});
       } else {
-        // var query = "SELECT id, word, t_inline FROM ru_en_word WHERE word <> lemma LIMIT 10";
         var query =
           "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
           searchValue.toLowerCase() +
@@ -69,36 +67,39 @@ class Search extends PureComponent {
         var db = dbRu;
         this.setState({goTo: 'ResultRu'});
       }
-
-      db.transaction(tx => {
-        tx.executeSql(query, [], (tx, results) => {
-          let temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
-          }
-          this.setState({data: temp});
-        }),
-          function (tx, err) {
-            alert('not found'); // НЕ РАБОТАЕТ
-          };
-      });
+      try {
+        db.transaction(tx => {
+          tx.executeSql(query, [], (tx, results) => {
+            let temp = [];
+            for (let i = 0; i < results.rows.length; ++i) {
+              temp.push(results.rows.item(i));
+            }
+            this.setState({data: temp});
+          }),
+            function (tx, err) {
+              alert('not found'); // НЕ РАБОТАЕТ
+            };
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
   setData = async (word, t_inline, transcription_us, transcription_uk) => {
+    let currentDate = new Date().toLocaleString();
     try {
       await dbHistory.transaction(async tx => {
         await tx.executeSql(
-          "SELECT COUNT (word) AS wordExist FROM History WHERE word = '" +
-            word +
-            "LIMIT 1'",
-          [],
-          (tx, results) => {
-            let temp = [];
-            temp.push(results.rows.item(0));
-          },
-          'INSERT INTO History (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
+          'INSERT OR IGNORE INTO History (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
           [word, t_inline, transcription_us, transcription_uk],
+        );
+        await tx.executeSql(
+          "UPDATE History SET time = '" +
+            currentDate.toLowerCase() +
+            "' WHERE word = '" +
+            word.toLowerCase() +
+            "'",
         );
       });
     } catch (error) {

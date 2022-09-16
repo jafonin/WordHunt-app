@@ -24,35 +24,39 @@ class _renderHistory extends PureComponent {
   }
 
   fetchData() {
-    var query = 'SELECT * FROM History ORDER BY id DESC';
-    dbHistory.transaction(tx => {
-      tx.executeSql(query, [], (tx, results) => {
-        let temp = [];
-        for (let i = 0; i < results.rows.length; ++i) {
-          temp.push(results.rows.item(i));
-        }
-        this.setState({data: temp});
-      }),
-        function (tx, err) {
-          alert('not found'); // НЕ РАБОТАЕТ
-        };
-    });
+    var query = 'SELECT * FROM History ORDER BY time DESC';
+    try {
+      dbHistory.transaction(tx => {
+        tx.executeSql(query, [], (tx, results) => {
+          let temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(results.rows.item(i));
+          }
+          this.setState({data: temp});
+        }),
+          function (tx, err) {
+            alert('not found'); // НЕ РАБОТАЕТ
+          };
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   navigateOnPress = (word, t_inline) => {
     const {navigation} = this.props;
     try {
       dbHistory.transaction(async tx => {
-        tx.executeSql('INSERT INTO History (word, t_inline) VALUES (?,?)', [
-          word,
-          t_inline,
-        ]);
+        tx.executeSql(
+          'INSERT OR IGNORE INTO History (word, t_inline) VALUES (?,?)',
+          [word, t_inline],
+        );
       });
     } catch (error) {
       console.log(error);
     }
     return (
-      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}),//Исправить state.goTO
+      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}), //Исправить state.goTO
       /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word}),
       this.setState({data: []})
     );
@@ -65,32 +69,32 @@ class _renderHistory extends PureComponent {
     const {transcription_us} = item;
     const {transcription_uk} = item;
     if (t_inline) {
-      // console.log(word);
       return (
         <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
             {(transcription_us || transcription_uk) && (
               <View style={{flexDirection: 'row', flex: 1}}>
-              <Text>
-                <Text
-                  style={{
-                    color: '#213646',
-                    fontFamily: 'georgia',
-                    fontSize: 17,
-                    textDecorationLine: 'underline',
-                  }}>
-                  {word}
+                <Text>
+                  <Text
+                    style={{
+                      color: '#213646',
+                      fontFamily: 'georgia',
+                      fontSize: 17,
+                      textDecorationLine: 'underline',
+                    }}>
+                    {word}
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#213646',
+                      fontFamily: 'georgia',
+                      fontSize: 17,
+                    }}>
+                    {' '}
+                    |{transcription_us}| - {t_inline}
+                  </Text>
                 </Text>
-                <Text
-                  style={{
-                    color: '#213646',
-                    fontFamily: 'georgia',
-                    fontSize: 17,
-                  }}>
-                  {'\ '}|{transcription_us}| - {t_inline}
-                </Text>
-              </Text>
-            </View>
+              </View>
             )}
             {!(transcription_us || transcription_uk) && (
               <View style={{flexDirection: 'row', flex: 1}}>
@@ -110,7 +114,8 @@ class _renderHistory extends PureComponent {
                       fontFamily: 'georgia',
                       fontSize: 17,
                     }}>
-                    {'\ '}- {t_inline}
+                    {' '}
+                    - {t_inline}
                   </Text>
                 </Text>
               </View>
@@ -139,5 +144,7 @@ class _renderHistory extends PureComponent {
 export default function HistoryContent(props) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  return <_renderHistory {...props} isFocused={isFocused} navigation={navigation}/>;
+  return (
+    <_renderHistory {...props} isFocused={isFocused} navigation={navigation} />
+  );
 }
