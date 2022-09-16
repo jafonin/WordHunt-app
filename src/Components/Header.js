@@ -99,7 +99,7 @@ class Search extends PureComponent {
             currentDate.toLowerCase() +
             "' WHERE word = '" +
             word.toLowerCase() +
-            "'",
+            "'"
         );
       });
     } catch (error) {

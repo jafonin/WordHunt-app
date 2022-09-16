@@ -45,11 +45,19 @@ class _renderHistory extends PureComponent {
 
   navigateOnPress = (word, t_inline) => {
     const {navigation} = this.props;
+    let currentDate = new Date().toLocaleString();
     try {
-      dbHistory.transaction(async tx => {
+      dbHistory.transaction( tx => {
         tx.executeSql(
           'INSERT OR IGNORE INTO History (word, t_inline) VALUES (?,?)',
           [word, t_inline],
+        );
+        tx.executeSql(
+          "UPDATE History SET time = '" +
+            currentDate.toLowerCase() +
+            "' WHERE word = '" +
+            word.toLowerCase() +
+            "'"
         );
       });
     } catch (error) {
