@@ -19,7 +19,7 @@ class Search extends PureComponent {
       searchValue: '',
       searching: false,
       updateItem: false,
-      goTo: ''
+      goTo: '',
     };
   }
 
@@ -54,7 +54,7 @@ class Search extends PureComponent {
     if (searchValue) {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
-          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE word LIKE '" +
+          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE t_mix IS NOT '' AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         var db = dbEn;
@@ -99,7 +99,7 @@ class Search extends PureComponent {
             currentDate.toLowerCase() +
             "' WHERE word = '" +
             word.toLowerCase() +
-            "'"
+            "'",
         );
       });
     } catch (error) {

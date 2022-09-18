@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   listItem: {
-    marginVertical: 5,
+    marginVertical: 7,
     flexDirection: 'row',
     flex: 1
   },

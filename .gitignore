@@ -63,3 +63,4 @@ buck-out/
 #SQLite3 DB
 android/app/src/main/assets/www/*.db
 !android/app/src/main/assets/www/UserHistory.db
+!android/app/src/main/assets/www/UserDictionary.db

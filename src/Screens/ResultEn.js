@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
 import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
@@ -7,6 +7,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+const Dicdb = openDatabase({name: 'UserDictionary.db', createFromLocation: 1})
 
 class ResultPage extends Component {
   constructor(props) {
@@ -27,14 +28,28 @@ class ResultPage extends Component {
   }
 
   fetchData(_word) {
-    // const { word } = this.props;
-    var query = "SELECT * FROM en_ru_word WHERE word = '" + _word + "'";
+    var query =
+      "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" +
+      _word +
+      "'";
     db.transaction(tx => {
       tx.executeSql(query, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
         this.setState({data: temp});
       });
+    });
+  }
+
+  updateDictionary() {
+    var query = "UPDATE dictionary SET word = '" +
+    _word +
+    "'";
+    // var query = "DELETE FROM dictionary WHERE word ='" +
+    // _word +
+    // "'";
+    Dicdb.transaction(tx => {
+      tx.executeSql(query, []);
     });
   }
 
@@ -49,27 +64,45 @@ class ResultPage extends Component {
               </Text>
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
-            <Image
-              source={require('../img/pd_11.png')}
-              style={ResultStyles.img}
-            />
+            <Pressable>
+              <Image
+                source={require('../img/pd_11.png')}
+                style={ResultStyles.img}
+              />
+            </Pressable>
           </View>
-          <View style={ResultStyles.wd_transcription}>
-            <View>
-              <Text style={ResultStyles.wd_transcription_text_i}>амер.</Text>
-              <Text style={ResultStyles.wd_transcription_text_i}>брит.</Text>
+          {(item.transcription_us.length > 0 ||
+            item.transcription_uk.length > 0) && (
+            <View style={ResultStyles.wd_transcription}>
+              <View>
+                {item.transcription_us.length > 0 && (
+                  <Text style={ResultStyles.wd_transcription_text_i}>
+                    амер.
+                  </Text>
+                )}
+                {item.transcription_uk.length > 0 && (
+                  <Text style={ResultStyles.wd_transcription_text_i}>
+                    брит.
+                  </Text>
+                )}
+              </View>
+              <View>
+                {item.transcription_us.length > 0 && (
+                  <Text style={ResultStyles.wd_transcription_text}>
+                    |{item.transcription_us}|
+                  </Text>
+                )}
+                {item.transcription_uk.length > 0 && (
+                  <Text style={ResultStyles.wd_transcription_text}>
+                    |{item.transcription_uk}|
+                  </Text>
+                )}
+              </View>
             </View>
-            <View>
-              <Text style={ResultStyles.wd_transcription_text}>
-                |{item.transcription_us}|
-              </Text>
-              <Text style={ResultStyles.wd_transcription_text}>
-                |{item.transcription_uk}|
-              </Text>
-            </View>
-          </View>
+          )}
           <View style={ResultStyles.wd_translation}>
-            <Text style={ResultStyles.wd_translation_text}>
+            <Text
+              style={[ResultStyles.wd_translation_text, {fontStyle: 'italic'}]}>
               {item.t_inline}
             </Text>
           </View>

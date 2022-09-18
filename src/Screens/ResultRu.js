@@ -41,7 +41,9 @@ class ResultPage extends Component {
     if (lemma != word) {
       return (
         <View>
-          <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
+          <Text style={ResultStyles.wd_translation_text}>
+            Смотрите также: {lemma}
+          </Text>
         </View>
       );
     }
@@ -68,9 +70,8 @@ class ResultPage extends Component {
               {item.t_inline}
             </Text>
           </View>
-          
-            {this.renderLemma(item.lemma, item.word)}
-          
+
+          {this.renderLemma(item.lemma, item.word)}
         </View>
       </ScrollView>
     ));
