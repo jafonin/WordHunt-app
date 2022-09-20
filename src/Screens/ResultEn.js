@@ -7,12 +7,12 @@ import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
-const Dicdb = openDatabase({name: 'UserDictionary.db', createFromLocation: 1})
+const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1})
 
 class ResultPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {data: []};
+    this.state = {data: [], inDictionary: false};
   }
 
   componentDidMount() {
@@ -28,29 +28,56 @@ class ResultPage extends Component {
   }
 
   fetchData(_word) {
-    var query =
+    var dbQuery =
       "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" +
       _word +
       "'";
     db.transaction(tx => {
-      tx.executeSql(query, [], (tx, results) => {
+      tx.executeSql(dbQuery, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
         this.setState({data: temp});
       });
     });
+    var dbDicQuery = "SELECT * FROM dictionary WHERE word = '" +
+    _word +
+    "'";
+    
+    dbDic.transaction(tx => {
+      tx.executeSql(dbDicQuery, [], (tx, results) => {
+        var dictionaryTemp = [];
+        dictionaryTemp.push(results.rows.item(0));
+        if (dictionaryTemp[0].word) {
+          console.log(dictionaryTemp[0].word);
+          this.setState({inDictionary: true});
+        }
+      });
+    });
   }
 
   updateDictionary() {
-    var query = "UPDATE dictionary SET word = '" +
+    var queryUpdate = "UPDATE dictionary SET word = '" +
     _word +
     "'";
     // var query = "DELETE FROM dictionary WHERE word ='" +
     // _word +
     // "'";
-    Dicdb.transaction(tx => {
-      tx.executeSql(query, []);
+    dbDic.transaction(tx => {
+      tx.executeSql(queryUpdate, []);
     });
+  }
+
+  onButtonPress = () => {
+    this.setState({inDictionary: !this.state.inDictionary})
+    if (inDictionary) {
+      var queryAdd = "INSERT OR IGNORE INTO dictionary  word = '" +
+      _word +
+      "'";
+    } else {
+      var queryDelete = "UPDATE dictionary SET word = '" +
+      _word +
+      "'";
+    }
   }
 
   render() {
@@ -64,11 +91,15 @@ class ResultPage extends Component {
               </Text>
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
-            <Pressable>
-              <Image
+            <Pressable onPress={this.onButtonPress}>
+              {!this.state.inDictionary && <Image
+                source={require('../img/pd_00.png')}
+                style={ResultStyles.img}
+              />}
+              {this.state.inDictionary && <Image
                 source={require('../img/pd_11.png')}
                 style={ResultStyles.img}
-              />
+              />}
             </Pressable>
           </View>
           {(item.transcription_us.length > 0 ||
