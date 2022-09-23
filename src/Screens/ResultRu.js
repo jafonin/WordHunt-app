@@ -1,32 +1,32 @@
 import React, {Component} from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
 import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
 class ResultPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {data: []};
+    this.state = {data: [], inDictionary: false};
   }
 
   componentDidMount() {
-    this.setState({data: []});
+    this.setState({data: [], inDictionary: false});
     this.fetchData(this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word) {
+      this.setState({data: [], inDictionary: false});
       this.fetchData(this.props._word);
-      this.setState({data: []});
     }
   }
 
   fetchData(_word) {
-    // const { word } = this.props;
     var query = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
     db.transaction(tx => {
       tx.executeSql(query, [], (tx, results) => {
@@ -35,6 +35,48 @@ class ResultPage extends Component {
         this.setState({data: temp});
       });
     });
+
+    dbDic.transaction(tx => {
+      tx.executeSql(
+        "SELECT * FROM dictionary WHERE word = '" + _word + "'",
+        [],
+        (tx, results) => {
+          var dictionaryTemp = [];
+          dictionaryTemp.push(results.rows.item(0));
+          dictionaryTemp[0].word.length > 0 &&
+            this.setState({inDictionary: true});
+        },
+      );
+    });
+  }
+
+  updateDictionary(queryUpdate, t_inline) {
+    const {_word} = this.props;
+    dbDic.transaction(tx => {
+      tx.executeSql(queryUpdate, [_word, t_inline]);
+    });
+  }
+
+  onButtonPress(t_inline) {
+    const {_word} = this.props;
+    var toggle = !this.state.inDictionary;
+    this.setState({inDictionary: !this.state.inDictionary});
+    if (!this.state.inDictionary) {
+      dbDic.transaction(tx => {
+        tx.executeSql(
+          'INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)',
+          [_word, t_inline],
+        );
+        console.log(t_inline);
+      });
+    } else {
+      dbDic.transaction(tx => {
+        tx.executeSql(
+          "DELETE FROM dictionary WHERE word = '" + _word + "'",
+          [],
+        );
+      });
+    }
   }
 
   renderLemma(lemma, word) {
@@ -60,10 +102,22 @@ class ResultPage extends Component {
               </Text>
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
-            <Image
-              source={require('../img/pd_11.png')}
-              style={ResultStyles.img}
-            />
+            <Pressable
+              onPress={() => this.onButtonPress(item.t_inline)}
+              style={{height: 25, width: 20}}>
+              {this.state.inDictionary == false && (
+                <Image
+                  source={require('../img/pd_00.png')}
+                  style={ResultStyles.img}
+                />
+              )}
+              {this.state.inDictionary == true && (
+                <Image
+                  source={require('../img/pd_11.png')}
+                  style={ResultStyles.img}
+                />
+              )}
+            </Pressable>
           </View>
           <View style={ResultStyles.wd_translation}>
             <Text style={ResultStyles.wd_translation_text}>

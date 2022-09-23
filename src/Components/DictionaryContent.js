@@ -5,9 +5,10 @@ import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {styles} from '../Styles/UserCollections';
 
+const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
-class _renderHistory extends PureComponent {
+class _renderDictionary extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {data: [], goTo: ''};
@@ -24,15 +25,16 @@ class _renderHistory extends PureComponent {
   }
 
   fetchData() {
-    var query = 'SELECT * FROM History ORDER BY time DESC';
+    var query = 'SELECT * FROM dictionary ORDER BY id DESC';
     try {
-      dbHistory.transaction(tx => {
+      dbDic.transaction(tx => {
         tx.executeSql(query, [], (tx, results) => {
           let temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
+        //   console.log(this.state.data)
         }),
           function (tx, err) {
             alert('not found'); // НЕ РАБОТАЕТ
@@ -60,7 +62,6 @@ class _renderHistory extends PureComponent {
             "'"
         );
       });
-      
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +78,7 @@ class _renderHistory extends PureComponent {
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
-    if (t_inline) {
+    // if (!t_inline) {
       return (
         <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
@@ -132,7 +133,7 @@ class _renderHistory extends PureComponent {
           </Pressable>
         </View>
       );
-    }
+    // }
   };
   render() {
     return (
@@ -150,10 +151,10 @@ class _renderHistory extends PureComponent {
   }
 }
 
-export default function HistoryContent(props) {
+export default function DictionaryContent(props) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   return (
-    <_renderHistory {...props} isFocused={isFocused} navigation={navigation} />
+    <_renderDictionary {...props} isFocused={isFocused} navigation={navigation} />
   );
 }

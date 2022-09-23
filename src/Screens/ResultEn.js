@@ -7,7 +7,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 
 const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
-const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1})
+const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
 class ResultPage extends Component {
   constructor(props) {
@@ -16,67 +16,72 @@ class ResultPage extends Component {
   }
 
   componentDidMount() {
-    this.setState({data: []});
+    this.setState({data: [], inDictionary: false});
     this.fetchData(this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word) {
+      this.setState({data: [], inDictionary: false});
       this.fetchData(this.props._word);
-      this.setState({data: []});
     }
   }
 
   fetchData(_word) {
-    var dbQuery =
-      "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" +
-      _word +
-      "'";
     db.transaction(tx => {
-      tx.executeSql(dbQuery, [], (tx, results) => {
-        var temp = [];
-        temp.push(results.rows.item(0));
-        this.setState({data: temp});
-      });
+      tx.executeSql(
+        "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" +
+          _word +
+          "'",
+        [],
+        (tx, results) => {
+          var temp = [];
+          temp.push(results.rows.item(0));
+          this.setState({data: temp});
+        },
+      );
     });
-    var dbDicQuery = "SELECT * FROM dictionary WHERE word = '" +
-    _word +
-    "'";
-    
+
     dbDic.transaction(tx => {
-      tx.executeSql(dbDicQuery, [], (tx, results) => {
-        var dictionaryTemp = [];
-        dictionaryTemp.push(results.rows.item(0));
-        if (dictionaryTemp[0].word) {
-          console.log(dictionaryTemp[0].word);
-          this.setState({inDictionary: true});
-        }
-      });
+      tx.executeSql(
+        "SELECT * FROM dictionary WHERE word = '" + _word + "'",
+        [],
+        (tx, results) => {
+          var dictionaryTemp = [];
+          dictionaryTemp.push(results.rows.item(0));
+          dictionaryTemp[0].word.length > 0 &&
+            this.setState({inDictionary: true});
+        },
+      );
     });
   }
 
-  updateDictionary() {
-    var queryUpdate = "UPDATE dictionary SET word = '" +
-    _word +
-    "'";
-    // var query = "DELETE FROM dictionary WHERE word ='" +
-    // _word +
-    // "'";
+  updateDictionary(queryUpdate, t_inline) {
+    const {_word} = this.props;
     dbDic.transaction(tx => {
-      tx.executeSql(queryUpdate, []);
+      tx.executeSql(queryUpdate, [_word, t_inline]);
     });
   }
 
-  onButtonPress = () => {
-    this.setState({inDictionary: !this.state.inDictionary})
-    if (inDictionary) {
-      var queryAdd = "INSERT OR IGNORE INTO dictionary  word = '" +
-      _word +
-      "'";
+  onButtonPress(t_inline) {
+    const {_word} = this.props;
+    var toggle = !this.state.inDictionary;
+    this.setState({inDictionary: !this.state.inDictionary});
+    if (!this.state.inDictionary) {
+      dbDic.transaction(tx => {
+        tx.executeSql(
+          'INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)',
+          [_word, t_inline],
+        );
+        console.log(t_inline);
+      });
     } else {
-      var queryDelete = "UPDATE dictionary SET word = '" +
-      _word +
-      "'";
+      dbDic.transaction(tx => {
+        tx.executeSql(
+          "DELETE FROM dictionary WHERE word = '" + _word + "'",
+          [],
+        );
+      });
     }
   }
 
@@ -91,15 +96,21 @@ class ResultPage extends Component {
               </Text>
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
-            <Pressable onPress={this.onButtonPress}>
-              {!this.state.inDictionary && <Image
-                source={require('../img/pd_00.png')}
-                style={ResultStyles.img}
-              />}
-              {this.state.inDictionary && <Image
-                source={require('../img/pd_11.png')}
-                style={ResultStyles.img}
-              />}
+            <Pressable
+              onPress={() => this.onButtonPress(item.t_inline)}
+              style={{height: 25, width: 20}}>
+              {this.state.inDictionary == false && (
+                <Image
+                  source={require('../img/pd_00.png')}
+                  style={ResultStyles.img}
+                />
+              )}
+              {this.state.inDictionary == true && (
+                <Image
+                  source={require('../img/pd_11.png')}
+                  style={ResultStyles.img}
+                />
+              )}
             </Pressable>
           </View>
           {(item.transcription_us.length > 0 ||
