@@ -5,6 +5,7 @@ import {Headerstyles} from '../Styles/Header';
 import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
+import HistoryContent from './HistoryContent';
 
 const dbEn = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
 const dbRu = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
@@ -14,7 +15,6 @@ class Search extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
       data: [],
       searchValue: '',
       searching: false,
@@ -46,7 +46,9 @@ class Search extends PureComponent {
     } else {
       this.setState({searching: false, data: []});
     }
+
     this.setState({searchValue: text});
+    console.log(text);
     this.fetchData(text);
   }
 
@@ -112,7 +114,8 @@ class Search extends PureComponent {
     this.setData(word, t_inline, transcription_us, transcription_uk);
     return (
       navigation.jumpTo(this.state.goTo, {word: word}),
-      this.setState({searching: false, searchValue: '', data: []})
+      this.setState({searching: false, searchValue: null, data: []})
+      
     );
   };
 
@@ -159,6 +162,7 @@ class Search extends PureComponent {
             <SearchBar
               placeholder="Поиск по словарю"
               platform={inputProps}
+              ref={search => (this.search = search)}
               placeholderTextColor="#888"
               containerStyle={{
                 width: '75%',
@@ -181,6 +185,9 @@ class Search extends PureComponent {
             style={{height: '100%', marginTop: 20}}
           />
         )}
+        {/* {this.state.showHistory && (<View style={{height: '100%'}}>
+          <HistoryContent />
+        </View>)} */}
       </View>
     );
   }

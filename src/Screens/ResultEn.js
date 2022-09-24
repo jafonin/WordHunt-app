@@ -56,24 +56,23 @@ class ResultPage extends Component {
     });
   }
 
-  updateDictionary(queryUpdate, t_inline) {
-    const {_word} = this.props;
-    dbDic.transaction(tx => {
-      tx.executeSql(queryUpdate, [_word, t_inline]);
-    });
-  }
+  // updateDictionary(queryUpdate, t_inline) {
+  //   const {_word} = this.props;
+  //   dbDic.transaction(tx => {
+  //     tx.executeSql(queryUpdate, [_word, t_inline]);
+  //   });
+  // }
 
-  onButtonPress(t_inline) {
+  onButtonPress(t_inline, transcription_us, transcription_uk) {
     const {_word} = this.props;
-    var toggle = !this.state.inDictionary;
+    // var toggle = !this.state.inDictionary;
     this.setState({inDictionary: !this.state.inDictionary});
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
         tx.executeSql(
-          'INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)',
-          [_word, t_inline],
+          'INSERT OR IGNORE INTO dictionary (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
+          [_word, t_inline, transcription_us, transcription_uk],
         );
-        console.log(t_inline);
       });
     } else {
       dbDic.transaction(tx => {
@@ -97,7 +96,7 @@ class ResultPage extends Component {
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
             <Pressable
-              onPress={() => this.onButtonPress(item.t_inline)}
+              onPress={() => this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)}
               style={{height: 25, width: 20}}>
               {this.state.inDictionary == false && (
                 <Image

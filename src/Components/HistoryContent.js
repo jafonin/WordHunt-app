@@ -81,7 +81,7 @@ class _renderHistory extends PureComponent {
       return (
         <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
-            {(transcription_us || transcription_uk) && (
+            {(transcription_us.length > 0 || transcription_uk.length > 0) && (
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
@@ -105,7 +105,7 @@ class _renderHistory extends PureComponent {
                 </Text>
               </View>
             )}
-            {!(transcription_us || transcription_uk) && (
+            {!(transcription_us.length > 0 || transcription_uk.length > 0) && (
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text

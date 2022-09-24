@@ -82,7 +82,7 @@ class _renderDictionary extends PureComponent {
       return (
         <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
-            {(transcription_us || transcription_uk) && (
+            {(transcription_us.length > 0 || transcription_uk.length > 0) && (
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
@@ -106,7 +106,7 @@ class _renderDictionary extends PureComponent {
                 </Text>
               </View>
             )}
-            {!(transcription_us || transcription_uk) && (
+            {!(transcription_us.length > 0 || transcription_uk.length > 0) && (
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
