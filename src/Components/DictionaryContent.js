@@ -34,7 +34,7 @@ class _renderDictionary extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
-        //   console.log(this.state.data)
+          //   console.log(this.state.data)
         }),
           function (tx, err) {
             alert('not found'); // НЕ РАБОТАЕТ
@@ -49,7 +49,7 @@ class _renderDictionary extends PureComponent {
     const {navigation} = this.props;
     let currentDate = new Date().toLocaleString();
     try {
-      dbHistory.transaction( tx => {
+      dbHistory.transaction(tx => {
         tx.executeSql(
           'INSERT OR IGNORE INTO History (word, t_inline) VALUES (?,?)',
           [word, t_inline],
@@ -59,7 +59,7 @@ class _renderDictionary extends PureComponent {
             currentDate.toLowerCase() +
             "' WHERE word = '" +
             word.toLowerCase() +
-            "'"
+            "'",
         );
       });
     } catch (error) {
@@ -78,62 +78,40 @@ class _renderDictionary extends PureComponent {
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
-    // if (!t_inline) {
+    if (transcription_uk || transcription_us) {
       return (
         <View key={id} style={styles.listItem}>
           <Pressable onPress={() => this.navigateOnPress(word)}>
-            {(transcription_us.length > 0 || transcription_uk.length > 0) && (
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                      textDecorationLine: 'underline',
-                    }}>
-                    {word}
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                    }}>
-                    {' '}
-                    |{transcription_us}| - {t_inline}
-                  </Text>
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>
+                  {word}
                 </Text>
-              </View>
-            )}
-            {!(transcription_us.length > 0 || transcription_uk.length > 0) && (
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                      textDecorationLine: 'underline',
-                    }}>
-                    {word}
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                    }}>
-                    {' '}
-                    - {t_inline}
-                  </Text>
+                <Text style={styles.text}>
+                  {' '}
+                  |{transcription_us}| - {t_inline}
                 </Text>
-              </View>
-            )}
+              </Text>
+            </View>
           </Pressable>
         </View>
       );
-    // }
+    } else {
+      return (
+        <View key={id} style={styles.listItem}>
+          <Pressable onPress={() => this.navigateOnPress(word)}>
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>
+                  {word}
+                </Text>
+                <Text style={styles.text}> - {t_inline}</Text>
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+      );
+    }
   };
   render() {
     return (
@@ -155,6 +133,10 @@ export default function DictionaryContent(props) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   return (
-    <_renderDictionary {...props} isFocused={isFocused} navigation={navigation} />
+    <_renderDictionary
+      {...props}
+      isFocused={isFocused}
+      navigation={navigation}
+    />
   );
 }

@@ -47,7 +47,7 @@ class _renderHistory extends PureComponent {
     const {navigation} = this.props;
     let currentDate = new Date().toLocaleString();
     try {
-      dbHistory.transaction( tx => {
+      dbHistory.transaction(tx => {
         tx.executeSql(
           'INSERT OR IGNORE INTO History (word, t_inline) VALUES (?,?)',
           [word, t_inline],
@@ -57,10 +57,9 @@ class _renderHistory extends PureComponent {
             currentDate.toLowerCase() +
             "' WHERE word = '" +
             word.toLowerCase() +
-            "'"
+            "'",
         );
       });
-      
     } catch (error) {
       console.log(error);
     }
@@ -78,10 +77,10 @@ class _renderHistory extends PureComponent {
     const {transcription_us} = item;
     const {transcription_uk} = item;
     if (t_inline) {
-      return (
-        <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word)}>
-            {(transcription_us.length > 0 || transcription_uk.length > 0) && (
+      if (transcription_uk || transcription_us) {
+        return (
+          <View key={id} style={styles.listItem}>
+            <Pressable onPress={() => this.navigateOnPress(word)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
@@ -104,8 +103,13 @@ class _renderHistory extends PureComponent {
                   </Text>
                 </Text>
               </View>
-            )}
-            {!(transcription_us.length > 0 || transcription_uk.length > 0) && (
+            </Pressable>
+          </View>
+        );
+      } else {
+        return (
+          <View key={id} style={styles.listItem}>
+            <Pressable onPress={() => this.navigateOnPress(word)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
@@ -128,10 +132,10 @@ class _renderHistory extends PureComponent {
                   </Text>
                 </Text>
               </View>
-            )}
-          </Pressable>
-        </View>
-      );
+            </Pressable>
+          </View>
+        );
+      }
     }
   };
   render() {

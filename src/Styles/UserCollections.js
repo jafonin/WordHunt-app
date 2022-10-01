@@ -43,6 +43,11 @@ export const styles = StyleSheet.create({
   listItem: {
     marginVertical: 7,
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
+  },
+  text: {
+    color: '#213646',
+    fontFamily: 'georgia',
+    fontSize: 17,
   },
 });
