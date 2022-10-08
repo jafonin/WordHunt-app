@@ -59,7 +59,7 @@ class ResultPage extends Component {
 
   onButtonPress(t_inline) {
     const {_word} = this.props;
-    var toggle = !this.state.inDictionary;
+    // var toggle = !this.state.inDictionary;
     this.setState({inDictionary: !this.state.inDictionary});
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
@@ -104,7 +104,7 @@ class ResultPage extends Component {
             </View>
             <Pressable
               onPress={() => this.onButtonPress(item.t_inline)}
-              style={{height: 25, width: 20}}>
+              style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
               {this.state.inDictionary == false && (
                 <Image
                   source={require('../img/pd_00.png')}
@@ -140,6 +140,5 @@ class ResultPage extends Component {
 
 export default function ResultRu({route, props}) {
   const {word} = route.params;
-  // const word = 'Hello';
   return <ResultPage {...props} _word={word} />;
 }

@@ -159,7 +159,8 @@ class Search extends PureComponent {
               style={Headerstyles.button}>
               <Text style={Headerstyles.lines}>≡</Text>
             </Pressable>
-            <SearchBar
+            {/* Не работает перемещение по тексту */}
+            <SearchBar 
               placeholder="Поиск по словарю"
               platform={inputProps}
               ref={search => (this.search = search)}

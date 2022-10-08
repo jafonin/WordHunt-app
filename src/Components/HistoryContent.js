@@ -10,7 +10,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderHistory extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: [], goTo: ''};
+    this.state = {data: []};
   }
 
   componentDidMount() {
@@ -35,7 +35,7 @@ class _renderHistory extends PureComponent {
           this.setState({data: temp});
         }),
           function (tx, err) {
-            alert('not found'); // НЕ РАБОТАЕТ
+            alert('not found'); // не работает
           };
       });
     } catch (error) {
@@ -64,7 +64,7 @@ class _renderHistory extends PureComponent {
       console.log(error);
     }
     return (
-      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}), //Исправить state.goTO
+      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}),
       /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word}),
       this.setState({data: []})
     );
@@ -84,23 +84,13 @@ class _renderHistory extends PureComponent {
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                      textDecorationLine: 'underline',
-                    }}>
+                    style={[styles.text, {textDecorationLine: 'underline'}]}>
                     {word}
                   </Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                    }}>
-                    {' '}
-                    |{transcription_us}| - {t_inline}
-                  </Text>
+                  {transcription_us && (
+                    <Text style={styles.text}> |{transcription_us}|</Text>
+                  )}
+                  <Text style={styles.text}> - {t_inline}</Text>
                 </Text>
               </View>
             </Pressable>
@@ -112,24 +102,8 @@ class _renderHistory extends PureComponent {
             <Pressable onPress={() => this.navigateOnPress(word)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                      textDecorationLine: 'underline',
-                    }}>
-                    {word}
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#213646',
-                      fontFamily: 'georgia',
-                      fontSize: 17,
-                    }}>
-                    {' '}
-                    - {t_inline}
-                  </Text>
+                  <Text style={styles.text}>{word}</Text>
+                  <Text style={styles.text}> - {t_inline}</Text>
                 </Text>
               </View>
             </Pressable>

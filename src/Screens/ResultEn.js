@@ -97,7 +97,7 @@ class ResultPage extends Component {
             </View>
             <Pressable
               onPress={() => this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)}
-              style={{height: 25, width: 20}}>
+              style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
               {this.state.inDictionary == false && (
                 <Image
                   source={require('../img/pd_00.png')}

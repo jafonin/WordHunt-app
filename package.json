@@ -15,7 +15,6 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@rneui/base": "^4.0.0-rc.5",
     "@rneui/themed": "^4.0.0-rc.5",
-    "native-base": "^3.4.9",
     "react": "17.0.2",
     "react-native": "0.68.2",
     "react-native-gesture-handler": "^2.5.0",

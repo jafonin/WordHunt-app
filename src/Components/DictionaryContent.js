@@ -87,10 +87,10 @@ class _renderDictionary extends PureComponent {
                 <Text style={[styles.text, {textDecorationLine: 'underline'}]}>
                   {word}
                 </Text>
-                <Text style={styles.text}>
-                  {' '}
-                  |{transcription_us}| - {t_inline}
-                </Text>
+                {transcription_us && (
+                    <Text style={styles.text}> |{transcription_us}|</Text>
+                  )}
+                  <Text style={styles.text}> - {t_inline}</Text>
               </Text>
             </View>
           </Pressable>
