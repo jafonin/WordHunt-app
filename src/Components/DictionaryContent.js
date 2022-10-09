@@ -11,7 +11,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderDictionary extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: [], goTo: ''};
+    this.state = {data: []};
   }
 
   componentDidMount() {

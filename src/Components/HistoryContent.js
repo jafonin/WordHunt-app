@@ -102,7 +102,7 @@ class _renderHistory extends PureComponent {
             <Pressable onPress={() => this.navigateOnPress(word)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
-                  <Text style={styles.text}>{word}</Text>
+                  <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
                   <Text style={styles.text}> - {t_inline}</Text>
                 </Text>
               </View>

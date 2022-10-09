@@ -5,7 +5,6 @@ import {Headerstyles} from '../Styles/Header';
 import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import HistoryContent from './HistoryContent';
 
 const dbEn = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
 const dbRu = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
@@ -48,7 +47,6 @@ class Search extends PureComponent {
     }
 
     this.setState({searchValue: text});
-    console.log(text);
     this.fetchData(text);
   }
 
@@ -186,9 +184,6 @@ class Search extends PureComponent {
             style={{height: '100%', marginTop: 20}}
           />
         )}
-        {/* {this.state.showHistory && (<View style={{height: '100%'}}>
-          <HistoryContent />
-        </View>)} */}
       </View>
     );
   }
