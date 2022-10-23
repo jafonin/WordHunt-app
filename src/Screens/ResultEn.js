@@ -6,7 +6,7 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 
-const db = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
 class ResultPage extends Component {
@@ -38,6 +38,7 @@ class ResultPage extends Component {
           var temp = [];
           temp.push(results.rows.item(0));
           this.setState({data: temp});
+          console.log(temp)
         },
       );
     });
@@ -152,6 +153,7 @@ class ResultPage extends Component {
               return (
                 <View key={index}>
                   {Object.values(word).map((translation, index) => {
+                    // debugger
                     return (
                       <View key={index} style={ResultStyles.wd_translation}>
                         <StyledText style={ResultStyles.wd_translation_text_i}>

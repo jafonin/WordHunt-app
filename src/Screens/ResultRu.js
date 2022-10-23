@@ -4,6 +4,7 @@ import Header from '../Components/Header';
 import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
+import StyledText from 'react-native-styled-text';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -11,28 +12,52 @@ const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 class ResultPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {data: [], inDictionary: false};
+    this.state = {ruEnWordData: [], ruEnWordDicData: [], inDictionary: false};
   }
 
   componentDidMount() {
-    this.setState({data: [], inDictionary: false});
-    this.fetchData(this.props._word);
+    this.setState({ruEnWordData: [], ruEnWordDicData: [], inDictionary: false});
+    this.fetchData(this.props._id, this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word) {
-      this.setState({data: [], inDictionary: false});
-      this.fetchData(this.props._word);
+      this.setState({
+        ruEnWordData: [],
+        ruEnWordDicData: [],
+        inDictionary: false,
+      });
+      this.fetchData(this.props._id, this.props._word);
     }
   }
 
-  fetchData(_word) {
-    var query = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
+  fetchData(_id, _word) {
+    var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE id = '" + _id + "'";
     db.transaction(tx => {
-      tx.executeSql(query, [], (tx, results) => {
+      tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
-        this.setState({data: temp});
+        this.setState({ruEnWordData: temp});
+        // console.log(this.state.ruEnWordData)
+      });
+    });
+
+    var ruEnWordDicQuery =
+      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr ' +
+      'FROM ru_en_word_dic ' +
+      'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
+      "WHERE ru_en_word_dic.ru_word_id = '" +
+      _id +
+      "'" +
+      'ORDER BY section, word_order';
+    db.transaction(tx => {
+      tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push(results.rows.item(i));
+        }
+        this.setState({ruEnWordDicData: temp});
+        console.log(temp);
       });
     });
 
@@ -92,7 +117,7 @@ class ResultPage extends Component {
   }
 
   render() {
-    const renderPage = this.state.data.map(item => (
+    const renderTitle = this.state.ruEnWordData.map(item => (
       <ScrollView key={item.id}>
         <View style={ResultStyles.wd}>
           <View style={ResultStyles.wd_title}>
@@ -104,7 +129,12 @@ class ResultPage extends Component {
             </View>
             <Pressable
               onPress={() => this.onButtonPress(item.t_inline)}
-              style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
+              style={{
+                height: 35,
+                width: 35,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               {this.state.inDictionary == false && (
                 <Image
                   source={require('../img/pd_00.png')}
@@ -124,15 +154,50 @@ class ResultPage extends Component {
               {item.t_inline}
             </Text>
           </View>
-
           {this.renderLemma(item.lemma, item.word)}
         </View>
       </ScrollView>
     ));
+
+    const renderBody = this.state.ruEnWordDicData.map((item, index) => {
+      return (
+        <View key={index}>
+          <Text style={{flexDirection: 'row', flex: 1}}>
+          {/* <View style={[ResultStyles.wd, {flexDirection: 'row'}]}> */}
+            <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
+              {item.en_word + ' — '}
+            </Text>
+            {Object.values(JSON.parse(item.tr)).map((words, index) => {
+              return (
+                <View key={index}>
+                  {Object.values(words).map((word, index) => {
+                    // debugger
+                    return (
+                      <View key={index}>
+                        <StyledText style={ResultStyles.wd_translation_text}>
+                          {word.l.join(', ')}
+                        </StyledText>
+                        <StyledText style={ResultStyles.wd_translation_text}>
+                          {word.w.join(', ')}
+                        </StyledText>
+                      </View>
+                    );
+                  })}
+                </View>
+              );
+            })}
+          {/* </View> */}
+          </Text>
+        </View>
+      );
+    });
     return (
       <View style={{flex: 1}}>
         <Header />
-        {renderPage}
+        <ScrollView>
+          {renderTitle}
+          {renderBody}
+        </ScrollView>
       </View>
     );
   }
@@ -140,5 +205,7 @@ class ResultPage extends Component {
 
 export default function ResultRu({route, props}) {
   const {word} = route.params;
-  return <ResultPage {...props} _word={word} />;
+  const {id} = route.params;
+  // debugger
+  return <ResultPage {...props} _word={word} _id={id} />;
 }

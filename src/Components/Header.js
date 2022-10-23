@@ -6,8 +6,8 @@ import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const dbEn = openDatabase({name: 'en_ru_word.db', createFromLocation: 1});
-const dbRu = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+// const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class Search extends PureComponent {
@@ -57,14 +57,14 @@ class Search extends PureComponent {
           "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE t_mix IS NOT '' AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
-        var db = dbEn;
+        // var db = dbEn;
         this.setState({goTo: 'ResultEn'});
       } else {
         var query =
           "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
-        var db = dbRu;
+        // var db = dbRu;
         this.setState({goTo: 'ResultRu'});
       }
       try {
@@ -107,19 +107,19 @@ class Search extends PureComponent {
     }
   };
 
-  navigateOnPress = (word, t_inline, transcription_us, transcription_uk) => {
+  navigateOnPress = (id, word, t_inline, transcription_us, transcription_uk) => {
     const {navigation} = this.props;
     this.setData(word, t_inline, transcription_us, transcription_uk);
     return (
-      navigation.jumpTo(this.state.goTo, {word: word}),
+      navigation.jumpTo(this.state.goTo, {word: word, id: id}),
       this.setState({searching: false, searchValue: null, data: []})
-      
     );
   };
 
   _renderItem = ({item}) => {
     const {word} = item;
     const {id} = item;
+    // {debugger}
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
@@ -130,6 +130,7 @@ class Search extends PureComponent {
             style={Headerstyles.resultButton}
             onPress={() =>
               this.navigateOnPress(
+                id,
                 word,
                 t_inline,
                 transcription_us,
