@@ -45,12 +45,11 @@ class Search extends PureComponent {
     } else {
       this.setState({searching: false, data: []});
     }
-
     this.setState({searchValue: text});
     this.fetchData(text);
   }
 
-  fetchData(searchValue) {
+  fetchData = async(searchValue) => {
     if (searchValue) {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
@@ -68,8 +67,8 @@ class Search extends PureComponent {
         this.setState({goTo: 'ResultRu'});
       }
       try {
-        db.transaction(tx => {
-          tx.executeSql(query, [], (tx, results) => {
+        await db.transaction(async tx => {
+          await tx.executeSql(query, [], (tx, results) => {
             let temp = [];
             for (let i = 0; i < results.rows.length; ++i) {
               temp.push(results.rows.item(i));
@@ -119,7 +118,6 @@ class Search extends PureComponent {
   _renderItem = ({item}) => {
     const {word} = item;
     const {id} = item;
-    // {debugger}
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;

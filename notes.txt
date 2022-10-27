@@ -1,0 +1,4 @@
+Перенести UserHistory.db UserDictionary.db в виде таблиц в бд ru_en_word (название бд изменить)
+Записывать в UserHistory.db UserDictionary.db индексы слов, вместо самих слов
+Чтение БД сделать асинхронным
+navigateOnPress вынести в отдельный файл

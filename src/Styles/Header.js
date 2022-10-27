@@ -5,6 +5,7 @@ export const Headerstyles = StyleSheet.create({
     height: 58,
     width: '100%',
     backgroundColor: '#1d415d',
+
   },
   lines: {
     textAlign: 'center',

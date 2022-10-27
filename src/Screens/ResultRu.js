@@ -43,7 +43,7 @@ class ResultPage extends Component {
     });
 
     var ruEnWordDicQuery =
-      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr ' +
+      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section ' +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
       "WHERE ru_en_word_dic.ru_word_id = '" +
@@ -92,7 +92,7 @@ class ResultPage extends Component {
           'INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)',
           [_word, t_inline],
         );
-        console.log(t_inline);
+        // console.log(t_inline);
       });
     } else {
       dbDic.transaction(tx => {
@@ -118,55 +118,54 @@ class ResultPage extends Component {
 
   render() {
     const renderTitle = this.state.ruEnWordData.map(item => (
-      <ScrollView key={item.id}>
-        <View style={ResultStyles.wd}>
-          <View style={ResultStyles.wd_title}>
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text style={ResultStyles.wd_title_text}>
-                {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
-              </Text>
-              <Text style={ResultStyles.rank}>{item.rank}</Text>
-            </View>
-            <Pressable
-              onPress={() => this.onButtonPress(item.t_inline)}
-              style={{
-                height: 35,
-                width: 35,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              {this.state.inDictionary == false && (
-                <Image
-                  source={require('../img/pd_00.png')}
-                  style={ResultStyles.img}
-                />
-              )}
-              {this.state.inDictionary == true && (
-                <Image
-                  source={require('../img/pd_11.png')}
-                  style={ResultStyles.img}
-                />
-              )}
-            </Pressable>
-          </View>
-          <View style={ResultStyles.wd_translation}>
-            <Text style={ResultStyles.wd_translation_text}>
-              {item.t_inline}
+      // <ScrollView >
+      <View key={item.id}>
+        <View style={ResultStyles.wd_title}>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <Text style={ResultStyles.wd_title_text}>
+              {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
+            <Text style={ResultStyles.rank}>{item.rank}</Text>
           </View>
-          {this.renderLemma(item.lemma, item.word)}
+          <Pressable
+            onPress={() => this.onButtonPress(item.t_inline)}
+            style={{
+              height: 35,
+              width: 35,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {this.state.inDictionary == false && (
+              <Image
+                source={require('../img/pd_00.png')}
+                style={ResultStyles.img}
+              />
+            )}
+            {this.state.inDictionary == true && (
+              <Image
+                source={require('../img/pd_11.png')}
+                style={ResultStyles.img}
+              />
+            )}
+          </Pressable>
         </View>
-      </ScrollView>
+        <View style={ResultStyles.wd_translation}>
+          <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
+        </View>
+        {this.renderLemma(item.lemma, item.word)}
+      </View>
+      // </ScrollView>
     ));
 
     const renderBody = this.state.ruEnWordDicData.map((item, index) => {
       return (
-        <View key={index}>
-          <Text style={{flexDirection: 'row', flex: 1}}>
-          {/* <View style={[ResultStyles.wd, {flexDirection: 'row'}]}> */}
-            <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
-              {item.en_word + ' — '}
-            </Text>
+        <View
+          key={index}
+          style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
+          <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
+            {item.en_word + ' — '}
+          </Text>
+          <View style={{flex: 1}}>
             {Object.values(JSON.parse(item.tr)).map((words, index) => {
               return (
                 <View key={index}>
@@ -174,20 +173,21 @@ class ResultPage extends Component {
                     // debugger
                     return (
                       <View key={index}>
-                        <StyledText style={ResultStyles.wd_translation_text}>
-                          {word.l.join(', ')}
-                        </StyledText>
-                        <StyledText style={ResultStyles.wd_translation_text}>
-                          {word.w.join(', ')}
-                        </StyledText>
+                        <Text>
+                          <StyledText style={ResultStyles.wd_translation_text}>
+                            {word.l.join(', ') + ', '}
+                          </StyledText>
+                          <StyledText style={ResultStyles.wd_translation_text}>
+                            {word.w.join(', ')}
+                          </StyledText>
+                        </Text>
                       </View>
                     );
                   })}
                 </View>
               );
             })}
-          {/* </View> */}
-          </Text>
+          </View>
         </View>
       );
     });
@@ -195,8 +195,10 @@ class ResultPage extends Component {
       <View style={{flex: 1}}>
         <Header />
         <ScrollView>
-          {renderTitle}
-          {renderBody}
+          <View style={ResultStyles.wd}>
+            {renderTitle}
+            {renderBody}
+          </View>
         </ScrollView>
       </View>
     );
