@@ -2,6 +2,7 @@ import React from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {openDatabase} from 'react-native-sqlite-storage';
 
 import History from './src/Screens/History';
 import UserDictionary from './src/Screens/UserDictionary';
@@ -62,3 +63,5 @@ function SideMenu() {
 export default function App() {
   return <SideMenu />;
 }
+
+export const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
