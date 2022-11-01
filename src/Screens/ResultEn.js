@@ -144,7 +144,7 @@ class ResultPage extends Component {
           )}
           <View style={ResultStyles.wd_translation}>
             <Text
-              style={[ResultStyles.wd_translation_text, {fontStyle: 'italic'}]}>
+              style={ResultStyles.wd_translation_text}>
               {item.t_inline}
             </Text>
           </View>

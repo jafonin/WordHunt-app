@@ -41,7 +41,6 @@ export const ResultStyles = StyleSheet.create({
   },
   wd_translation_text_i: {
     fontFamily: 'georgia',
-    color: '#213646',
     fontStyle: 'italic',
     fontSize: 18,
     marginBottom: 7,
