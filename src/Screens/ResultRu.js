@@ -204,39 +204,32 @@ class ResultPage extends Component {
         <View
           key={index}
           style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
-          {item.section == 2 && (
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text
-                style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
-                {item.en_word + ' — '}
-              </Text>
-              <View style={{flex: 1}}>
-                {Object.values(JSON.parse(item.tr)).map((words, index) => {
-                  return (
-                    <View key={index}>
-                      {Object.values(words).map((word, index) => {
-                        // debugger
-                        return (
-                          <View key={index}>
-                            <Text>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.l.join(', ') + ', '}
-                              </StyledText>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.w.join(', ')}
-                              </StyledText>
-                            </Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          )}
+          <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
+            {item.en_word + ' — '}
+          </Text>
+          <View style={{flex: 1}}>
+            {Object.values(JSON.parse(item.tr)).map((words, index) => {
+              return (
+                <View key={index}>
+                  {Object.values(words).map((word, index) => {
+                    // debugger
+                    return (
+                      <View key={index}>
+                        <Text>
+                          <StyledText style={ResultStyles.wd_translation_text}>
+                            {word.l.join(', ') + word.l.length > 0 ? ', ' : ''}
+                          </StyledText>
+                          <StyledText style={ResultStyles.wd_translation_text}>
+                            {word.w.join(', ')}
+                          </StyledText>
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              );
+            })}
+          </View>
         </View>
       );
     });
