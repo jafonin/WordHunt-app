@@ -175,7 +175,7 @@ class ResultPage extends Component {
                       <View key={index}>
                         <Text>
                           <StyledText style={ResultStyles.wd_translation_text}>
-                            {word.l.join(', ') + ', '}
+                            {word.l.join(', ') + word.l.length > 0 ? ', ' : ''}
                           </StyledText>
                           <StyledText style={ResultStyles.wd_translation_text}>
                             {word.w.join(', ')}

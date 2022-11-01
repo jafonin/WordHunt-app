@@ -43,14 +43,14 @@ class _renderHistory extends PureComponent {
     }
   }
 
-  navigateOnPress = (word, t_inline) => {
+  navigateOnPress = (word, id) => {
     const {navigation} = this.props;
     let currentDate = new Date().toLocaleString();
     try {
       dbHistory.transaction(tx => {
         tx.executeSql(
-          'INSERT OR IGNORE INTO History (word, t_inline) VALUES (?,?)',
-          [word, t_inline],
+          'INSERT OR IGNORE INTO History (word) VALUES (?)',
+          [word],
         );
         tx.executeSql(
           "UPDATE History SET time = '" +
@@ -64,8 +64,8 @@ class _renderHistory extends PureComponent {
       console.log(error);
     }
     return (
-      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word}),
-      /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word}),
+      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word, id: id}),
+      /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word, id: id}),
       this.setState({data: []})
     );
   };
@@ -80,7 +80,7 @@ class _renderHistory extends PureComponent {
       if (transcription_uk || transcription_us) {
         return (
           <View key={id} style={styles.listItem}>
-            <Pressable onPress={() => this.navigateOnPress(word)}>
+            <Pressable onPress={() => this.navigateOnPress(word, id)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text
@@ -114,13 +114,13 @@ class _renderHistory extends PureComponent {
   };
   render() {
     return (
-      <View style={styles.list}>
+      <View style={{flex: 1}}>
         <FlatList
           contentContainerStyle={{flexGrow: 1}}
           data={this.state.data}
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
-          style={{marginTop: 20}}
+          style={{marginBottom: 7}}
           windowSize={5}
         />
       </View>

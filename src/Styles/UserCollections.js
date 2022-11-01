@@ -3,14 +3,19 @@ import {StyleSheet} from 'react-native';
 export const styles = StyleSheet.create({
   body: {
     alignItems: 'center',
-    marginTop: 30,
   },
   rectangle: {
     height: 42,
     width: '92%',
     backgroundColor: '#ffefbe',
+    marginTop: 30,
     borderRadius: 6,
     flexDirection: 'row',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 8,
   },
   title: {
     color: '#583627',
@@ -36,12 +41,12 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ffdca9',
     borderRadius: 6,
   },
-  list: {
-    marginHorizontal: 15,
-    flex: 1,
-  },
+  // list: {
+  //   flex: 1,
+  // },
   listItem: {
-    marginVertical: 7,
+    marginTop: 14,
+    marginHorizontal: 18,
     flexDirection: 'row',
     flex: 1,
   },
