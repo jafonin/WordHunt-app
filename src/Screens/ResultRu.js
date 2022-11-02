@@ -31,10 +31,10 @@ class ResultPage extends Component {
     }
   }
 
-  fetchData(_id, _word) {
+  fetchData = async(_id, _word) => {
     var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE id = '" + _id + "'";
-    db.transaction(tx => {
-      tx.executeSql(ruEnWordQuery, [], (tx, results) => {
+    await db.transaction(async tx => {
+      await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
         this.setState({ruEnWordData: temp});
@@ -50,19 +50,19 @@ class ResultPage extends Component {
       _id +
       "'" +
       'ORDER BY section, word_order';
-    db.transaction(tx => {
-      tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
+    await db.transaction(async tx => {
+      await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
         this.setState({ruEnWordDicData: temp});
-        console.log(temp);
+        // console.log(temp);
       });
     });
 
-    dbDic.transaction(tx => {
-      tx.executeSql(
+    await dbDic.transaction(async tx => {
+      await tx.executeSql(
         "SELECT * FROM dictionary WHERE word = '" + _word + "'",
         [],
         (tx, results) => {
@@ -165,7 +165,10 @@ class ResultPage extends Component {
           {item.section == 1 && (
             <View style={{flexDirection: 'row', flex: 1}}>
               <Text
-                style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
+                style={[
+                  ResultStyles.wd_translation_text,
+                  {textAlign: 'left'},
+                ]}>
                 {item.en_word + ' — '}
               </Text>
               <View style={{flex: 1}}>
@@ -179,8 +182,11 @@ class ResultPage extends Component {
                             <Text>
                               <StyledText
                                 style={ResultStyles.wd_translation_text}>
-                                {word.l.join(', ') + ', '}
+                                {word.l.join(', ')}
                               </StyledText>
+                              <Text>
+                                {(word.l.length && word.w.length) > 0 ? ', ' : ''}
+                              </Text>
                               <StyledText
                                 style={ResultStyles.wd_translation_text}>
                                 {word.w.join(', ')}
@@ -196,56 +202,79 @@ class ResultPage extends Component {
             </View>
           )}
         </View>
-      );
-    });
+      )}
+    );
+
+    const renderText = (
+      <Text
+        style={[ResultStyles.wd_translation_text_i, {marginVertical: 5}]}>
+        Родственные слова, либо редко употребляемые в данном значении
+      </Text>
+    )
 
     const renderBodySectionTwo = this.state.ruEnWordDicData.map((item, index) => {
-      return (
-        <View
+        return (
+          <View
           key={index}
           style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
-          <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
-            {item.en_word + ' — '}
-          </Text>
-          <View style={{flex: 1}}>
-            {Object.values(JSON.parse(item.tr)).map((words, index) => {
-              return (
-                <View key={index}>
-                  {Object.values(words).map((word, index) => {
-                    // debugger
-                    return (
-                      <View key={index}>
-                        <Text>
-                          <StyledText style={ResultStyles.wd_translation_text}>
-                            {word.l.join(', ') + word.l.length > 0 ? ', ' : ''}
-                          </StyledText>
-                          <StyledText style={ResultStyles.wd_translation_text}>
-                            {word.w.join(', ')}
-                          </StyledText>
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            })}
-          </View>
+          {item.section == 2 && (
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <Text
+                style={[
+                  ResultStyles.wd_translation_text,
+                  {textAlign: 'left'},
+                ]}>
+                {item.en_word + ' — '}
+              </Text>
+              <View style={{flex: 1}}>
+                {Object.values(JSON.parse(item.tr)).map((words, index) => {
+                  return (
+                    <View key={index}>
+                      {Object.values(words).map((word, index) => {
+                        // debugger
+                        return (
+                          <View key={index}>
+                            <Text>
+                              <StyledText
+                                style={ResultStyles.wd_translation_text}>
+                                {word.l.join(', ')}
+                              </StyledText>
+                              <Text>
+                                {(word.l.length && word.w.length) > 0 ? ', ' : ''}
+                              </Text>
+                              <StyledText
+                                style={ResultStyles.wd_translation_text}>
+                                {word.w.join(', ')}
+                              </StyledText>
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
         </View>
-      );
-    });
+        );
+      },
+    );
+
+    const renderBody = (
+      <View style={ResultStyles.wd}>
+        {renderTitle}
+        {renderBodySectionOne}
+        {renderText}
+        {renderBodySectionTwo}
+      </View>
+    )
 
     return (
       <View style={{flex: 1}}>
         <Header />
         <ScrollView>
-          <View style={ResultStyles.wd}>
-            {renderTitle}
-            {renderBodySectionOne}
-            <Text style={[ResultStyles.wd_translation_text_i, {marginVertical: 5}]}>
-              Родственные слова, либо редко употребляемые в данном значении
-            </Text>
-            {renderBodySectionTwo}
-          </View>
+          {renderBody}
         </ScrollView>
       </View>
     );
