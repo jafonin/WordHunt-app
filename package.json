@@ -24,7 +24,8 @@
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-styled-text": "^2.0.0",
     "react-native-svg": "^12.3.0",
-    "react-native-vector-icons": "^9.2.0"
+    "react-native-vector-icons": "^9.2.0",
+    "react-native-zip-archive": "^6.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

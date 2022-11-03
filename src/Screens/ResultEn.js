@@ -153,7 +153,7 @@ class ResultPage extends Component {
               return (
                 <View key={index}>
                   {Object.values(word).map((translation, index) => {
-                    // debugger
+                    debugger
                     return (
                       <View key={index} style={ResultStyles.wd_translation}>
                         <StyledText style={ResultStyles.wd_translation_text_i}>

@@ -31,14 +31,14 @@ class ResultPage extends Component {
     }
   }
 
-  fetchData = async(_id, _word) => {
+  fetchData = async (_id, _word) => {
     var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE id = '" + _id + "'";
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
         this.setState({ruEnWordData: temp});
-        // console.log(this.state.ruEnWordData)
+        // console.log(this.state.ruEnWordData);
       });
     });
 
@@ -68,12 +68,11 @@ class ResultPage extends Component {
         (tx, results) => {
           var dictionaryTemp = [];
           dictionaryTemp.push(results.rows.item(0));
-          dictionaryTemp[0].word.length > 0 &&
-            this.setState({inDictionary: true});
+          dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
         },
       );
     });
-  }
+  };
 
   updateDictionary(queryUpdate, t_inline) {
     const {_word} = this.props;
@@ -88,18 +87,15 @@ class ResultPage extends Component {
     this.setState({inDictionary: !this.state.inDictionary});
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
-        tx.executeSql(
-          'INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)',
-          [_word, t_inline],
-        );
+        tx.executeSql('INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)', [
+          _word,
+          t_inline,
+        ]);
         // console.log(t_inline);
       });
     } else {
       dbDic.transaction(tx => {
-        tx.executeSql(
-          "DELETE FROM dictionary WHERE word = '" + _word + "'",
-          [],
-        );
+        tx.executeSql("DELETE FROM dictionary WHERE word = '" + _word + "'", []);
       });
     }
   }
@@ -108,9 +104,7 @@ class ResultPage extends Component {
     if (lemma != word) {
       return (
         <View>
-          <Text style={ResultStyles.wd_translation_text}>
-            Смотрите также: {lemma}
-          </Text>
+          <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
         </View>
       );
     }
@@ -136,16 +130,10 @@ class ResultPage extends Component {
               justifyContent: 'center',
             }}>
             {this.state.inDictionary == false && (
-              <Image
-                source={require('../img/pd_00.png')}
-                style={ResultStyles.img}
-              />
+              <Image source={require('../img/pd_00.png')} style={ResultStyles.img} />
             )}
             {this.state.inDictionary == true && (
-              <Image
-                source={require('../img/pd_11.png')}
-                style={ResultStyles.img}
-              />
+              <Image source={require('../img/pd_11.png')} style={ResultStyles.img} />
             )}
           </Pressable>
         </View>
@@ -159,42 +147,55 @@ class ResultPage extends Component {
 
     const renderBodySectionOne = this.state.ruEnWordDicData.map((item, index) => {
       return (
-        <View
-          key={index}
-          style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
+        <View key={index}>
           {item.section == 1 && (
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text
-                style={[
-                  ResultStyles.wd_translation_text,
-                  {textAlign: 'left'},
-                ]}>
-                {item.en_word + ' — '}
-              </Text>
-              <View style={{flex: 1}}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Text style={ResultStyles.wd_translation_text}>{item.en_word + ' — '}</Text>
+              <View>
                 {Object.values(JSON.parse(item.tr)).map((words, index) => {
                   return (
-                    <View key={index}>
-                      {Object.values(words).map((word, index) => {
-                        // debugger
+                    <View key={index} style={{flex: 1, flexDirection: 'row'}}>
+                      {/* <Text> */}
+                        {words.map((word, index) => {
                         return (
                           <View key={index}>
-                            <Text>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.l.join(', ')}
-                              </StyledText>
-                              <Text>
-                                {(word.l.length && word.w.length) > 0 ? ', ' : ''}
-                              </Text>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.w.join(', ')}
-                              </StyledText>
-                            </Text>
+                            {/* <Text style={ResultStyles.wd_translation_text}> */}
+                              {Object.values(word.l).map((l, index) => {
+                                return (
+                                  <View key={index}>
+                                    <Pressable>
+                                      <StyledText style={ResultStyles.wd_translation_text}>
+                                        {index + 1 !== Object.values(word.l).length ||
+                                        Object.values(word.w).length !== 0
+                                          ? l + ', '
+                                          : l}
+                                        {/* {(Object.values(word.w).length && Object.values(word.l).length) > 0 ? l + ', ' : null} */}
+                                      </StyledText>
+                                    </Pressable>
+                                  </View>
+                                );
+                              })}
+                              {/* {(Object.values(word.l).length && Object.values(word.w).length) >
+                                    0 && (
+                                    <View>
+                                      <Text style={ResultStyles.wd_translation_text}>{', '}</Text>
+                                    </View>
+                                  )} */}
+                              {Object.values(word.w).map((w, index) => {
+                                return (
+                                  <View key={index}>
+                                    <StyledText style={ResultStyles.wd_translation_text}>
+                                      {index + 1 !== Object.values(word.w).length ? w + ', ' : w}
+                                    </StyledText>
+                                  </View>
+                                );
+                              })}
+                            {/* </Text> */}
                           </View>
                         );
                       })}
+                      {/* </Text> */}
+                      
                     </View>
                   );
                 })}
@@ -202,50 +203,62 @@ class ResultPage extends Component {
             </View>
           )}
         </View>
-      )}
-    );
+      );
+    });
 
     const renderText = (
-      <Text
-        style={[ResultStyles.wd_translation_text_i, {marginVertical: 5}]}>
-        Родственные слова, либо редко употребляемые в данном значении
-      </Text>
-    )
+      <View style={{marginTop: 35}}>
+        <Text style={ResultStyles.wd_translation_text_i}>
+          Родственные слова, либо редко употребляемые в данном значении
+        </Text>
+      </View>
+    );
 
     const renderBodySectionTwo = this.state.ruEnWordDicData.map((item, index) => {
-        return (
-          <View
-          key={index}
-          style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
+      return (
+        <View key={index} style={{flexDirection: 'row', flex: 1}}>
           {item.section == 2 && (
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text
-                style={[
-                  ResultStyles.wd_translation_text,
-                  {textAlign: 'left'},
-                ]}>
+            <View style={{flexDirection: 'row', flex: 1, marginVertical: 7}}>
+              <Text style={[ResultStyles.wd_translation_text, {textAlign: 'left'}]}>
                 {item.en_word + ' — '}
               </Text>
               <View style={{flex: 1}}>
                 {Object.values(JSON.parse(item.tr)).map((words, index) => {
                   return (
                     <View key={index}>
-                      {Object.values(words).map((word, index) => {
-                        // debugger
+                      {words.map((word, index) => {
                         return (
-                          <View key={index}>
-                            <Text>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.l.join(', ')}
-                              </StyledText>
-                              <Text>
-                                {(word.l.length && word.w.length) > 0 ? ', ' : ''}
-                              </Text>
-                              <StyledText
-                                style={ResultStyles.wd_translation_text}>
-                                {word.w.join(', ')}
-                              </StyledText>
+                          <View key={index} style={{flexDirection: 'row'}}>
+                            <Text style={ResultStyles.wd_translation_text}>
+                              {Object.values(word.l).map((l, index) => {
+                                return (
+                                  <View key={index}>
+                                    <Pressable>
+                                      <StyledText style={ResultStyles.wd_translation_text}>
+                                        {index + 1 !== Object.values(word.l).length ||
+                                        Object.values(word.w).length !== 0
+                                          ? l + ', '
+                                          : l}
+                                      </StyledText>
+                                    </Pressable>
+                                  </View>
+                                );
+                              })}
+                              {/* {(Object.values(word.l).length && Object.values(word.w).length) >
+                                0 && (
+                                <View>
+                                  <Text style={ResultStyles.wd_translation_text}>{', '}</Text>
+                                </View>
+                              )} */}
+                              {Object.values(word.w).map((w, index) => {
+                                return (
+                                  <View key={index}>
+                                    <StyledText style={ResultStyles.wd_translation_text}>
+                                      {index + 1 !== Object.values(word.w).length ? w + ', ' : w}
+                                    </StyledText>
+                                  </View>
+                                );
+                              })}
                             </Text>
                           </View>
                         );
@@ -257,9 +270,8 @@ class ResultPage extends Component {
             </View>
           )}
         </View>
-        );
-      },
-    );
+      );
+    });
 
     const renderBody = (
       <View style={ResultStyles.wd}>
@@ -268,14 +280,12 @@ class ResultPage extends Component {
         {renderText}
         {renderBodySectionTwo}
       </View>
-    )
+    );
 
     return (
       <View style={{flex: 1}}>
         <Header />
-        <ScrollView>
-          {renderBody}
-        </ScrollView>
+        <ScrollView>{renderBody}</ScrollView>
       </View>
     );
   }
