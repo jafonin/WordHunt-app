@@ -53,7 +53,7 @@ class ResultPage extends Component {
     });
 
     var ruEnWordDicQuery =
-      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, en_ru_word.transcription_us ' +
+      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.id, en_ru_word.transcription_us ' +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
       "WHERE ru_en_word_dic.ru_word_id = '" +
@@ -136,7 +136,7 @@ class ResultPage extends Component {
 
   render() {
     const renderTitle = this.state.ruEnWordData.map(item => (
-      <View key={item.id} style={{marginHorizontal: 15, marginVertical: 10}}>
+      <View key={item.id}>
         <View style={ResultStyles.wd_title}>
           <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={ResultStyles.wd_title_text}>
@@ -225,7 +225,7 @@ class ResultPage extends Component {
 
     const renderBodySectionOne = this.state.ruEnDicSectionOne.map((item, index) => {
       return (
-        <View key={index} style={[ResultStyles.wd, {flex: 1, flexDirection: 'row'}]}>
+        <View key={index} style={{flex: 1, flexDirection: 'row'}}>
           <RenderSection item={item} />
         </View>
       );
@@ -233,7 +233,7 @@ class ResultPage extends Component {
 
     const renderBodySectionTwo = this.state.ruEnDicSectionTwo.map((item, index) => {
       return (
-        <View key={index} style={[ResultStyles.wd, {flex: 1, flexDirection: 'row'}]}>
+        <View key={index} style={{flexDirection: 'row', flex: 1}}>
           <RenderSection item={item} />
         </View>
       );
@@ -242,40 +242,16 @@ class ResultPage extends Component {
     return (
       <View style={{flex: 1}}>
         <Header />
-        <ScrollView style={{backgroundColor: '#e7ebf4'}}>
-          <View style={{flex: 1}}>
-            <View
-              style={{
-                backgroundColor: '#fff',
-                borderRadius: 7,
-                marginHorizontal: 10,
-                marginTop: 17,
-              }}>
-              {renderTitle}
-            </View>
-            <View
-              style={{
-                marginTop: 17,
-                backgroundColor: '#fff',
-                borderRadius: 7,
-                marginHorizontal: 10,
-              }}>
-              {renderBodySectionOne}
-            </View>
-
-            <View
-              style={{
-                marginVertical: 17,
-                backgroundColor: '#fff',
-                borderRadius: 7,
-                marginHorizontal: 10,
-              }}>
-              <Text
-                style={[ResultStyles.wd_translation_text_i, {marginLeft: 25, marginVertical: 10}]}>
+        <ScrollView>
+          <View style={[ResultStyles.wd, {flex: 1}]}>
+            {renderTitle}
+            {renderBodySectionOne}
+            <View style={{marginTop: 35}}>
+              <Text style={ResultStyles.wd_translation_text_i}>
                 Родственные слова, либо редко употребляемые в данном значении
               </Text>
-              {renderBodySectionTwo}
             </View>
+            {renderBodySectionTwo}
           </View>
         </ScrollView>
         {/* <View style={[ResultStyles.wd, {flex: 1}]}>

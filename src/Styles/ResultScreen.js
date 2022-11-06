@@ -2,8 +2,8 @@ import {StyleSheet} from 'react-native';
 
 export const ResultStyles = StyleSheet.create({
   wd: {
-    marginTop: 10,
-    marginHorizontal: 15,
+    marginTop: 30,
+    marginHorizontal: 25,
   },
   wd_title: {
     marginBottom: 15,
