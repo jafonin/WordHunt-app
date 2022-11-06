@@ -49,10 +49,7 @@ class _renderDictionary extends PureComponent {
     let currentDate = new Date().toLocaleString();
     try {
       dbHistory.transaction(tx => {
-        tx.executeSql(
-          'INSERT OR IGNORE INTO History (word) VALUES (?)',
-          [word],
-        );
+        tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
         tx.executeSql(
           "UPDATE History SET time = '" +
             currentDate.toLowerCase() +
@@ -83,13 +80,9 @@ class _renderDictionary extends PureComponent {
           <Pressable onPress={() => this.navigateOnPress(word, id)}>
             <View style={{flexDirection: 'row', flex: 1}}>
               <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>
-                  {word}
-                </Text>
-                {transcription_us && (
-                    <Text style={styles.text}> |{transcription_us}|</Text>
-                  )}
-                  <Text style={styles.text}> - {t_inline}</Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+                {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
+                <Text style={styles.text}> - {t_inline}</Text>
               </Text>
             </View>
           </Pressable>
@@ -101,9 +94,7 @@ class _renderDictionary extends PureComponent {
           <Pressable onPress={() => this.navigateOnPress(word, id)}>
             <View style={{flexDirection: 'row', flex: 1}}>
               <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>
-                  {word}
-                </Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
                 <Text style={styles.text}> - {t_inline}</Text>
               </Text>
             </View>
@@ -131,11 +122,5 @@ class _renderDictionary extends PureComponent {
 export default function DictionaryContent(props) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  return (
-    <_renderDictionary
-      {...props}
-      isFocused={isFocused}
-      navigation={navigation}
-    />
-  );
+  return <_renderDictionary {...props} isFocused={isFocused} navigation={navigation} />;
 }

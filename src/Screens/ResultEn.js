@@ -30,30 +30,23 @@ class ResultPage extends Component {
   fetchData(_word) {
     db.transaction(tx => {
       tx.executeSql(
-        "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" +
-          _word +
-          "'",
+        "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" + _word + "'",
         [],
         (tx, results) => {
           var temp = [];
           temp.push(results.rows.item(0));
           this.setState({data: temp});
-          console.log(temp)
+          console.log(temp);
         },
       );
     });
 
     dbDic.transaction(tx => {
-      tx.executeSql(
-        "SELECT * FROM dictionary WHERE word = '" + _word + "'",
-        [],
-        (tx, results) => {
-          var dictionaryTemp = [];
-          dictionaryTemp.push(results.rows.item(0));
-          dictionaryTemp[0].word.length > 0 &&
-            this.setState({inDictionary: true});
-        },
-      );
+      tx.executeSql("SELECT * FROM dictionary WHERE word = '" + _word + "'", [], (tx, results) => {
+        var dictionaryTemp = [];
+        dictionaryTemp.push(results.rows.item(0));
+        dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
+      });
     });
   }
 
@@ -77,10 +70,7 @@ class ResultPage extends Component {
       });
     } else {
       dbDic.transaction(tx => {
-        tx.executeSql(
-          "DELETE FROM dictionary WHERE word = '" + _word + "'",
-          [],
-        );
+        tx.executeSql("DELETE FROM dictionary WHERE word = '" + _word + "'", []);
       });
     }
   }
@@ -97,63 +87,47 @@ class ResultPage extends Component {
               <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
             <Pressable
-              onPress={() => this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)}
+              onPress={() =>
+                this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
+              }
               style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
               {this.state.inDictionary == false && (
-                <Image
-                  source={require('../img/pd_00.png')}
-                  style={ResultStyles.img}
-                />
+                <Image source={require('../img/pd_00.png')} style={ResultStyles.img} />
               )}
               {this.state.inDictionary == true && (
-                <Image
-                  source={require('../img/pd_11.png')}
-                  style={ResultStyles.img}
-                />
+                <Image source={require('../img/pd_11.png')} style={ResultStyles.img} />
               )}
             </Pressable>
           </View>
-          {(item.transcription_us.length > 0 ||
-            item.transcription_uk.length > 0) && (
+          {(item.transcription_us.length > 0 || item.transcription_uk.length > 0) && (
             <View style={ResultStyles.wd_transcription}>
               <View>
                 {item.transcription_us.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text_i}>
-                    амер.
-                  </Text>
+                  <Text style={ResultStyles.wd_transcription_text_i}>амер.</Text>
                 )}
                 {item.transcription_uk.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text_i}>
-                    брит.
-                  </Text>
+                  <Text style={ResultStyles.wd_transcription_text_i}>брит.</Text>
                 )}
               </View>
               <View>
                 {item.transcription_us.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text}>
-                    |{item.transcription_us}|
-                  </Text>
+                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_us}|</Text>
                 )}
                 {item.transcription_uk.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text}>
-                    |{item.transcription_uk}|
-                  </Text>
+                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_uk}|</Text>
                 )}
               </View>
             </View>
           )}
           <View style={ResultStyles.wd_translation}>
-            <Text
-              style={ResultStyles.wd_translation_text}>
-              {item.t_inline}
-            </Text>
+            <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
           </View>
           <View>
             {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
               return (
                 <View key={index}>
                   {Object.values(word).map((translation, index) => {
-                    debugger
+                    // debugger
                     return (
                       <View key={index} style={ResultStyles.wd_translation}>
                         <StyledText style={ResultStyles.wd_translation_text_i}>

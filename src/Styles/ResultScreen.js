@@ -2,8 +2,8 @@ import {StyleSheet} from 'react-native';
 
 export const ResultStyles = StyleSheet.create({
   wd: {
-    marginTop: 30,
-    marginHorizontal: 25,
+    marginTop: 10,
+    marginHorizontal: 15,
   },
   wd_title: {
     marginBottom: 15,
@@ -17,7 +17,7 @@ export const ResultStyles = StyleSheet.create({
   wd_transcription: {
     flex: 1,
     flexDirection: 'row',
-    marginBottom: 5
+    marginBottom: 5,
   },
   wd_transcription_text_i: {
     fontFamily: 'georgia',
@@ -29,10 +29,10 @@ export const ResultStyles = StyleSheet.create({
     fontFamily: 'georgia',
     color: '#213646',
     fontSize: 20,
-    marginLeft: 7
+    marginLeft: 7,
   },
   wd_translation: {
-    marginVertical: 10
+    marginVertical: 10,
   },
   wd_translation_text: {
     fontFamily: 'georgia',

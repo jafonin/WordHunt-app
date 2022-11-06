@@ -48,10 +48,7 @@ class _renderHistory extends PureComponent {
     let currentDate = new Date().toLocaleString();
     try {
       dbHistory.transaction(tx => {
-        tx.executeSql(
-          'INSERT OR IGNORE INTO History (word) VALUES (?)',
-          [word],
-        );
+        tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
         tx.executeSql(
           "UPDATE History SET time = '" +
             currentDate.toLowerCase() +
@@ -83,13 +80,8 @@ class _renderHistory extends PureComponent {
             <Pressable onPress={() => this.navigateOnPress(word, id)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
-                  <Text
-                    style={[styles.text, {textDecorationLine: 'underline'}]}>
-                    {word}
-                  </Text>
-                  {transcription_us && (
-                    <Text style={styles.text}> |{transcription_us}|</Text>
-                  )}
+                  <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+                  {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
                   <Text style={styles.text}> - {t_inline}</Text>
                 </Text>
               </View>
@@ -99,7 +91,7 @@ class _renderHistory extends PureComponent {
       } else {
         return (
           <View key={id} style={styles.listItem}>
-            <Pressable onPress={() => this.navigateOnPress(word)}>
+            <Pressable onPress={() => this.navigateOnPress(word, id)}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text>
                   <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
@@ -131,7 +123,5 @@ class _renderHistory extends PureComponent {
 export default function HistoryContent(props) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  return (
-    <_renderHistory {...props} isFocused={isFocused} navigation={navigation} />
-  );
+  return <_renderHistory {...props} isFocused={isFocused} navigation={navigation} />;
 }
