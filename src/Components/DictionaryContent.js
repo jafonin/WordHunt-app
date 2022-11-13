@@ -62,8 +62,7 @@ class _renderDictionary extends PureComponent {
       console.log(error);
     }
     return (
-      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word, id: id}),
-      /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word, id: id}),
+      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word}),
       this.setState({data: []})
     );
   };
@@ -77,7 +76,7 @@ class _renderDictionary extends PureComponent {
     if (transcription_uk || transcription_us) {
       return (
         <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word, id)}>
+          <Pressable onPress={() => this.navigateOnPress(word)}>
             <View style={{flexDirection: 'row', flex: 1}}>
               <Text>
                 <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
@@ -91,7 +90,7 @@ class _renderDictionary extends PureComponent {
     } else {
       return (
         <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word, id)}>
+          <Pressable onPress={() => this.navigateOnPress(word)}>
             <View style={{flexDirection: 'row', flex: 1}}>
               <Text>
                 <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>

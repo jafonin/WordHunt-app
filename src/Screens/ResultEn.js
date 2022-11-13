@@ -5,6 +5,7 @@ import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
+import {setData} from '../Components/AddToHistory';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -17,26 +18,26 @@ class ResultPage extends Component {
 
   componentDidMount() {
     this.setState({data: [], inDictionary: false});
-    this.fetchData(this.props._word);
+    this.fetchData(this.props._id, this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word) {
       this.setState({data: [], inDictionary: false});
-      this.fetchData(this.props._word);
+      this.fetchData(this.props._id, this.props._word);
     }
   }
 
-  fetchData(_word) {
-    db.transaction(tx => {
-      tx.executeSql(
-        "SELECT * FROM en_ru_word WHERE t_mix IS NOT '' AND word = '" + _word + "'",
+  fetchData = async (_id, _word) => {
+    await db.transaction(async tx => {
+      await tx.executeSql(
+        "SELECT * FROM en_ru_word WHERE word = '" + _word + "'",
         [],
         (tx, results) => {
           var temp = [];
           temp.push(results.rows.item(0));
           this.setState({data: temp});
-          console.log(temp);
+          setData(_word, temp[0].t_inline, _id, temp[0].transcription_us);
         },
       );
     });
@@ -48,7 +49,7 @@ class ResultPage extends Component {
         dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
       });
     });
-  }
+  };
 
   // updateDictionary(queryUpdate, t_inline) {
   //   const {_word} = this.props;
@@ -76,6 +77,9 @@ class ResultPage extends Component {
   }
 
   render() {
+    const imgSource = this.state.inDictionary
+      ? require('../img/pd_11.png')
+      : require('../img/pd_00.png');
     const renderPage = this.state.data.map(item => (
       <ScrollView key={item.id}>
         <View style={ResultStyles.wd}>
@@ -91,12 +95,7 @@ class ResultPage extends Component {
                 this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
               }
               style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
-              {this.state.inDictionary == false && (
-                <Image source={require('../img/pd_00.png')} style={ResultStyles.img} />
-              )}
-              {this.state.inDictionary == true && (
-                <Image source={require('../img/pd_11.png')} style={ResultStyles.img} />
-              )}
+              <Image source={imgSource} style={ResultStyles.img} />
             </Pressable>
           </View>
           {(item.transcription_us.length > 0 || item.transcription_uk.length > 0) && (
@@ -157,5 +156,6 @@ class ResultPage extends Component {
 
 export default function ResultEn({route, props}) {
   const {word} = route.params;
-  return <ResultPage {...props} _word={word} />;
+  const {id} = route.params;
+  return <ResultPage {...props} _word={word} _id={id} />;
 }

@@ -5,10 +5,10 @@ import {Headerstyles} from '../Styles/Header';
 import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
+import {setData} from './AddToHistory';
 
 // const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
-const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class Search extends PureComponent {
   constructor(props) {
@@ -22,23 +22,6 @@ class Search extends PureComponent {
     };
   }
 
-  // componentDidMount() {
-  //   if (this.state.searchValue) {
-  //     this.fetchData(this.state.searchValue);
-  //   }
-  // }
-  // Попробовать
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevState.searchValue !== this.state.searchValue){
-  //     this.setState({updateItem: true});
-  //     // this.fetchData(this.state.searchValue);
-  //   }
-  //   // else {
-  //   //   this.setState({updateItem: false});
-  //   // }
-  // }
-  // для очистки поля поиска(сейчас остается крестик, при возврате назад)
-
   handleSearch(text) {
     if (text) {
       this.setState({searching: true});
@@ -49,18 +32,18 @@ class Search extends PureComponent {
     this.fetchData(text);
   }
 
-  fetchData = async(searchValue) => {
+  fetchData = async searchValue => {
     if (searchValue) {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
-          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE t_mix IS NOT '' AND word LIKE '" +
+          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE t_mix IS NOT NULL AND t_inline IS NOT NULL AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         // var db = dbEn;
         this.setState({goTo: 'ResultEn'});
       } else {
         var query =
-          "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE word LIKE '" +
+          "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE t_inline IS NOT '' AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         // var db = dbRu;
@@ -83,32 +66,11 @@ class Search extends PureComponent {
         console.log(error);
       }
     }
-  }
-
-  setData = async (word, t_inline, transcription_us, transcription_uk) => {
-    let currentDate = new Date().toLocaleString();
-    try {
-      await dbHistory.transaction(async tx => {
-        await tx.executeSql(
-          'INSERT OR IGNORE INTO History (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
-          [word, t_inline, transcription_us, transcription_uk],
-        );
-        await tx.executeSql(
-          "UPDATE History SET time = '" +
-            currentDate.toLowerCase() +
-            "' WHERE word = '" +
-            word.toLowerCase() +
-            "'",
-        );
-      });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   navigateOnPress = (id, word, t_inline, transcription_us, transcription_uk) => {
     const {navigation} = this.props;
-    this.setData(word, t_inline, transcription_us, transcription_uk);
+    // setData(word, t_inline, transcription_us, transcription_uk);
     return (
       navigation.jumpTo(this.state.goTo, {word: word, id: id}),
       this.setState({searching: false, searchValue: null, data: []})
@@ -127,13 +89,7 @@ class Search extends PureComponent {
           <Pressable
             style={Headerstyles.resultButton}
             onPress={() =>
-              this.navigateOnPress(
-                id,
-                word,
-                t_inline,
-                transcription_us,
-                transcription_uk,
-              )
+              this.navigateOnPress(id, word, t_inline, transcription_us, transcription_uk)
             }>
             <Text style={Headerstyles.resultText} numberOfLines={1}>
               {word} - {t_inline}
@@ -151,13 +107,11 @@ class Search extends PureComponent {
       <View>
         <View style={Headerstyles.rectangle}>
           <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-            <Pressable
-              onPress={() => navigation.openDrawer()}
-              style={Headerstyles.button}>
+            <Pressable onPress={() => navigation.openDrawer()} style={Headerstyles.button}>
               <Text style={Headerstyles.lines}>≡</Text>
             </Pressable>
             {/* Не работает перемещение по тексту */}
-            <SearchBar 
+            <SearchBar
               placeholder="Поиск по словарю"
               platform={inputProps}
               ref={search => (this.search = search)}

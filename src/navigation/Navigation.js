@@ -1,9 +1,8 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-
 import History from '../Screens/History';
-import UserDictionary from '../Screens/UserDictionary';
+import Dictionary from '../Screens/Dictionary';
 import Main from '../Screens/Main';
 import ResultEn from '../Screens/ResultEn';
 import ResultRu from '../Screens/ResultRu';
@@ -28,19 +27,11 @@ export const Navigation = () => {
           drawerActiveTintColor: '#583627',
           drawerInactiveTintColor: '#583627',
         }}>
+        <Drawer.Screen name="Main" component={Main} options={{drawerLabel: 'Главная'}} />
+        <Drawer.Screen name="History" component={History} options={{drawerLabel: 'Вся история'}} />
         <Drawer.Screen
-          name="Main"
-          component={Main}
-          options={{drawerLabel: 'Главная'}}
-        />
-        <Drawer.Screen
-          name="History"
-          component={History}
-          options={{drawerLabel: 'Вся история'}}
-        />
-        <Drawer.Screen
-          name="UserDictionary"
-          component={UserDictionary}
+          name="Dictionary"
+          component={Dictionary}
           options={{drawerLabel: 'Мой словарь'}}
         />
         <Drawer.Screen

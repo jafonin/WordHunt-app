@@ -1,15 +1,16 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
 import {ResultStyles} from '../Styles/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
+import {setData} from '../Components/AddToHistory';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
-class ResultPage extends Component {
+class ResultPage extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,12 +44,14 @@ class ResultPage extends Component {
   }
 
   fetchData = async (_id, _word) => {
-    var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE id = '" + _id + "'";
+    var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
+    var wordId = 0;
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         var temp = [];
         temp.push(results.rows.item(0));
         this.setState({ruEnWordData: temp});
+        setData(_word, temp[0].t_inline, _id);
       });
     });
 
@@ -60,6 +63,7 @@ class ResultPage extends Component {
       _id +
       "'" +
       'ORDER BY section, word_order';
+
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
         var temp = [];
@@ -72,14 +76,6 @@ class ResultPage extends Component {
         }
         var sectionOne = temp.slice(0, -sectionTwo.length);
         var sectionTwo = sectionTwo.reverse();
-        // var data = [
-        //   {title: '', data: sectionOne},
-        //   {
-        //     title: 'Родственные слова, либо редко употребляемые в данном значении',
-        //     data: sectionTwo,
-        //   },
-        // ];
-        // console.log(data);
         this.setState({
           ruEnDicSectionOne: sectionOne,
           ruEnDicSectionTwo: sectionTwo,
@@ -100,12 +96,12 @@ class ResultPage extends Component {
     });
   };
 
-  updateDictionary(queryUpdate, t_inline) {
-    const {_word} = this.props;
-    dbDic.transaction(tx => {
-      tx.executeSql(queryUpdate, [_word, t_inline]);
-    });
-  }
+  // updateDictionary(queryUpdate, t_inline) {
+  //   const {_word} = this.props;
+  //   dbDic.transaction(tx => {
+  //     tx.executeSql(queryUpdate, [_word, t_inline]);
+  //   });
+  // }
 
   onButtonPress(t_inline) {
     const {_word} = this.props;
@@ -124,17 +120,19 @@ class ResultPage extends Component {
     }
   }
 
-  renderLemma(lemma, word) {
-    if (lemma !== word && lemma !== '') {
-      return (
-        <View>
-          <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
-        </View>
-      );
-    }
+  renderLemma(lemma) {
+    return (
+      <View>
+        <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
+      </View>
+    );
   }
 
   render() {
+    const imgSource = this.state.inDictionary
+      ? require('../img/pd_11.png')
+      : require('../img/pd_00.png');
+
     const renderTitle = this.state.ruEnWordData.map(item => (
       <View key={item.id}>
         <View style={ResultStyles.wd_title}>
@@ -152,18 +150,13 @@ class ResultPage extends Component {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            {this.state.inDictionary == false && (
-              <Image source={require('../img/pd_00.png')} style={ResultStyles.img} />
-            )}
-            {this.state.inDictionary == true && (
-              <Image source={require('../img/pd_11.png')} style={ResultStyles.img} />
-            )}
+            <Image source={imgSource} style={ResultStyles.img} />
           </Pressable>
         </View>
         <View style={ResultStyles.wd_translation}>
           <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
         </View>
-        {this.renderLemma(item.lemma, item.word)}
+        {item.lemma !== item.word && item.lemma !== '' ? this.renderLemma(item.lemma) : null}
       </View>
     ));
 
@@ -174,7 +167,7 @@ class ResultPage extends Component {
           <Text>
             <Pressable>
               <Text>
-                <Text style={ResultStyles.wd_translation_text}>{item.en_word + ' '}</Text>
+                <Text style={ResultStyles.wd_translation_text}>{'- ' + item.en_word + ' '}</Text>
                 {item.transcription_us ? (
                   <Text style={ResultStyles.wd_translation_text}>
                     {'|' + item.transcription_us + '|' + ' — '}
@@ -254,25 +247,6 @@ class ResultPage extends Component {
             {renderBodySectionTwo}
           </View>
         </ScrollView>
-        {/* <View style={[ResultStyles.wd, {flex: 1}]}>
-          {renderTitle}
-          <SectionList
-            sections={this.sectionData}
-            keyExtractor={(item, index) => item + index}
-            renderItem={renderSection}
-            renderSectionHeader={({section: {title}}) => (
-              <Text style={{color: '#000'}}>{title}</Text>
-            )}
-          />
-        </View> */}
-        {/* <FlatList
-              contentContainerStyle={{flexGrow: 1}}
-              data={this.state.ruEnWordDicData}
-              keyExtractor={item => item.id}
-              renderItem={renderBodySectionOne}
-              style={{marginVertical: 7}}
-              windowSize={5}
-            /> */}
       </View>
     );
   }

@@ -4,7 +4,7 @@ import {styles} from '../Styles/UserCollections';
 import Header from '../Components/Header';
 import DictionaryContent from '../Components/DictionaryContent';
 
-function UserDictionary({navigation}) {
+export default function Dictionary({navigation}) {
   const onPressHandler = () => {
     navigation.jumpTo('History');
   };
@@ -25,5 +25,3 @@ function UserDictionary({navigation}) {
     </View>
   );
 }
-
-export default UserDictionary;

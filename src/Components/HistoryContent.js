@@ -33,10 +33,8 @@ class _renderHistory extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
-        }),
-          function (tx, err) {
-            alert('not found'); // не работает
-          };
+          console.log(temp);
+        });
       });
     } catch (error) {
       console.log(error);
@@ -61,8 +59,8 @@ class _renderHistory extends PureComponent {
       console.log(error);
     }
     return (
-      /[A-Za-z]/.test(word) && navigation.jumpTo('ResultEn', {word: word, id: id}),
-      /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word, id: id}),
+      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
+      // /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word, id: id}),
       this.setState({data: []})
     );
   };
@@ -73,35 +71,37 @@ class _renderHistory extends PureComponent {
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
-    if (t_inline) {
-      if (transcription_uk || transcription_us) {
-        return (
-          <View key={id} style={styles.listItem}>
-            <Pressable onPress={() => this.navigateOnPress(word, id)}>
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text>
-                  <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                  {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
-                  <Text style={styles.text}> - {t_inline}</Text>
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      } else {
-        return (
-          <View key={id} style={styles.listItem}>
-            <Pressable onPress={() => this.navigateOnPress(word, id)}>
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text>
-                  <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                  <Text style={styles.text}> - {t_inline}</Text>
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-        );
-      }
+    const {en_id} = item;
+    const {ru_id} = item;
+    console.log('HC ' + ru_id);
+    console.log(en_id);
+    if (transcription_uk || transcription_us) {
+      return (
+        <View key={id} style={styles.listItem}>
+          <Pressable onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}>
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+                {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
+                <Text style={styles.text}> - {t_inline}</Text>
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+      );
+    } else {
+      return (
+        <View key={id} style={styles.listItem}>
+          <Pressable onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}>
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <Text>
+                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+                <Text style={styles.text}> - {t_inline}</Text>
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+      );
     }
   };
   render() {
