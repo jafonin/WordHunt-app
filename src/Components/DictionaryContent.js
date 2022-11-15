@@ -62,7 +62,7 @@ class _renderDictionary extends PureComponent {
       console.log(error);
     }
     return (
-      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word}),
+      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
       this.setState({data: []})
     );
   };
@@ -73,34 +73,19 @@ class _renderDictionary extends PureComponent {
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
-    if (transcription_uk || transcription_us) {
-      return (
-        <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word)}>
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
-                <Text style={styles.text}> - {t_inline}</Text>
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-      );
-    } else {
-      return (
-        <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word)}>
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                <Text style={styles.text}> - {t_inline}</Text>
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-      );
-    }
+    return (
+      <View key={id} style={styles.listItem}>
+        <Pressable onPress={() => this.navigateOnPress(word, id)}>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <Text>
+              <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+              {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
+              <Text style={styles.text}> - {t_inline}</Text>
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+    );
   };
   render() {
     return (
@@ -111,7 +96,6 @@ class _renderDictionary extends PureComponent {
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
           style={{marginBottom: 7}}
-          windowSize={5}
         />
       </View>
     );

@@ -66,20 +66,27 @@ class ResultPage extends PureComponent {
 
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
-        var temp = [];
-        var sectionTwo = [];
+        let temp = [];
+
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
-        for (let i = temp.length - 1; temp[i].section == 2; --i) {
-          sectionTwo.push(temp[i]);
+        if (temp[temp.length - 1].section == 2) {
+          let sectionTwo = [];
+          for (let i = temp.length - 1; temp[i].section == 2; --i) {
+            sectionTwo.push(temp[i]);
+          }
+          let sectionOne = temp.slice(0, -sectionTwo.length);
+          sectionTwo = sectionTwo.reverse();
+          this.setState({
+            ruEnDicSectionOne: sectionOne,
+            ruEnDicSectionTwo: sectionTwo,
+          });
+        } else {
+          this.setState({
+            ruEnDicSectionOne: temp,
+          });
         }
-        var sectionOne = temp.slice(0, -sectionTwo.length);
-        var sectionTwo = sectionTwo.reverse();
-        this.setState({
-          ruEnDicSectionOne: sectionOne,
-          ruEnDicSectionTwo: sectionTwo,
-        });
       });
     });
 
@@ -95,13 +102,6 @@ class ResultPage extends PureComponent {
       );
     });
   };
-
-  // updateDictionary(queryUpdate, t_inline) {
-  //   const {_word} = this.props;
-  //   dbDic.transaction(tx => {
-  //     tx.executeSql(queryUpdate, [_word, t_inline]);
-  //   });
-  // }
 
   onButtonPress(t_inline) {
     const {_word} = this.props;

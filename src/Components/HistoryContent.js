@@ -33,7 +33,6 @@ class _renderHistory extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
-          console.log(temp);
         });
       });
     } catch (error) {
@@ -60,7 +59,6 @@ class _renderHistory extends PureComponent {
     }
     return (
       navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
-      // /[А-Яа-я]/.test(word) && navigation.jumpTo('ResultRu', {word: word, id: id}),
       this.setState({data: []})
     );
   };
@@ -73,8 +71,6 @@ class _renderHistory extends PureComponent {
     const {transcription_uk} = item;
     const {en_id} = item;
     const {ru_id} = item;
-    console.log('HC ' + ru_id);
-    console.log(en_id);
     if (transcription_uk || transcription_us) {
       return (
         <View key={id} style={styles.listItem}>

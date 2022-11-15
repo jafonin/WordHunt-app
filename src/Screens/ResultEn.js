@@ -98,26 +98,28 @@ class ResultPage extends Component {
               <Image source={imgSource} style={ResultStyles.img} />
             </Pressable>
           </View>
-          {(item.transcription_us.length > 0 || item.transcription_uk.length > 0) && (
+          {item.transcription_us !== null || item.transcription_uk !== null ? (
             <View style={ResultStyles.wd_transcription}>
               <View>
-                {item.transcription_us.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text_i}>амер.</Text>
-                )}
-                {item.transcription_uk.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text_i}>брит.</Text>
-                )}
-              </View>
-              <View>
-                {item.transcription_us.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_us}|</Text>
-                )}
-                {item.transcription_uk.length > 0 && (
-                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_uk}|</Text>
-                )}
+                {item.transcription_us !== null ? (
+                  <Text>
+                    <Text style={ResultStyles.wd_transcription_text_i}>амер. </Text>
+                    <Text style={ResultStyles.wd_transcription_text}>
+                      |{item.transcription_us}|
+                    </Text>
+                  </Text>
+                ) : null}
+                {item.transcription_uk !== null ? (
+                  <Text>
+                    <Text style={ResultStyles.wd_transcription_text_i}>брит. </Text>
+                    <Text style={ResultStyles.wd_transcription_text}>
+                      |{item.transcription_uk}|
+                    </Text>
+                  </Text>
+                ) : null}
               </View>
             </View>
-          )}
+          ) : null}
           <View style={ResultStyles.wd_translation}>
             <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
           </View>

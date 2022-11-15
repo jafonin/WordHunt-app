@@ -6,6 +6,7 @@ import {SearchBar} from '@rneui/themed';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {setData} from './AddToHistory';
+import {TextInput} from 'react-native';
 
 // const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
@@ -68,9 +69,8 @@ class Search extends PureComponent {
     }
   };
 
-  navigateOnPress = (id, word, t_inline, transcription_us, transcription_uk) => {
+  navigateOnPress = (id, word) => {
     const {navigation} = this.props;
-    // setData(word, t_inline, transcription_us, transcription_uk);
     return (
       navigation.jumpTo(this.state.goTo, {word: word, id: id}),
       this.setState({searching: false, searchValue: null, data: []})
@@ -88,9 +88,7 @@ class Search extends PureComponent {
         <View key={id} style={Headerstyles.resultItem}>
           <Pressable
             style={Headerstyles.resultButton}
-            onPress={() =>
-              this.navigateOnPress(id, word, t_inline, transcription_us, transcription_uk)
-            }>
+            onPress={() => this.navigateOnPress(id, word)}>
             <Text style={Headerstyles.resultText} numberOfLines={1}>
               {word} - {t_inline}
             </Text>
@@ -111,17 +109,20 @@ class Search extends PureComponent {
               <Text style={Headerstyles.lines}>≡</Text>
             </Pressable>
             {/* Не работает перемещение по тексту */}
-            <SearchBar
+            <TextInput
               placeholder="Поиск по словарю"
               platform={inputProps}
-              ref={search => (this.search = search)}
+              // ref={search => (this.search = search)}
               placeholderTextColor="#888"
-              containerStyle={{
+              containerStyle={{}}
+              style={{
+                backgroundColor: '#fff',
                 width: '75%',
                 height: '78%',
                 justifyContent: 'center',
                 borderRadius: 5,
                 marginLeft: '2%',
+                color: '#000',
               }}
               value={this.state.searchValue}
               onChangeText={text => this.handleSearch(text)}
