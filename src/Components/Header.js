@@ -1,17 +1,16 @@
-import React, {PureComponent} from 'react';
-import {View, Text, Pressable, FlatList} from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, Pressable, FlatList, Keyboard} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Headerstyles} from '../Styles/Header';
-import {SearchBar} from '@rneui/themed';
+
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {setData} from './AddToHistory';
 import {TextInput} from 'react-native';
 
 // const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
-class Search extends PureComponent {
+class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -109,24 +108,26 @@ class Search extends PureComponent {
               <Text style={Headerstyles.lines}>≡</Text>
             </Pressable>
             {/* Не работает перемещение по тексту */}
-            <TextInput
-              placeholder="Поиск по словарю"
-              platform={inputProps}
-              // ref={search => (this.search = search)}
-              placeholderTextColor="#888"
-              containerStyle={{}}
-              style={{
-                backgroundColor: '#fff',
-                width: '75%',
-                height: '78%',
-                justifyContent: 'center',
-                borderRadius: 5,
-                marginLeft: '2%',
-                color: '#000',
-              }}
-              value={this.state.searchValue}
-              onChangeText={text => this.handleSearch(text)}
-            />
+            <Pressable onPress={Keyboard.dismiss}>
+              <TextInput
+                placeholder="Поиск по словарю"
+                // platform={inputProps}
+                // ref={search => (this.search = search)}
+                placeholderTextColor="#888"
+                // containerStyle={{}}
+                style={{
+                  backgroundColor: '#fff',
+                  width: '75%',
+                  height: '78%',
+                  justifyContent: 'center',
+                  borderRadius: 5,
+                  marginLeft: '2%',
+                  color: '#000',
+                }}
+                // value={this.state.searchValue}
+                onChangeText={text => this.handleSearch(text)}
+              />
+            </Pressable>
           </View>
         </View>
         {this.state.searching && (
