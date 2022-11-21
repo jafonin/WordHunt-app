@@ -5,7 +5,6 @@ export const Headerstyles = StyleSheet.create({
     height: 58,
     width: '100%',
     backgroundColor: '#1d415d',
-
   },
   lines: {
     textAlign: 'center',
@@ -14,8 +13,10 @@ export const Headerstyles = StyleSheet.create({
   },
   button: {
     height: '100%',
-    width: 54,
+    width: 60,
     justifyContent: 'center',
+    // alignContent: 'center',
+    // marginHorizontal: 14,
   },
   input: {
     height: 38,

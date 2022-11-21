@@ -106,9 +106,12 @@ class Search extends Component {
         <View>
           <View style={Headerstyles.rectangle}>
             <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-              <Pressable onPress={() => navigation.openDrawer()} style={Headerstyles.button}>
-                <Text style={Headerstyles.lines}>≡</Text>
-              </Pressable>
+              <View style={Headerstyles.button}>
+                <Pressable onPress={() => navigation.openDrawer()} style={{marginHorizontal: 16}}>
+                  <Text style={Headerstyles.lines}>≡</Text>
+                </Pressable>
+              </View>
+
               {/* Не работает перемещение по тексту */}
 
               <TextInput
@@ -119,11 +122,11 @@ class Search extends Component {
                 // containerStyle={{}}
                 style={{
                   backgroundColor: '#fff',
-                  width: '75%',
-                  height: '78%',
+                  width: '80%',
+                  height: '70%',
                   justifyContent: 'center',
+                  alignContent: 'center',
                   borderRadius: 5,
-                  marginLeft: '3%',
                   color: '#000',
                   // flex: 1,
                 }}
