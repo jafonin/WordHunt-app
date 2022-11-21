@@ -6,6 +6,7 @@ import {Headerstyles} from '../Styles/Header';
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {TextInput} from 'react-native';
+import {SafeAreaView} from 'react-native';
 
 // const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
@@ -101,14 +102,15 @@ class Search extends Component {
     const {navigation} = this.props;
     const {inputProps} = this.props;
     return (
-      <View>
-        <View style={Headerstyles.rectangle}>
-          <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-            <Pressable onPress={() => navigation.openDrawer()} style={Headerstyles.button}>
-              <Text style={Headerstyles.lines}>≡</Text>
-            </Pressable>
-            {/* Не работает перемещение по тексту */}
-            <Pressable onPress={Keyboard.dismiss}>
+      <SafeAreaView>
+        <View>
+          <View style={Headerstyles.rectangle}>
+            <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
+              <Pressable onPress={() => navigation.openDrawer()} style={Headerstyles.button}>
+                <Text style={Headerstyles.lines}>≡</Text>
+              </Pressable>
+              {/* Не работает перемещение по тексту */}
+
               <TextInput
                 placeholder="Поиск по словарю"
                 // platform={inputProps}
@@ -121,25 +123,28 @@ class Search extends Component {
                   height: '78%',
                   justifyContent: 'center',
                   borderRadius: 5,
-                  marginLeft: '2%',
+                  marginLeft: '3%',
                   color: '#000',
+                  // flex: 1,
                 }}
-                // value={this.state.searchValue}
+                value={this.state.searchValue}
                 onChangeText={text => this.handleSearch(text)}
               />
-            </Pressable>
+            </View>
           </View>
+          {this.state.searching && (
+            <FlatList
+              data={this.state.data}
+              keyExtractor={item => item.id}
+              windowSize={1}
+              renderItem={this._renderItem}
+              style={{height: '100%', marginTop: 20}}
+              keyboardDismissMode={'on-drag'}
+              keyboardShouldPersistTaps={'handled'}
+            />
+          )}
         </View>
-        {this.state.searching && (
-          <FlatList
-            data={this.state.data}
-            keyExtractor={item => item.id}
-            windowSize={1}
-            renderItem={this._renderItem}
-            style={{height: '100%', marginTop: 20}}
-          />
-        )}
-      </View>
+      </SafeAreaView>
     );
   }
 }

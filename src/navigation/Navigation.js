@@ -28,7 +28,7 @@ export const Navigation = () => {
           // ),
           // headerStyle: {backgroundColor: '#1d415d'},
           drawerType: 'slide',
-          swipeEdgeWidth: 450,
+          swipeEdgeWidth: 70,
           headerShown: false,
           drawerActiveBackgroundColor: '#ffffef',
           drawerActiveTintColor: '#583627',
