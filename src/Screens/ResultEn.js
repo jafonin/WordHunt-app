@@ -81,76 +81,72 @@ class ResultPage extends Component {
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
     const renderPage = this.state.data.map(item => (
-      <ScrollView key={item.id}>
-        <View style={ResultStyles.wd}>
-          <View style={ResultStyles.wd_title}>
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <Text style={ResultStyles.wd_title_text}>
-                {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
-              </Text>
-              <Text style={ResultStyles.rank}>{item.rank}</Text>
-            </View>
-            <Pressable
-              onPress={() =>
-                this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
-              }
-              style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
-              <Image source={imgSource} style={ResultStyles.img} />
-            </Pressable>
+      <View key={item.id} style={ResultStyles.wd}>
+        <View style={ResultStyles.wd_title}>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <Text style={ResultStyles.wd_title_text}>
+              {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+            </Text>
+            <Text style={ResultStyles.rank}>{item.rank}</Text>
           </View>
-          {item.transcription_us !== null || item.transcription_uk !== null ? (
-            <View style={ResultStyles.wd_transcription}>
-              <View>
-                {item.transcription_us !== null ? (
-                  <Text>
-                    <Text style={ResultStyles.wd_transcription_text_i}>амер. </Text>
-                    <Text style={ResultStyles.wd_transcription_text}>
-                      |{item.transcription_us}|
-                    </Text>
-                  </Text>
-                ) : null}
-                {item.transcription_uk !== null ? (
-                  <Text>
-                    <Text style={ResultStyles.wd_transcription_text_i}>брит. </Text>
-                    <Text style={ResultStyles.wd_transcription_text}>
-                      |{item.transcription_uk}|
-                    </Text>
-                  </Text>
-                ) : null}
-              </View>
-            </View>
-          ) : null}
-          <View style={ResultStyles.wd_translation}>
-            <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
-          </View>
-          <View>
-            {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-              return (
-                <View key={index}>
-                  {Object.values(word).map((translation, index) => {
-                    // debugger
-                    return (
-                      <View key={index} style={ResultStyles.wd_translation}>
-                        <StyledText style={ResultStyles.wd_translation_text_i}>
-                          {translation.w}
-                        </StyledText>
-                        <StyledText style={ResultStyles.wd_translation_text}>
-                          {'- ' + translation.t.join('\n\n- ')}
-                        </StyledText>
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            })}
-          </View>
+          <Pressable
+            onPress={() =>
+              this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
+            }
+            style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
+            <Image source={imgSource} style={ResultStyles.img} />
+          </Pressable>
         </View>
-      </ScrollView>
+        {item.transcription_us !== null || item.transcription_uk !== null ? (
+          <View style={ResultStyles.wd_transcription}>
+            <View>
+              {item.transcription_us !== null ? (
+                <Text>
+                  <Text style={ResultStyles.wd_transcription_text_i}>амер. </Text>
+                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_us}|</Text>
+                </Text>
+              ) : null}
+              {item.transcription_uk !== null ? (
+                <Text>
+                  <Text style={ResultStyles.wd_transcription_text_i}>брит. </Text>
+                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_uk}|</Text>
+                </Text>
+              ) : null}
+            </View>
+          </View>
+        ) : null}
+        <View style={ResultStyles.wd_translation}>
+          <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
+        </View>
+        <View>
+          {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+            return (
+              <View key={index}>
+                {Object.values(word).map((translation, index) => {
+                  // debugger
+                  return (
+                    <View key={index} style={ResultStyles.wd_translation}>
+                      <StyledText style={ResultStyles.wd_translation_text_i}>
+                        {translation.w}
+                      </StyledText>
+                      <StyledText style={ResultStyles.wd_translation_text}>
+                        {'- ' + translation.t.join('\n\n- ')}
+                      </StyledText>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+        </View>
+      </View>
     ));
     return (
       <View style={{flex: 1}}>
         <Header />
-        {renderPage}
+        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+          {renderPage}
+        </ScrollView>
       </View>
     );
   }

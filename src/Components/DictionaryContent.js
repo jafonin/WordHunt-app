@@ -96,6 +96,8 @@ class _renderDictionary extends PureComponent {
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
           style={{marginBottom: 7}}
+          keyboardDismissMode={'on-drag'}
+          keyboardShouldPersistTaps={'always'}
         />
       </View>
     );

@@ -33,6 +33,7 @@ class _renderHistory extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
+          console.log(temp);
         });
       });
     } catch (error) {
@@ -109,7 +110,8 @@ class _renderHistory extends PureComponent {
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
           style={{marginBottom: 7}}
-          windowSize={5}
+          keyboardDismissMode={'on-drag'}
+          keyboardShouldPersistTaps={'always'}
         />
       </View>
     );

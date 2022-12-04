@@ -235,7 +235,7 @@ class ResultPage extends PureComponent {
     return (
       <View style={{flex: 1}}>
         <Header />
-        <ScrollView>
+        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           <View style={[ResultStyles.wd, {flex: 1}]}>
             {renderTitle}
             {renderBodySectionOne}

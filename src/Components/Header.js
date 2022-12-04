@@ -1,8 +1,7 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {View, Text, Pressable, FlatList, Keyboard} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Headerstyles} from '../Styles/Header';
-
 import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {TextInput} from 'react-native';
@@ -11,7 +10,7 @@ import {SafeAreaView} from 'react-native';
 // const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
-class Search extends Component {
+class Search extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -73,7 +72,8 @@ class Search extends Component {
     const {navigation} = this.props;
     return (
       navigation.jumpTo(this.state.goTo, {word: word, id: id}),
-      this.setState({searching: false, searchValue: null, data: []})
+      this.setState({searching: false, searchValue: null, data: []}),
+      Keyboard.dismiss()
     );
   };
 
@@ -107,7 +107,7 @@ class Search extends Component {
           <View style={Headerstyles.rectangle}>
             <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
               <View style={Headerstyles.button}>
-                <Pressable onPress={() => navigation.openDrawer()} style={{marginHorizontal: 16}}>
+                <Pressable onPress={() => navigation.openDrawer()} style={{marginHorizontal: 10}}>
                   <Text style={Headerstyles.lines}>≡</Text>
                 </Pressable>
               </View>
@@ -142,8 +142,9 @@ class Search extends Component {
               windowSize={1}
               renderItem={this._renderItem}
               style={{height: '100%', marginTop: 20}}
-              keyboardDismissMode={'on-drag'}
-              keyboardShouldPersistTaps={'handled'}
+              // keyboardDismissMode={'interactive'}
+              keyboardShouldPersistTaps={'always'}
+              // onScrollBeginDrag={Keyboard.dismiss}
             />
           )}
         </View>
