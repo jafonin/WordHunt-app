@@ -75,8 +75,11 @@ class _renderDictionary extends PureComponent {
     const {transcription_uk} = item;
     return (
       <View key={id} style={styles.listItem}>
-        <Pressable onPress={() => this.navigateOnPress(word, id)}>
-          <View style={{flexDirection: 'row', flex: 1}}>
+        <Pressable
+          onPress={() => this.navigateOnPress(word, id)}
+          android_ripple={{color: '#d1d1d1'}}
+          style={{flex: 1}}>
+          <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
             <Text>
               <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
               {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
@@ -91,11 +94,11 @@ class _renderDictionary extends PureComponent {
     return (
       <View style={{flex: 1}}>
         <FlatList
-          contentContainerStyle={{flexGrow: 1}}
+          contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
-          style={{marginBottom: 7}}
+          style={{}}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
         />

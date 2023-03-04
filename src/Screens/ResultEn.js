@@ -93,6 +93,7 @@ class ResultPage extends Component {
             onPress={() =>
               this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
             }
+            android_ripple={{color: '#d1d1d1', borderless: true, radius: 20}}
             style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
             <Image source={imgSource} style={ResultStyles.img} />
           </Pressable>
@@ -123,7 +124,6 @@ class ResultPage extends Component {
             return (
               <View key={index}>
                 {Object.values(word).map((translation, index) => {
-                  // debugger
                   return (
                     <View key={index} style={ResultStyles.wd_translation}>
                       <StyledText style={ResultStyles.wd_translation_text_i}>
@@ -144,7 +144,10 @@ class ResultPage extends Component {
     return (
       <View style={{flex: 1}}>
         <Header />
-        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          style={{backgroundColor: '#fff'}}>
           {renderPage}
         </ScrollView>
       </View>

@@ -75,8 +75,11 @@ class _renderHistory extends PureComponent {
     if (transcription_uk || transcription_us) {
       return (
         <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}>
-            <View style={{flexDirection: 'row', flex: 1}}>
+          <Pressable
+            onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
+            android_ripple={{color: '#d1d1d1'}}
+            style={{flex: 1}}>
+            <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
               <Text>
                 <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
                 {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
@@ -89,8 +92,11 @@ class _renderHistory extends PureComponent {
     } else {
       return (
         <View key={id} style={styles.listItem}>
-          <Pressable onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}>
-            <View style={{flexDirection: 'row', flex: 1}}>
+          <Pressable
+            onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
+            android_ripple={{color: '#d1d1d1'}}
+            style={{flex: 1}}>
+            <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
               <Text>
                 <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
                 <Text style={styles.text}> - {t_inline}</Text>
@@ -105,11 +111,10 @@ class _renderHistory extends PureComponent {
     return (
       <View style={{flex: 1}}>
         <FlatList
-          contentContainerStyle={{flexGrow: 1}}
+          contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
-          style={{marginBottom: 7}}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
         />

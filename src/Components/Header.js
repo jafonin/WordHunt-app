@@ -1,13 +1,20 @@
 import React, {PureComponent} from 'react';
-import {View, Text, Pressable, FlatList, Keyboard} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  FlatList,
+  Keyboard,
+  SafeAreaView,
+  StatusBar,
+  TextInput,
+  Platform,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Headerstyles} from '../Styles/Header';
-import {Platform} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {TextInput} from 'react-native';
-import {SafeAreaView} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-// const dbEn = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
 class Search extends PureComponent {
@@ -36,7 +43,8 @@ class Search extends PureComponent {
     if (searchValue) {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
-          "SELECT id, word, t_inline, transcription_us, transcription_uk FROM en_ru_word WHERE t_mix IS NOT NULL AND t_inline IS NOT NULL AND word LIKE '" +
+          'SELECT id, word, t_inline, transcription_us, transcription_uk ' +
+          "FROM en_ru_word WHERE t_mix IS NOT NULL AND t_inline IS NOT NULL AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         // var db = dbEn;
@@ -85,13 +93,18 @@ class Search extends PureComponent {
     const {transcription_uk} = item;
     if (t_inline) {
       return (
-        <View key={id} style={Headerstyles.resultItem}>
+        <View key={id} style={Headerstyles.item}>
           <Pressable
-            style={Headerstyles.resultButton}
-            onPress={() => this.navigateOnPress(id, word)}>
-            <Text style={Headerstyles.resultText} numberOfLines={1}>
-              {word} - {t_inline}
-            </Text>
+            style={Headerstyles.itemButton}
+            onPress={() => this.navigateOnPress(id, word)}
+            android_ripple={{color: '#d1d1d1'}}>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 15}}>
+              <Icon name="search" size={20} style={{color: '#583627', marginRight: 5}} />
+              <Text style={Headerstyles.itemText} numberOfLines={1}>
+                {word} - {t_inline}
+              </Text>
+            </View>
           </Pressable>
         </View>
       );
@@ -104,31 +117,31 @@ class Search extends PureComponent {
     return (
       <SafeAreaView>
         <View>
+          <StatusBar translucent backgroundColor="transparent" />
           <View style={Headerstyles.rectangle}>
-            <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-              <View style={Headerstyles.button}>
-                <Pressable onPress={() => navigation.openDrawer()} style={{marginHorizontal: 10}}>
+            <View style={{flexDirection: 'row', alignItems: 'center', flex: 1, marginTop: 27}}>
+              <View style={Headerstyles.drawerButton}>
+                <Pressable
+                  onPress={() => navigation.openDrawer()}
+                  style={{marginHorizontal: 10}}
+                  android_ripple={{color: '#87888a', borderless: true, radius: 20}}>
                   <Text style={Headerstyles.lines}>≡</Text>
                 </Pressable>
               </View>
-
-              {/* Не работает перемещение по тексту */}
-
               <TextInput
                 placeholder="Поиск по словарю"
-                // platform={inputProps}
-                // ref={search => (this.search = search)}
                 placeholderTextColor="#888"
-                // containerStyle={{}}
                 style={{
                   backgroundColor: '#fff',
-                  width: '80%',
+                  width: '78%',
                   height: '70%',
                   justifyContent: 'center',
                   alignContent: 'center',
                   borderRadius: 5,
                   color: '#000',
-                  // flex: 1,
+                  paddingHorizontal: 15,
+                  fontFamily: 'georgia',
+                  fontSize: 16,
                 }}
                 value={this.state.searchValue}
                 onChangeText={text => this.handleSearch(text)}
@@ -142,9 +155,7 @@ class Search extends PureComponent {
               windowSize={1}
               renderItem={this._renderItem}
               style={{height: '100%', marginTop: 20}}
-              // keyboardDismissMode={'interactive'}
               keyboardShouldPersistTaps={'always'}
-              // onScrollBeginDrag={Keyboard.dismiss}
             />
           )}
         </View>

@@ -6,7 +6,7 @@ import Header from '../Components/Header';
 
 function Main() {
   return (
-    <View>
+    <View style={{backgroundColor: '#fff', flex: 1}}>
       <Header />
       <View style={Mainstyles.body}>
         <View>

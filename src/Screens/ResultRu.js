@@ -144,6 +144,7 @@ class ResultPage extends PureComponent {
           </View>
           <Pressable
             onPress={() => this.onButtonPress(item.t_inline)}
+            android_ripple={{color: '#d1d1d1', borderless: true, radius: 20}}
             style={{
               height: 35,
               width: 35,
@@ -235,7 +236,10 @@ class ResultPage extends PureComponent {
     return (
       <View style={{flex: 1}}>
         <Header />
-        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          style={{backgroundColor: '#fff'}}>
           <View style={[ResultStyles.wd, {flex: 1}]}>
             {renderTitle}
             {renderBodySectionOne}

@@ -6,7 +6,8 @@ import Dictionary from '../Screens/Dictionary';
 import Main from '../Screens/Main';
 import ResultEn from '../Screens/ResultEn';
 import ResultRu from '../Screens/ResultRu';
-import {TextInput} from 'react-native';
+import CustomDrawer from '../Components/CustomDrawer';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Drawer = createDrawerNavigator();
 
@@ -16,17 +17,12 @@ export const Navigation = () => {
       <Drawer.Navigator
         backBehavior="history"
         initialRouteName="Main"
+        drawerContent={props => <CustomDrawer {...props} />}
         screenOptions={{
           drawerStyle: {
             backgroundColor: '#ffffef',
           },
-          // headerTitle: () => (
-          //   <TextInput
-          //     style={{width: '100%', height: 50, fontSize: 20}}
-          //     placeholder={'Поиск по словарю'}
-          //   />
-          // ),
-          // headerStyle: {backgroundColor: '#1d415d'},
+          drawerLabelStyle: {fontSize: 16, fontFamily: 'georgia'},
           drawerType: 'slide',
           swipeEdgeWidth: 60,
           headerShown: false,
@@ -39,13 +35,30 @@ export const Navigation = () => {
           component={Main}
           options={{
             drawerLabel: 'Главная',
+            drawerIcon: () => (
+              <Icon name="home" size={22} style={{marginRight: -15, color: '#583627'}} />
+            ),
           }}
         />
-        <Drawer.Screen name="History" component={History} options={{drawerLabel: 'Вся история'}} />
+        <Drawer.Screen
+          name="History"
+          component={History}
+          options={{
+            drawerLabel: 'Вся история',
+            drawerIcon: () => (
+              <Icon name="history" size={22} style={{marginRight: -15, color: '#583627'}} />
+            ),
+          }}
+        />
         <Drawer.Screen
           name="Dictionary"
           component={Dictionary}
-          options={{drawerLabel: 'Мой словарь'}}
+          options={{
+            drawerLabel: 'Мой словарь',
+            drawerIcon: () => (
+              <Icon name="book" size={22} style={{marginRight: -15, color: '#583627'}} />
+            ),
+          }}
         />
         <Drawer.Screen
           name="ResultEn"

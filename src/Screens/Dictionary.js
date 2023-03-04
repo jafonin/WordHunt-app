@@ -9,15 +9,20 @@ export default function Dictionary({navigation}) {
     navigation.jumpTo('History');
   };
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#fff'}}>
       <Header />
       <View style={styles.body}>
         <View style={styles.rectangle}>
-          <Pressable style={styles.button} onPress={onPressHandler}>
-            <Text style={styles.title}>История запросов</Text>
+          <Pressable
+            style={styles.button}
+            onPress={onPressHandler}
+            android_ripple={{color: '#dbbe93'}}>
+            <Text style={styles.screenName}>История запросов</Text>
           </Pressable>
-          <Pressable style={styles.thisButton}>
-            <Text style={styles.title}>Мой словарь</Text>
+          <Pressable
+            style={[styles.button, {backgroundColor: '#ffdca9', borderRadius: 6}]}
+            android_ripple={{color: '#dbbe93'}}>
+            <Text style={styles.screenName}>Мой словарь</Text>
           </Pressable>
         </View>
       </View>

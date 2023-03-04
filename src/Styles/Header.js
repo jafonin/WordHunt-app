@@ -2,39 +2,41 @@ import {StyleSheet} from 'react-native';
 
 export const Headerstyles = StyleSheet.create({
   rectangle: {
-    height: 58,
+    height: 85,
     width: '100%',
     backgroundColor: '#1d415d',
+    shadowColor: '#000000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 15,
   },
   lines: {
     textAlign: 'center',
     fontSize: 35,
     color: 'white',
   },
-  button: {
+  drawerButton: {
     height: '100%',
     width: 60,
     justifyContent: 'center',
-    // alignContent: 'center',
-    // marginHorizontal: 14,
   },
-  input: {
-    height: 38,
-    width: '72%',
-    maxWidth: 500,
-    backgroundColor: '#fff',
-    borderRadius: 6,
-  },
-  resultItem: {
+  // input: {
+  //   height: 38,
+  //   width: '72%',
+  //   maxWidth: 500,
+  //   backgroundColor: '#fff',
+  //   borderRadius: 6,
+  // },
+  item: {
     marginVertical: 8,
-    marginHorizontal: 15,
   },
-  resultButton: {
+  itemButton: {
     height: 35,
     justifyContent: 'center',
     flex: 1,
   },
-  resultText: {
+  itemText: {
     color: '#000',
     fontSize: 18,
     fontFamily: 'georgia',
