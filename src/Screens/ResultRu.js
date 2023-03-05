@@ -123,7 +123,7 @@ class ResultPage extends PureComponent {
   renderLemma(lemma) {
     return (
       <View>
-        <Text style={ResultStyles.wd_translation_text}>Смотрите также: {lemma}</Text>
+        <Text style={ResultStyles.translation}>Смотрите также: {lemma}</Text>
       </View>
     );
   }
@@ -135,27 +135,22 @@ class ResultPage extends PureComponent {
 
     const renderTitle = this.state.ruEnWordData.map(item => (
       <View key={item.id}>
-        <View style={ResultStyles.wd_title}>
+        <View style={ResultStyles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
-            <Text style={ResultStyles.wd_title_text}>
+            <Text style={ResultStyles.titleWord}>
               {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
             <Text style={ResultStyles.rank}>{item.rank}</Text>
           </View>
           <Pressable
             onPress={() => this.onButtonPress(item.t_inline)}
-            android_ripple={{color: '#d1d1d1', borderless: true, radius: 20}}
-            style={{
-              height: 35,
-              width: 35,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Image source={imgSource} style={ResultStyles.img} />
+            android_ripple={ResultStyles.ripple}
+            style={ResultStyles.flagButton}>
+            <Image source={imgSource} style={ResultStyles.image} />
           </Pressable>
         </View>
-        <View style={ResultStyles.wd_translation}>
-          <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
+        <View style={{marginTop: 10, marginBottom: 20}}>
+          <Text style={ResultStyles.translation}>{item.t_inline}</Text>
         </View>
         {item.lemma !== item.word && item.lemma !== '' ? this.renderLemma(item.lemma) : null}
       </View>
@@ -168,13 +163,13 @@ class ResultPage extends PureComponent {
           <Text>
             <Pressable>
               <Text>
-                <Text style={ResultStyles.wd_translation_text}>{'- ' + item.en_word + ' '}</Text>
+                <Text style={ResultStyles.translation}>{'- ' + item.en_word + ' '}</Text>
                 {item.transcription_us ? (
-                  <Text style={ResultStyles.wd_translation_text}>
+                  <Text style={ResultStyles.translation}>
                     {'|' + item.transcription_us + '|' + ' — '}
                   </Text>
                 ) : (
-                  <Text style={ResultStyles.wd_translation_text}>{' — '}</Text>
+                  <Text style={ResultStyles.translation}>{' — '}</Text>
                 )}
               </Text>
             </Pressable>
@@ -186,13 +181,10 @@ class ResultPage extends PureComponent {
                     <Pressable>
                       <Text>
                         <StyledText
-                          style={[
-                            ResultStyles.wd_translation_text,
-                            {textDecorationLine: 'underline'},
-                          ]}>
+                          style={[ResultStyles.translation, {textDecorationLine: 'underline'}]}>
                           {index + 1 !== _length || _length !== 0 ? word : word}
                         </StyledText>
-                        <Text style={ResultStyles.wd_translation_text}>
+                        <Text style={ResultStyles.translation}>
                           {index + 1 !== _length || (_length !== 0 && itemTr.w.length) ? ', ' : ''}
                         </Text>
                       </Text>
@@ -205,7 +197,7 @@ class ResultPage extends PureComponent {
               {Object.values(itemTr.w).map((word, index) => {
                 return (
                   <View key={index} style={{flexDirection: 'row', flex: 1}}>
-                    <StyledText style={ResultStyles.wd_translation_text}>
+                    <StyledText style={ResultStyles.translation}>
                       {index + 1 !== itemTr.w.length ? word + ', ' : word}
                     </StyledText>
                   </View>
@@ -240,11 +232,11 @@ class ResultPage extends PureComponent {
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           style={{backgroundColor: '#fff'}}>
-          <View style={[ResultStyles.wd, {flex: 1}]}>
+          <View style={[ResultStyles.body, {flex: 1}]}>
             {renderTitle}
             {renderBodySectionOne}
             <View style={{marginTop: 35}}>
-              <Text style={ResultStyles.wd_translation_text_i}>
+              <Text style={ResultStyles.translationItalic}>
                 Родственные слова, либо редко употребляемые в данном значении
               </Text>
             </View>

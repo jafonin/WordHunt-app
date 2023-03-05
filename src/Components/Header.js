@@ -100,7 +100,7 @@ class Search extends PureComponent {
             android_ripple={{color: '#d1d1d1'}}>
             <View
               style={{flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 15}}>
-              <Icon name="search" size={20} style={{color: '#583627', marginRight: 5}} />
+              <Icon name="search" size={20} style={{color: '#42291F', marginRight: 5}} />
               <Text style={Headerstyles.itemText} numberOfLines={1}>
                 {word} - {t_inline}
               </Text>
@@ -125,24 +125,13 @@ class Search extends PureComponent {
                   onPress={() => navigation.openDrawer()}
                   style={{marginHorizontal: 10}}
                   android_ripple={{color: '#87888a', borderless: true, radius: 20}}>
-                  <Text style={Headerstyles.lines}>≡</Text>
+                  <Text style={Headerstyles.threeLines}>≡</Text>
                 </Pressable>
               </View>
               <TextInput
                 placeholder="Поиск по словарю"
                 placeholderTextColor="#888"
-                style={{
-                  backgroundColor: '#fff',
-                  width: '78%',
-                  height: '70%',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  borderRadius: 5,
-                  color: '#000',
-                  paddingHorizontal: 15,
-                  fontFamily: 'georgia',
-                  fontSize: 16,
-                }}
+                style={Headerstyles.input}
                 value={this.state.searchValue}
                 onChangeText={text => this.handleSearch(text)}
               />

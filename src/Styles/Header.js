@@ -11,7 +11,7 @@ export const Headerstyles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 15,
   },
-  lines: {
+  threeLines: {
     textAlign: 'center',
     fontSize: 35,
     color: 'white',
@@ -21,13 +21,18 @@ export const Headerstyles = StyleSheet.create({
     width: 60,
     justifyContent: 'center',
   },
-  // input: {
-  //   height: 38,
-  //   width: '72%',
-  //   maxWidth: 500,
-  //   backgroundColor: '#fff',
-  //   borderRadius: 6,
-  // },
+  input: {
+    backgroundColor: '#fff',
+    width: '78%',
+    height: '70%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderRadius: 5,
+    color: '#000',
+    paddingHorizontal: 15,
+    fontFamily: 'georgia',
+    fontSize: 16,
+  },
   item: {
     marginVertical: 8,
   },

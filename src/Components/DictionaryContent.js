@@ -80,7 +80,7 @@ class _renderDictionary extends PureComponent {
           android_ripple={{color: '#d1d1d1'}}
           style={{flex: 1}}>
           <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
-            <Text>
+            <Text style={{textAlignVertical: 'center'}}>
               <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
               {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
               <Text style={styles.text}> - {t_inline}</Text>

@@ -1,50 +1,18 @@
 import {StyleSheet} from 'react-native';
 
 export const ResultStyles = StyleSheet.create({
-  wd: {
+  body: {
     marginTop: 30,
     marginHorizontal: 25,
   },
-  wd_title: {
+  title: {
     marginBottom: 15,
     flexDirection: 'row',
   },
-  wd_title_text: {
+  titleWord: {
     fontFamily: 'georgia',
     color: '#213646',
     fontSize: 24,
-  },
-  wd_transcription: {
-    flex: 1,
-    flexDirection: 'row',
-    marginBottom: 5,
-  },
-  wd_transcription_text_i: {
-    fontFamily: 'georgia',
-    fontStyle: 'italic',
-    color: '#213646',
-    fontSize: 18,
-  },
-  wd_transcription_text: {
-    fontFamily: 'georgia',
-    color: '#213646',
-    fontSize: 20,
-    marginLeft: 7,
-  },
-  wd_translation: {
-    marginVertical: 10,
-  },
-  wd_translation_text: {
-    fontFamily: 'georgia',
-    color: '#213646',
-    fontSize: 17,
-  },
-  wd_translation_text_i: {
-    fontFamily: 'georgia',
-    fontStyle: 'italic',
-    fontSize: 18,
-    marginBottom: 7,
-    color: '#0f687e',
   },
   rank: {
     color: '#213646',
@@ -52,7 +20,40 @@ export const ResultStyles = StyleSheet.create({
     marginLeft: 3,
     fontSize: 11,
   },
-  img: {
+  ripple: {
+    color: '#d1d1d1',
+    borderless: true,
+    radius: 20,
+  },
+  flagButton: {
+    height: 35,
+    width: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  transcriptions: {
+    flex: 1,
+    flexDirection: 'row',
+    marginBottom: 5,
+  },
+  transcriptionWord: {
+    fontFamily: 'georgia',
+    color: '#213646',
+    fontSize: 18,
+  },
+  translation: {
+    fontFamily: 'georgia',
+    color: '#213646',
+    fontSize: 18,
+  },
+  translationItalic: {
+    fontFamily: 'georgia',
+    fontStyle: 'italic',
+    fontSize: 18,
+    marginBottom: 7,
+    color: '#0f687e',
+  },
+  image: {
     width: 14,
     height: 19,
     alignItems: 'center',

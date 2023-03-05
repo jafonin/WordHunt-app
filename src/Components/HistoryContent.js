@@ -33,7 +33,6 @@ class _renderHistory extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
-          console.log(temp);
         });
       });
     } catch (error) {
@@ -72,40 +71,22 @@ class _renderHistory extends PureComponent {
     const {transcription_uk} = item;
     const {en_id} = item;
     const {ru_id} = item;
-    if (transcription_uk || transcription_us) {
-      return (
-        <View key={id} style={styles.listItem}>
-          <Pressable
-            onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
-            android_ripple={{color: '#d1d1d1'}}
-            style={{flex: 1}}>
-            <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
-              <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                {transcription_us && <Text style={styles.text}> |{transcription_us}|</Text>}
-                <Text style={styles.text}> - {t_inline}</Text>
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-      );
-    } else {
-      return (
-        <View key={id} style={styles.listItem}>
-          <Pressable
-            onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
-            android_ripple={{color: '#d1d1d1'}}
-            style={{flex: 1}}>
-            <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
-              <Text>
-                <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-                <Text style={styles.text}> - {t_inline}</Text>
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-      );
-    }
+    return (
+      <View key={id} style={styles.listItem}>
+        <Pressable
+          onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
+          android_ripple={{color: '#d1d1d1'}}
+          style={{flex: 1}}>
+          <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
+            <Text style={{textAlignVertical: 'center'}}>
+              <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
+              {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
+              <Text style={styles.text}> - {t_inline}</Text>
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+    );
   };
   render() {
     return (

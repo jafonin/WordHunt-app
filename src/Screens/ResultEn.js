@@ -41,7 +41,6 @@ class ResultPage extends Component {
         },
       );
     });
-
     dbDic.transaction(tx => {
       tx.executeSql("SELECT * FROM dictionary WHERE word = '" + _word + "'", [], (tx, results) => {
         var dictionaryTemp = [];
@@ -50,13 +49,6 @@ class ResultPage extends Component {
       });
     });
   };
-
-  // updateDictionary(queryUpdate, t_inline) {
-  //   const {_word} = this.props;
-  //   dbDic.transaction(tx => {
-  //     tx.executeSql(queryUpdate, [_word, t_inline]);
-  //   });
-  // }
 
   onButtonPress(t_inline, transcription_us, transcription_uk) {
     const {_word} = this.props;
@@ -76,15 +68,59 @@ class ResultPage extends Component {
     }
   }
 
+  description(item) {
+    return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+      return (
+        <View key={index}>
+          {Object.values(word).map((translation, index) => {
+            return (
+              <View key={index} style={{marginVertical: 10}}>
+                <StyledText style={ResultStyles.translationItalic}>{translation.w}</StyledText>
+                <StyledText style={ResultStyles.translation}>
+                  {'- ' + translation.t.join('\n\n- ')}
+                </StyledText>
+              </View>
+            );
+          })}
+        </View>
+      );
+    });
+  }
+
+  transcriptions(item) {
+    return (
+      <View style={ResultStyles.transcriptions}>
+        <View>
+          {item.transcription_us !== null ? (
+            <Text>
+              <Text style={[ResultStyles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
+              <Text style={[ResultStyles.transcriptionWord, {marginLeft: 7}]}>
+                |{item.transcription_us}|
+              </Text>
+            </Text>
+          ) : null}
+          {item.transcription_uk !== null ? (
+            <Text>
+              <Text style={[ResultStyles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
+              <Text style={[ResultStyles.transcriptionWord, {marginLeft: 7}]}>
+                |{item.transcription_uk}|
+              </Text>
+            </Text>
+          ) : null}
+        </View>
+      </View>
+    );
+  }
+
   render() {
     const imgSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
-    const renderPage = this.state.data.map(item => (
-      <View key={item.id} style={ResultStyles.wd}>
-        <View style={ResultStyles.wd_title}>
+    const page = this.state.data.map(item => (
+      <View key={item.id} style={ResultStyles.body}>
+        <View style={ResultStyles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
-            <Text style={ResultStyles.wd_title_text}>
+            <Text style={ResultStyles.titleWord}>
               {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
             <Text style={ResultStyles.rank}>{item.rank}</Text>
@@ -93,52 +129,18 @@ class ResultPage extends Component {
             onPress={() =>
               this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
             }
-            android_ripple={{color: '#d1d1d1', borderless: true, radius: 20}}
-            style={{height: 35, width: 35, alignItems: 'center', justifyContent: 'center'}}>
-            <Image source={imgSource} style={ResultStyles.img} />
+            android_ripple={ResultStyles.ripple}
+            style={ResultStyles.flagButton}>
+            <Image source={imgSource} style={ResultStyles.image} />
           </Pressable>
         </View>
-        {item.transcription_us !== null || item.transcription_uk !== null ? (
-          <View style={ResultStyles.wd_transcription}>
-            <View>
-              {item.transcription_us !== null ? (
-                <Text>
-                  <Text style={ResultStyles.wd_transcription_text_i}>амер. </Text>
-                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_us}|</Text>
-                </Text>
-              ) : null}
-              {item.transcription_uk !== null ? (
-                <Text>
-                  <Text style={ResultStyles.wd_transcription_text_i}>брит. </Text>
-                  <Text style={ResultStyles.wd_transcription_text}>|{item.transcription_uk}|</Text>
-                </Text>
-              ) : null}
-            </View>
-          </View>
-        ) : null}
-        <View style={ResultStyles.wd_translation}>
-          <Text style={ResultStyles.wd_translation_text}>{item.t_inline}</Text>
+        {item.transcription_us !== null || item.transcription_uk !== null
+          ? this.transcriptions(item)
+          : null}
+        <View style={{marginVertical: 10}}>
+          <Text style={ResultStyles.translation}>{item.t_inline}</Text>
         </View>
-        <View>
-          {Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-            return (
-              <View key={index}>
-                {Object.values(word).map((translation, index) => {
-                  return (
-                    <View key={index} style={ResultStyles.wd_translation}>
-                      <StyledText style={ResultStyles.wd_translation_text_i}>
-                        {translation.w}
-                      </StyledText>
-                      <StyledText style={ResultStyles.wd_translation_text}>
-                        {'- ' + translation.t.join('\n\n- ')}
-                      </StyledText>
-                    </View>
-                  );
-                })}
-              </View>
-            );
-          })}
-        </View>
+        <View>{this.description(item)}</View>
       </View>
     ));
     return (
@@ -148,7 +150,7 @@ class ResultPage extends Component {
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           style={{backgroundColor: '#fff'}}>
-          {renderPage}
+          {page}
         </ScrollView>
       </View>
     );

@@ -26,17 +26,18 @@ export const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: '2%',
     width: '46%',
     height: '100%',
   },
   listItem: {
-    marginBottom: 14,
+    marginVertical: 4,
     // marginHorizontal: 18,
     flexDirection: 'row',
     flex: 1,
+    minHeight: 42,
   },
   text: {
     color: '#213646',
