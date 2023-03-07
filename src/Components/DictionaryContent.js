@@ -3,7 +3,7 @@ import React from 'react';
 import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {styles} from '../Styles/UserCollections';
+import {styles} from '../Styles/LightTheme/UserCollections';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});

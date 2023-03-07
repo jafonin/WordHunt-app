@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
-import {ResultStyles} from '../Styles/ResultScreen';
+import {ResultStyles} from '../Styles/LightTheme/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';

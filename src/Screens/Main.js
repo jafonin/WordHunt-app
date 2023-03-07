@@ -1,13 +1,14 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {mainStyles} from '../Styles/MainScreen';
-
+import {lightStyles} from '../Styles/LightTheme/MainScreen';
+import {darkStyles} from '../Styles/DarkTheme/MainScreen';
 import Header from '../Components/Header';
 
-function Main() {
+function Main({darkMode}) {
+  const mainStyles = darkMode ? darkStyles : lightStyles;
   return (
     <View style={mainStyles.body}>
-      <Header />
+      <Header darkMode={darkMode} />
       <View style={mainStyles.spacer}>
         <View>
           <Text style={mainStyles.title}>Англо-русский и русско-английский словарь</Text>

@@ -1,0 +1,47 @@
+import {StyleSheet} from 'react-native';
+
+export const styles = StyleSheet.create({
+  body: {
+    alignItems: 'center',
+  },
+  rectangle: {
+    height: 42,
+    width: '92%',
+    backgroundColor: '#ffefbe',
+    marginTop: 30,
+    borderRadius: 6,
+    flexDirection: 'row',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+  },
+  screenName: {
+    color: '#583627',
+    fontWeight: '700',
+    height: '100%',
+    textAlignVertical: 'center',
+    fontFamily: 'georgia',
+  },
+  button: {
+    flex: 1,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: '2%',
+    width: '46%',
+    height: '100%',
+  },
+  listItem: {
+    marginVertical: 4,
+    // marginHorizontal: 18,
+    flexDirection: 'row',
+    flex: 1,
+    minHeight: 42,
+  },
+  text: {
+    color: '#213646',
+    fontFamily: 'georgia',
+    fontSize: 17,
+  },
+});

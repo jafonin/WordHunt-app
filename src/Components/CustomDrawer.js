@@ -4,12 +4,10 @@ import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer'
 import {SafeAreaView} from 'react-native';
 import {Image} from 'react-native';
 
-const CustomDrawer = props => {
-  const [darkMode, setDarkMode] = useState(false);
+const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-  // console.log(darkMode);
   return (
     <SafeAreaView style={{flex: 1}}>
       <View

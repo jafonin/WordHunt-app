@@ -1,10 +1,10 @@
 import {StyleSheet} from 'react-native';
 
-export const Headerstyles = StyleSheet.create({
+export const darkStyles = StyleSheet.create({
   rectangle: {
     height: 85,
     width: '100%',
-    backgroundColor: '#1d415d',
+    backgroundColor: '#17344a',
     shadowColor: '#000000',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
@@ -22,7 +22,7 @@ export const Headerstyles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: '#242424',
     width: '78%',
     height: '70%',
     justifyContent: 'center',

@@ -1,16 +1,16 @@
 import {StyleSheet} from 'react-native';
 
-export const mainStyles = StyleSheet.create({
+export const darkStyles = StyleSheet.create({
   title: {
     fontSize: 18,
-    color: '#004150',
+    color: '#84c1c6',
     fontFamily: 'georgia',
     fontWeight: '800',
     marginBottom: 20,
   },
   description: {
     fontSize: 18,
-    color: '#1a1a1a',
+    color: '#f5f5f5',
     fontFamily: 'georgia',
     marginBottom: 13,
   },
@@ -20,7 +20,7 @@ export const mainStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   body: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1a1a1a',
     flex: 1,
   },
 });

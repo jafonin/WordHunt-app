@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
-import {styles} from '../Styles/UserCollections';
+import {styles} from '../Styles/LightTheme/UserCollections';
 import HistoryContent from '../Components/HistoryContent';
 import Header from '../Components/Header';
 

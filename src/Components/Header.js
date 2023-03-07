@@ -11,7 +11,8 @@ import {
   Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Headerstyles} from '../Styles/Header';
+import {lightStyles} from '../Styles/LightTheme/Header';
+import {darkStyles} from '../Styles/DarkTheme/Header';
 import {openDatabase} from 'react-native-sqlite-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -112,6 +113,7 @@ class Search extends PureComponent {
   };
 
   render() {
+    const Headerstyles = this.props.darkMode ? darkStyles : lightStyles;
     const {navigation} = this.props;
     const {inputProps} = this.props;
     return (
@@ -153,11 +155,12 @@ class Search extends PureComponent {
   }
 }
 
-export default function Header(props) {
+export default function Header({darkMode, ...props}) {
   const navigation = useNavigation();
   const inputProps = Platform.select({
     android: 'android',
     ios: 'ios',
   });
-  return <Search {...props} navigation={navigation} inputProps={inputProps} />;
+  console.log(darkMode);
+  return <Search {...props} navigation={navigation} inputProps={inputProps} darkMode={darkMode} />;
 }

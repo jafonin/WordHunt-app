@@ -8,16 +8,21 @@ import ResultEn from '../Screens/ResultEn';
 import ResultRu from '../Screens/ResultRu';
 import CustomDrawer from '../Components/CustomDrawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useState} from 'react';
 
 const Drawer = createDrawerNavigator();
 
 export const Navigation = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  const MainScreen = () => <Main darkMode={darkMode} />;
   return (
     <NavigationContainer>
       <Drawer.Navigator
         backBehavior="history"
         initialRouteName="Main"
-        drawerContent={props => <CustomDrawer {...props} />}
+        drawerContent={props => (
+          <CustomDrawer {...props} darkMode={darkMode} setDarkMode={setDarkMode} />
+        )}
         screenOptions={{
           drawerStyle: {backgroundColor: '#ffffef'},
           drawerLabelStyle: {fontSize: 16, fontFamily: 'georgia'},
@@ -28,15 +33,17 @@ export const Navigation = () => {
           drawerActiveTintColor: '#583627',
           drawerInactiveTintColor: '#583627',
         }}>
+        {/* {console.log(darkMode)} */}
         <Drawer.Screen
           name="Main"
-          component={Main}
+          component={MainScreen}
           options={{
             drawerLabel: 'Главная',
             drawerIcon: () => (
               <Icon name="home" size={24} style={{marginRight: -20, color: '#583627'}} />
             ),
           }}
+          // initialParams={{darkMode: darkMode}}
         />
         <Drawer.Screen
           name="History"
