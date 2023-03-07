@@ -1,10 +1,15 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import {View, Text, Pressable} from 'react-native';
+import React, {useState} from 'react';
 import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 import {SafeAreaView} from 'react-native';
 import {Image} from 'react-native';
 
 const CustomDrawer = props => {
+  const [darkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+  // console.log(darkMode);
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
@@ -19,6 +24,9 @@ const CustomDrawer = props => {
           shadowRadius: 6,
           elevation: 15,
         }}>
+        <Pressable onPress={toggleDarkMode}>
+          <Text style={{color: '#AAA', marginVertical: 20}}>Сменить тему</Text>
+        </Pressable>
         <Image
           source={require('../img/logo.png')}
           style={{width: 191, height: 24, marginBottom: 25, marginLeft: 15}}

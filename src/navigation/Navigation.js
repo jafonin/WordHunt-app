@@ -7,7 +7,7 @@ import Main from '../Screens/Main';
 import ResultEn from '../Screens/ResultEn';
 import ResultRu from '../Screens/ResultRu';
 import CustomDrawer from '../Components/CustomDrawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Drawer = createDrawerNavigator();
 
@@ -19,9 +19,7 @@ export const Navigation = () => {
         initialRouteName="Main"
         drawerContent={props => <CustomDrawer {...props} />}
         screenOptions={{
-          drawerStyle: {
-            backgroundColor: '#ffffef',
-          },
+          drawerStyle: {backgroundColor: '#ffffef'},
           drawerLabelStyle: {fontSize: 16, fontFamily: 'georgia'},
           drawerType: 'slide',
           swipeEdgeWidth: 60,
@@ -36,7 +34,7 @@ export const Navigation = () => {
           options={{
             drawerLabel: 'Главная',
             drawerIcon: () => (
-              <Icon name="home" size={22} style={{marginRight: -15, color: '#583627'}} />
+              <Icon name="home" size={24} style={{marginRight: -20, color: '#583627'}} />
             ),
           }}
         />
@@ -46,7 +44,7 @@ export const Navigation = () => {
           options={{
             drawerLabel: 'Вся история',
             drawerIcon: () => (
-              <Icon name="history" size={22} style={{marginRight: -15, color: '#583627'}} />
+              <Icon name="history" size={24} style={{marginRight: -20, color: '#583627'}} />
             ),
           }}
         />
@@ -56,7 +54,7 @@ export const Navigation = () => {
           options={{
             drawerLabel: 'Мой словарь',
             drawerIcon: () => (
-              <Icon name="book" size={22} style={{marginRight: -15, color: '#583627'}} />
+              <Icon name="book" size={24} style={{marginRight: -20, color: '#583627'}} />
             ),
           }}
         />
