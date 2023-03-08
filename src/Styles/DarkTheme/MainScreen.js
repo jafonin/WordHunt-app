@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export const darkStyles = StyleSheet.create({
   title: {
     fontSize: 18,
-    color: '#84c1c6',
+    color: '#6d93b0',
     fontFamily: 'georgia',
     fontWeight: '800',
     marginBottom: 20,

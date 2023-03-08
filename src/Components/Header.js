@@ -14,7 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {lightStyles} from '../Styles/LightTheme/Header';
 import {darkStyles} from '../Styles/DarkTheme/Header';
 import {openDatabase} from 'react-native-sqlite-storage';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 
@@ -86,30 +86,38 @@ class Search extends PureComponent {
     );
   };
 
-  _renderItem = ({item}) => {
+  renderItem = ({item}) => {
     const {word} = item;
     const {id} = item;
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
+    const Headerstyles = this.props.darkMode ? darkStyles : lightStyles;
     if (t_inline) {
       return (
-        <View key={id} style={Headerstyles.item}>
+        <View key={id}>
           <Pressable
             style={Headerstyles.itemButton}
             onPress={() => this.navigateOnPress(id, word)}
-            android_ripple={{color: '#d1d1d1'}}>
+            android_ripple={{color: '#888'}}>
             <View
-              style={{flexDirection: 'row', justifyContent: 'flex-start', marginHorizontal: 15}}>
-              <Icon name="search" size={20} style={{color: '#42291F', marginRight: 5}} />
-              <Text style={Headerstyles.itemText} numberOfLines={1}>
-                {word} - {t_inline}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                marginLeft: 15,
+                marginRight: 55,
+              }}>
+              <Icon name="search" size={24} style={Headerstyles.icon} />
+              <Text style={Headerstyles.itemText} numberOfLines={2}>
+                <Text style={{fontWeight: '900', color: Headerstyles.input.color}}>{word}</Text>
+                {' — '}
+                {t_inline}
               </Text>
             </View>
           </Pressable>
         </View>
       );
-    }
+    } else null;
   };
 
   render() {
@@ -121,12 +129,12 @@ class Search extends PureComponent {
         <View>
           <StatusBar translucent backgroundColor="transparent" />
           <View style={Headerstyles.rectangle}>
-            <View style={{flexDirection: 'row', alignItems: 'center', flex: 1, marginTop: 27}}>
+            <View style={Headerstyles.spacer}>
               <View style={Headerstyles.drawerButton}>
                 <Pressable
                   onPress={() => navigation.openDrawer()}
-                  style={{marginHorizontal: 10}}
-                  android_ripple={{color: '#87888a', borderless: true, radius: 20}}>
+                  style={{marginHorizontal: 8}}
+                  android_ripple={{color: '#888', borderless: true, radius: 20}}>
                   <Text style={Headerstyles.threeLines}>≡</Text>
                 </Pressable>
               </View>
@@ -144,9 +152,10 @@ class Search extends PureComponent {
               data={this.state.data}
               keyExtractor={item => item.id}
               windowSize={1}
-              renderItem={this._renderItem}
-              style={{height: '100%', marginTop: 20}}
-              keyboardShouldPersistTaps={'always'}
+              renderItem={this.renderItem}
+              style={{height: '100%', paddingVertical: 20, width: '100%'}}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
             />
           )}
         </View>

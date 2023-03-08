@@ -3,13 +3,14 @@ import {View, Text} from 'react-native';
 import {lightStyles} from '../Styles/LightTheme/MainScreen';
 import {darkStyles} from '../Styles/DarkTheme/MainScreen';
 import Header from '../Components/Header';
+import {ScrollView} from 'react-native';
 
 function Main({darkMode}) {
   const mainStyles = darkMode ? darkStyles : lightStyles;
   return (
     <View style={mainStyles.body}>
       <Header darkMode={darkMode} />
-      <View style={mainStyles.spacer}>
+      <ScrollView style={mainStyles.spacer}>
         <View>
           <Text style={mainStyles.title}>Англо-русский и русско-английский словарь</Text>
         </View>
@@ -21,7 +22,7 @@ function Main({darkMode}) {
           <Text style={mainStyles.description}>Около 5 000 000 примеров употребления слов</Text>
           <Text style={mainStyles.description}>Фразовые глаголы и формы слов.</Text>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
