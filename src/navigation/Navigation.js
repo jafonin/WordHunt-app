@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import History from '../Screens/History';
@@ -9,11 +9,31 @@ import ResultRu from '../Screens/ResultRu';
 import CustomDrawer from '../Components/CustomDrawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 
 export const Navigation = () => {
   const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    async function getTheme() {
+      try {
+        const theme = await AsyncStorage.getItem('theme');
+        if (theme !== null) {
+          setDarkMode(JSON.parse(theme));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getTheme();
+  }, []);
+
+  const drawerStyle = darkMode
+    ? {backgroudColor: '#242424', TintColor: '#fff3d6'}
+    : {backgroudColor: '#ffffef', TintColor: '#583627'};
+
   const MainScreen = () => <Main darkMode={darkMode} />;
   return (
     <NavigationContainer>
@@ -24,26 +44,28 @@ export const Navigation = () => {
           <CustomDrawer {...props} darkMode={darkMode} setDarkMode={setDarkMode} />
         )}
         screenOptions={{
-          drawerStyle: {backgroundColor: '#ffffef'},
+          drawerStyle: {backgroundColor: drawerStyle.backgroudColor},
           drawerLabelStyle: {fontSize: 16, fontFamily: 'georgia'},
           drawerType: 'slide',
           swipeEdgeWidth: 60,
           headerShown: false,
-          drawerActiveBackgroundColor: '#ffffef',
-          drawerActiveTintColor: '#583627',
-          drawerInactiveTintColor: '#583627',
+          drawerActiveBackgroundColor: drawerStyle.backgroudColor,
+          drawerActiveTintColor: drawerStyle.TintColor,
+          drawerInactiveTintColor: drawerStyle.TintColor,
         }}>
-        {/* {console.log(darkMode)} */}
         <Drawer.Screen
           name="Main"
           component={MainScreen}
           options={{
             drawerLabel: 'Главная',
             drawerIcon: () => (
-              <Icon name="home" size={24} style={{marginRight: -20, color: '#583627'}} />
+              <Icon
+                name="home"
+                size={24}
+                style={{marginRight: -20, color: drawerStyle.TintColor}}
+              />
             ),
           }}
-          // initialParams={{darkMode: darkMode}}
         />
         <Drawer.Screen
           name="History"
@@ -51,7 +73,11 @@ export const Navigation = () => {
           options={{
             drawerLabel: 'Вся история',
             drawerIcon: () => (
-              <Icon name="history" size={24} style={{marginRight: -20, color: '#583627'}} />
+              <Icon
+                name="history"
+                size={24}
+                style={{marginRight: -20, color: drawerStyle.TintColor}}
+              />
             ),
           }}
         />
@@ -61,7 +87,11 @@ export const Navigation = () => {
           options={{
             drawerLabel: 'Мой словарь',
             drawerIcon: () => (
-              <Icon name="book" size={24} style={{marginRight: -20, color: '#583627'}} />
+              <Icon
+                name="book"
+                size={24}
+                style={{marginRight: -20, color: drawerStyle.TintColor}}
+              />
             ),
           }}
         />

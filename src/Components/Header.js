@@ -170,6 +170,5 @@ export default function Header({darkMode, ...props}) {
     android: 'android',
     ios: 'ios',
   });
-  console.log(darkMode);
   return <Search {...props} navigation={navigation} inputProps={inputProps} darkMode={darkMode} />;
 }

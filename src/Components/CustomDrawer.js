@@ -3,27 +3,33 @@ import React, {useState} from 'react';
 import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 import {SafeAreaView} from 'react-native';
 import {Image} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  const toggleDarkMode = async () => {
+    try {
+      await AsyncStorage.setItem('theme', JSON.stringify(!darkMode));
+      setDarkMode(!darkMode);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
         style={{
           height: 160,
-          backgroundColor: '#1d415d',
+          backgroundColor: darkMode ? '#17344a' : '#1d415d',
           justifyContent: 'flex-end',
           marginBottom: -10,
-          shadowColor: '#000000',
+          shadowColor: darkMode ? '#888' : '#000000',
           shadowOffset: {width: 0, height: 6},
           shadowOpacity: 0.5,
           shadowRadius: 6,
           elevation: 15,
         }}>
         <Pressable onPress={toggleDarkMode}>
-          <Text style={{color: '#AAA', marginVertical: 20}}>Сменить тему</Text>
+          <Text style={{color: '#888', margin: 20}}>Сменить тему</Text>
         </Pressable>
         <Image
           source={require('../img/logo.png')}
