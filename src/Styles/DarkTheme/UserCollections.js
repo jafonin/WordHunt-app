@@ -1,7 +1,12 @@
 import {StyleSheet} from 'react-native';
+import {defaultDark} from '../Default';
 
-export const styles = StyleSheet.create({
+export const darkStyles = StyleSheet.create({
   body: {
+    flex: 1,
+    backgroundColor: defaultDark.backgroundColor,
+  },
+  spacer: {
     alignItems: 'center',
   },
   rectangle: {
@@ -40,7 +45,7 @@ export const styles = StyleSheet.create({
     minHeight: 42,
   },
   text: {
-    color: '#213646',
+    color: defaultDark.fontColor,
     fontFamily: 'georgia',
     fontSize: 17,
   },

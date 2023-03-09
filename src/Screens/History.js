@@ -1,17 +1,21 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
-import {styles} from '../Styles/LightTheme/UserCollections';
+import {lightStyles} from '../Styles/LightTheme/UserCollections';
+import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import HistoryContent from '../Components/HistoryContent';
 import Header from '../Components/Header';
+import {useNavigation} from '@react-navigation/native';
 
-export default function History({navigation}) {
+export default function History({darkMode}) {
+  const navigation = useNavigation();
   const onPressHandler = () => {
     navigation.jumpTo('Dictionary');
   };
+  const styles = darkMode ? darkStyles : lightStyles;
   return (
-    <View style={{flex: 1, backgroundColor: '#fff'}}>
-      <Header />
-      <View style={styles.body}>
+    <View style={styles.body}>
+      <Header darkMode={darkMode} />
+      <View style={styles.spacer}>
         <View style={styles.rectangle}>
           <Pressable
             style={[styles.button, {backgroundColor: '#ffdca9', borderRadius: 6}]}
@@ -26,7 +30,7 @@ export default function History({navigation}) {
           </Pressable>
         </View>
       </View>
-      <HistoryContent />
+      <HistoryContent darkMode={darkMode} />
     </View>
   );
 }

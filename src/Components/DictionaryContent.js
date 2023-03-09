@@ -3,7 +3,8 @@ import React from 'react';
 import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {styles} from '../Styles/LightTheme/UserCollections';
+import {lightStyles} from '../Styles/LightTheme/UserCollections';
+import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
@@ -73,6 +74,7 @@ class _renderDictionary extends PureComponent {
     const {t_inline} = item;
     const {transcription_us} = item;
     const {transcription_uk} = item;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
@@ -107,8 +109,15 @@ class _renderDictionary extends PureComponent {
   }
 }
 
-export default function DictionaryContent(props) {
+export default function DictionaryContent({darkMode, ...props}) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  return <_renderDictionary {...props} isFocused={isFocused} navigation={navigation} />;
+  return (
+    <_renderDictionary
+      {...props}
+      isFocused={isFocused}
+      navigation={navigation}
+      darkMode={darkMode}
+    />
+  );
 }

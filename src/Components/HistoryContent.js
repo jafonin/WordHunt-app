@@ -3,7 +3,9 @@ import React from 'react';
 import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {styles} from '../Styles/LightTheme/UserCollections';
+import {lightStyles} from '../Styles/LightTheme/UserCollections';
+import {darkStyles} from '../Styles/DarkTheme/UserCollections';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
@@ -71,17 +73,30 @@ class _renderHistory extends PureComponent {
     const {transcription_uk} = item;
     const {en_id} = item;
     const {ru_id} = item;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
           onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
           android_ripple={{color: '#d1d1d1'}}
           style={{flex: 1}}>
-          <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
-            <Text style={{textAlignVertical: 'center'}}>
-              <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-              {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
-              <Text style={styles.text}> - {t_inline}</Text>
+          <View style={{flexDirection: 'row', flex: 1, marginLeft: 12, marginRight: 55}}>
+            <Icon
+              name="history"
+              size={26}
+              style={{color: '#c7c7c7', textAlignVertical: 'center'}}
+            />
+            <Text
+              style={{
+                textAlignVertical: 'center',
+                marginLeft: 15,
+                width: '100%',
+              }}>
+              <Text style={styles.text}>{word}</Text>
+              {transcription_us ? (
+                <Text style={[styles.text, {color: '#eee'}]}> |{transcription_us}|</Text>
+              ) : null}
+              <Text style={[styles.text, {color: '#888'}]}> - {t_inline}</Text>
             </Text>
           </View>
         </Pressable>
@@ -104,8 +119,10 @@ class _renderHistory extends PureComponent {
   }
 }
 
-export default function HistoryContent(props) {
+export default function HistoryContent({darkMode, ...props}) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  return <_renderHistory {...props} isFocused={isFocused} navigation={navigation} />;
+  return (
+    <_renderHistory {...props} isFocused={isFocused} navigation={navigation} darkMode={darkMode} />
+  );
 }

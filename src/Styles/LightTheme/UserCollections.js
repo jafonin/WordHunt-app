@@ -1,7 +1,8 @@
 import {StyleSheet} from 'react-native';
 
-export const styles = StyleSheet.create({
-  body: {
+export const lightStyles = StyleSheet.create({
+  body: {flex: 1, backgroundColor: '#fff'},
+  spacer: {
     alignItems: 'center',
   },
   rectangle: {

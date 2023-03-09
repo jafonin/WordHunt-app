@@ -6,21 +6,21 @@ import Header from '../Components/Header';
 import {ScrollView} from 'react-native';
 
 function Main({darkMode}) {
-  const mainStyles = darkMode ? darkStyles : lightStyles;
+  const styles = darkMode ? darkStyles : lightStyles;
   return (
-    <View style={mainStyles.body}>
+    <View style={styles.body}>
       <Header darkMode={darkMode} />
-      <ScrollView style={mainStyles.spacer}>
+      <ScrollView style={styles.spacer}>
         <View>
-          <Text style={mainStyles.title}>Англо-русский и русско-английский словарь</Text>
+          <Text style={styles.title}>Англо-русский и русско-английский словарь</Text>
         </View>
         <View>
-          <Text style={mainStyles.description}>125 000 статей англо-русского словаря</Text>
-          <Text style={mainStyles.description}>Английская и британская озвучка слов</Text>
-          <Text style={mainStyles.description}>Транскрипции</Text>
-          <Text style={mainStyles.description}>Частотность употребления слова</Text>
-          <Text style={mainStyles.description}>Около 5 000 000 примеров употребления слов</Text>
-          <Text style={mainStyles.description}>Фразовые глаголы и формы слов.</Text>
+          <Text style={styles.description}>125 000 статей англо-русского словаря</Text>
+          <Text style={styles.description}>Английская и британская озвучка слов</Text>
+          <Text style={styles.description}>Транскрипции</Text>
+          <Text style={styles.description}>Частотность употребления слова</Text>
+          <Text style={styles.description}>Около 5 000 000 примеров употребления слов</Text>
+          <Text style={styles.description}>Фразовые глаголы и формы слов.</Text>
         </View>
       </ScrollView>
     </View>

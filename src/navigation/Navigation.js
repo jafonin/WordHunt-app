@@ -35,6 +35,8 @@ export const Navigation = () => {
     : {backgroudColor: '#ffffef', TintColor: '#583627'};
 
   const MainScreen = () => <Main darkMode={darkMode} />;
+  const HistoryScreen = () => <History darkMode={darkMode} />;
+  const DictionaryScreen = () => <Dictionary darkMode={darkMode} />;
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -69,7 +71,7 @@ export const Navigation = () => {
         />
         <Drawer.Screen
           name="History"
-          component={History}
+          component={HistoryScreen}
           options={{
             drawerLabel: 'Вся история',
             drawerIcon: () => (
@@ -83,7 +85,7 @@ export const Navigation = () => {
         />
         <Drawer.Screen
           name="Dictionary"
-          component={Dictionary}
+          component={DictionaryScreen}
           options={{
             drawerLabel: 'Мой словарь',
             drawerIcon: () => (
