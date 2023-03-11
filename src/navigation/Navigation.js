@@ -92,7 +92,7 @@ export const Navigation = () => {
             drawerLabel: 'Мой словарь',
             drawerIcon: () => (
               <Icon
-                name="book"
+                name="bookmark"
                 size={24}
                 style={{marginRight: -20, color: drawerStyle.TintColor}}
               />

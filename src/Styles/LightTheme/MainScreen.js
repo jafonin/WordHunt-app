@@ -1,17 +1,18 @@
 import {StyleSheet} from 'react-native';
+import {defaultLight} from '../Global';
 
 export const lightStyles = StyleSheet.create({
   title: {
     fontSize: 18,
     color: '#004150',
-    fontFamily: 'georgia',
+    fontFamily: defaultLight.fontFamily,
     fontWeight: '800',
     marginBottom: 20,
   },
   description: {
     fontSize: 18,
     color: '#1a1a1a',
-    fontFamily: 'georgia',
+    fontFamily: defaultLight.fontFamily,
     marginBottom: 13,
   },
   spacer: {
@@ -20,7 +21,7 @@ export const lightStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   body: {
-    backgroundColor: '#fff',
+    backgroundColor: defaultLight.backgroundColor,
     flex: 1,
   },
 });

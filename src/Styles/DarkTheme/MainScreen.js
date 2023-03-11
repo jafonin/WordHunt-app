@@ -1,17 +1,18 @@
 import {StyleSheet} from 'react-native';
+import {defaultDark} from '../Global';
 
 export const darkStyles = StyleSheet.create({
   title: {
     fontSize: 18,
     color: '#6d93b0',
-    fontFamily: 'georgia',
+    fontFamily: defaultDark.fontFamily,
     fontWeight: '800',
     marginBottom: 20,
   },
   description: {
     fontSize: 18,
-    color: '#f5f5f5',
-    fontFamily: 'georgia',
+    color: defaultDark.fontColor,
+    fontFamily: defaultDark.fontFamily,
     marginBottom: 13,
   },
   spacer: {
@@ -20,7 +21,7 @@ export const darkStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   body: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: defaultDark.backgroundColor,
     flex: 1,
   },
 });

@@ -24,11 +24,10 @@ export const lightStyles = StyleSheet.create({
     fontWeight: '700',
     height: '100%',
     textAlignVertical: 'center',
-    fontFamily: 'georgia',
+    fontFamily: defaultLight.fontFamily,
   },
   button: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: '2%',
     width: '46%',
@@ -36,6 +35,10 @@ export const lightStyles = StyleSheet.create({
   },
   ripple: {
     color: defaultLight.rippleColor,
+  },
+  icon: {
+    color: defaultLight.fontColor,
+    textAlignVertical: 'center',
   },
   listItem: {
     marginVertical: 4,
@@ -45,8 +48,18 @@ export const lightStyles = StyleSheet.create({
     minHeight: 42,
   },
   text: {
-    color: '#213646',
-    fontFamily: 'georgia',
+    color: defaultLight.fontColor,
+    fontFamily: defaultLight.fontFamily,
+    fontSize: 17,
+  },
+  transcription: {
+    color: defaultLight.fontColor,
+    fontFamily: defaultLight.fontFamily,
+    fontSize: 17,
+  },
+  translation: {
+    color: defaultLight.fontColor,
+    fontFamily: defaultLight.fontFamily,
     fontSize: 17,
   },
 });

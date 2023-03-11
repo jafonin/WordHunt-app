@@ -5,6 +5,7 @@ import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
@@ -78,14 +79,21 @@ class _renderDictionary extends PureComponent {
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
+          style={{justifyContent: 'center', marginHorizontal: 15}}
+          android_ripple={{color: styles.ripple.color, borderless: true, radius: 20}}>
+          <Icon name="bookmark" size={24} style={[styles.icon]} />
+        </Pressable>
+        <Pressable
           onPress={() => this.navigateOnPress(word, id)}
           android_ripple={styles.ripple}
           style={{flex: 1}}>
-          <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
-            <Text style={{textAlignVertical: 'center'}}>
-              <Text style={[styles.text, {textDecorationLine: 'underline'}]}>{word}</Text>
-              {transcription_us ? <Text style={styles.text}> |{transcription_us}|</Text> : null}
-              <Text style={styles.text}> - {t_inline}</Text>
+          <View style={{flexDirection: 'row', flex: 1, marginRight: 15}}>
+            <Text style={{textAlignVertical: 'center', width: '100%'}}>
+              <Text style={styles.text}>{word}</Text>
+              {transcription_us ? (
+                <Text style={styles.transcription}> |{transcription_us}|</Text>
+              ) : null}
+              <Text style={styles.translation}> - {t_inline}</Text>
             </Text>
           </View>
         </Pressable>
@@ -100,7 +108,6 @@ class _renderDictionary extends PureComponent {
           data={this.state.data}
           keyExtractor={item => item.id}
           renderItem={this._renderItem}
-          style={{}}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
         />

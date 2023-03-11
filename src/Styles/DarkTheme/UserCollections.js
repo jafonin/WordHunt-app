@@ -27,11 +27,10 @@ export const darkStyles = StyleSheet.create({
     fontWeight: '700',
     height: '100%',
     textAlignVertical: 'center',
-    fontFamily: 'georgia',
+    fontFamily: defaultDark.fontFamily,
   },
   button: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: '2%',
     width: '46%',
@@ -39,6 +38,10 @@ export const darkStyles = StyleSheet.create({
   },
   ripple: {
     color: defaultDark.rippleColor,
+  },
+  icon: {
+    color: '#c7c7c7',
+    textAlignVertical: 'center',
   },
   listItem: {
     marginVertical: 4,
@@ -49,7 +52,17 @@ export const darkStyles = StyleSheet.create({
   },
   text: {
     color: defaultDark.fontColor,
-    fontFamily: 'georgia',
+    fontFamily: defaultDark.fontFamily,
+    fontSize: 17,
+  },
+  transcription: {
+    color: defaultDark.fontColor,
+    fontFamily: defaultDark.fontFamily,
+    fontSize: 17,
+  },
+  translation: {
+    color: '#aaa',
+    fontFamily: defaultDark.fontFamily,
     fontSize: 17,
   },
 });

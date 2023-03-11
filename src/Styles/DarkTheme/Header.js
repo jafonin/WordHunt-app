@@ -17,7 +17,7 @@ export const darkStyles = StyleSheet.create({
   threeLines: lightStyles.threeLines,
   drawerButton: lightStyles.drawerButton,
   input: {
-    backgroundColor: '#242424',
+    backgroundColor: defaultDark.backgroundColor,
     width: '80%',
     height: '70%',
     justifyContent: 'center',
@@ -26,7 +26,7 @@ export const darkStyles = StyleSheet.create({
     paddingHorizontal: 15,
     fontFamily: 'georgia',
     fontSize: 16,
-    color: '#f5f5f5',
+    color: defaultDark.fontColor,
   },
   itemButton: lightStyles.itemButton,
   itemText: [

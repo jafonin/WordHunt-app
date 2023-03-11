@@ -80,23 +80,14 @@ class _renderHistory extends PureComponent {
           onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
           android_ripple={styles.ripple}
           style={{flex: 1}}>
-          <View style={{flexDirection: 'row', flex: 1, marginLeft: 12, marginRight: 55}}>
-            <Icon
-              name="history"
-              size={26}
-              style={{color: '#c7c7c7', textAlignVertical: 'center'}}
-            />
-            <Text
-              style={{
-                textAlignVertical: 'center',
-                marginLeft: 15,
-                width: '100%',
-              }}>
+          <View style={{flexDirection: 'row', flex: 1, marginLeft: 15, marginRight: 55}}>
+            <Icon name="history" size={26} style={styles.icon} />
+            <Text style={{textAlignVertical: 'center', marginLeft: 15, width: '100%'}}>
               <Text style={styles.text}>{word}</Text>
               {transcription_us ? (
-                <Text style={[styles.text, {color: '#eee'}]}> |{transcription_us}|</Text>
+                <Text style={styles.transcription}> |{transcription_us}|</Text>
               ) : null}
-              <Text style={[styles.text, {color: '#888'}]}> - {t_inline}</Text>
+              <Text style={styles.translation}> - {t_inline}</Text>
             </Text>
           </View>
         </Pressable>

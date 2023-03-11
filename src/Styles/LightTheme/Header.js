@@ -33,7 +33,7 @@ export const lightStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: defaultLight.backgroundColor,
     width: '80%',
     height: '70%',
     justifyContent: 'center',
