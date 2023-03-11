@@ -1,7 +1,12 @@
 import {StyleSheet} from 'react-native';
+import {defaultLight} from '../Global';
 
-export const ResultStyles = StyleSheet.create({
+export const lightStyles = StyleSheet.create({
   body: {
+    flex: 1,
+    backgroundColor: defaultLight.backgroundColor,
+  },
+  spacer: {
     marginTop: 30,
     marginHorizontal: 25,
   },
@@ -10,18 +15,18 @@ export const ResultStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   titleWord: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.fontColor,
     fontSize: 24,
   },
   rank: {
-    color: '#213646',
+    color: defaultLight.fontColor,
     lineHeight: 16,
     marginLeft: 3,
     fontSize: 11,
   },
   ripple: {
-    color: '#d1d1d1',
+    color: defaultLight.rippleColor,
     borderless: true,
     radius: 20,
   },
@@ -37,21 +42,21 @@ export const ResultStyles = StyleSheet.create({
     marginBottom: 5,
   },
   transcriptionWord: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.fontColor,
     fontSize: 18,
   },
   translation: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.fontColor,
     fontSize: 18,
   },
   translationItalic: {
-    fontFamily: 'georgia',
+    fontFamily: defaultLight.fontFamily,
     fontStyle: 'italic',
     fontSize: 18,
     marginBottom: 7,
-    color: '#0f687e',
+    color: defaultLight.blueFont,
   },
   image: {
     width: 14,

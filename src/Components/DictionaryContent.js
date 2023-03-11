@@ -79,7 +79,7 @@ class _renderDictionary extends PureComponent {
       <View key={id} style={styles.listItem}>
         <Pressable
           onPress={() => this.navigateOnPress(word, id)}
-          android_ripple={{color: '#d1d1d1'}}
+          android_ripple={styles.ripple}
           style={{flex: 1}}>
           <View style={{flexDirection: 'row', flex: 1, marginHorizontal: 18}}>
             <Text style={{textAlignVertical: 'center'}}>

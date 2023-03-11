@@ -1,7 +1,12 @@
 import {StyleSheet} from 'react-native';
+import {defaultDark} from '../Global';
 
-export const ResultStyles = StyleSheet.create({
+export const darkStyles = StyleSheet.create({
   body: {
+    flex: 1,
+    backgroundColor: defaultDark.backgroundColor,
+  },
+  spacer: {
     marginTop: 30,
     marginHorizontal: 25,
   },
@@ -10,18 +15,18 @@ export const ResultStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   titleWord: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.fontColor,
     fontSize: 24,
   },
   rank: {
-    color: '#213646',
+    color: defaultDark.fontColor,
     lineHeight: 16,
     marginLeft: 3,
     fontSize: 11,
   },
   ripple: {
-    color: '#d1d1d1',
+    color: defaultDark.rippleColor,
     borderless: true,
     radius: 20,
   },
@@ -37,21 +42,21 @@ export const ResultStyles = StyleSheet.create({
     marginBottom: 5,
   },
   transcriptionWord: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.fontColor,
     fontSize: 18,
   },
   translation: {
-    fontFamily: 'georgia',
-    color: '#213646',
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.fontColor,
     fontSize: 18,
   },
   translationItalic: {
-    fontFamily: 'georgia',
+    fontFamily: defaultDark.fontFamily,
     fontStyle: 'italic',
     fontSize: 18,
-    marginBottom: 7,
-    color: '#0f687e',
+    marginBottom: 10,
+    color: defaultDark.lightBlueFont,
   },
   image: {
     width: 14,

@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {defaultDark} from '../Default';
+import {defaultDark} from '../Global';
 
 export const darkStyles = StyleSheet.create({
   body: {
@@ -36,6 +36,9 @@ export const darkStyles = StyleSheet.create({
     paddingHorizontal: '2%',
     width: '46%',
     height: '100%',
+  },
+  ripple: {
+    color: defaultDark.rippleColor,
   },
   listItem: {
     marginVertical: 4,

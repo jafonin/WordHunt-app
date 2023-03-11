@@ -1,11 +1,13 @@
 import React, {PureComponent} from 'react';
 import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
-import {ResultStyles} from '../Styles/LightTheme/ResultScreen';
+import {lightStyles} from '../Styles/LightTheme/ResultScreen';
+import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
+import {useRoute} from '@react-navigation/native';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -120,7 +122,7 @@ class ResultPage extends PureComponent {
     }
   }
 
-  renderLemma(lemma) {
+  renderLemma(lemma, ResultStyles) {
     return (
       <View>
         <Text style={ResultStyles.translation}>Смотрите также: {lemma}</Text>
@@ -129,6 +131,7 @@ class ResultPage extends PureComponent {
   }
 
   render() {
+    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
     const imgSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
@@ -152,7 +155,9 @@ class ResultPage extends PureComponent {
         <View style={{marginTop: 10, marginBottom: 20}}>
           <Text style={ResultStyles.translation}>{item.t_inline}</Text>
         </View>
-        {item.lemma !== item.word && item.lemma !== '' ? this.renderLemma(item.lemma) : null}
+        {item.lemma !== item.word && item.lemma !== ''
+          ? this.renderLemma(item.lemma, ResultStyles)
+          : null}
       </View>
     ));
 
@@ -226,13 +231,10 @@ class ResultPage extends PureComponent {
     });
 
     return (
-      <View style={{flex: 1}}>
-        <Header />
-        <ScrollView
-          keyboardDismissMode="on-drag"
-          keyboardShouldPersistTaps="handled"
-          style={{backgroundColor: '#fff'}}>
-          <View style={[ResultStyles.body, {flex: 1}]}>
+      <View style={ResultStyles.body}>
+        <Header darkMode={this.props.darkMode} />
+        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+          <View style={[ResultStyles.spacer]}>
             {renderTitle}
             {renderBodySectionOne}
             <View style={{marginTop: 35}}>
@@ -248,8 +250,9 @@ class ResultPage extends PureComponent {
   }
 }
 
-export default function ResultRu({route, props}) {
+export default function ResultRu({darkMode, ...props}) {
+  const route = useRoute();
   const {word} = route.params;
   const {id} = route.params;
-  return <ResultPage {...props} _word={word} _id={id} />;
+  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} />;
 }

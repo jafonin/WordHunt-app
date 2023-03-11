@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {lightStyles} from '../LightTheme/Header';
+import {defaultDark} from '../Global';
 
 export const darkStyles = StyleSheet.create({
   rectangle: [
@@ -9,6 +10,9 @@ export const darkStyles = StyleSheet.create({
       shadowColor: '#888',
     },
   ],
+  ripple: {
+    color: defaultDark.rippleColor,
+  },
   spacer: lightStyles.spacer,
   threeLines: lightStyles.threeLines,
   drawerButton: lightStyles.drawerButton,
@@ -28,7 +32,7 @@ export const darkStyles = StyleSheet.create({
   itemText: [
     lightStyles.itemText,
     {
-      color: '#969696',
+      color: '#aaaaaa',
     },
   ],
   icon: [

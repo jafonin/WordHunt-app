@@ -6,7 +6,6 @@ import {
   FlatList,
   Keyboard,
   SafeAreaView,
-  StatusBar,
   TextInput,
   Platform,
 } from 'react-native';
@@ -99,7 +98,7 @@ class Search extends PureComponent {
           <Pressable
             style={Headerstyles.itemButton}
             onPress={() => this.navigateOnPress(id, word)}
-            android_ripple={{color: '#888'}}>
+            android_ripple={Headerstyles.ripple}>
             <View
               style={{
                 flexDirection: 'row',
@@ -125,41 +124,38 @@ class Search extends PureComponent {
     const {navigation} = this.props;
     const {inputProps} = this.props;
     return (
-      <SafeAreaView>
-        <View>
-          <StatusBar translucent backgroundColor="transparent" />
-          <View style={Headerstyles.rectangle}>
-            <View style={Headerstyles.spacer}>
-              <View style={Headerstyles.drawerButton}>
-                <Pressable
-                  onPress={() => navigation.openDrawer()}
-                  style={{marginHorizontal: 8}}
-                  android_ripple={{color: '#888', borderless: true, radius: 20}}>
-                  <Text style={Headerstyles.threeLines}>≡</Text>
-                </Pressable>
-              </View>
-              <TextInput
-                placeholder="Поиск по словарю"
-                placeholderTextColor="#888"
-                style={Headerstyles.input}
-                value={this.state.searchValue}
-                onChangeText={text => this.handleSearch(text)}
-              />
+      <View>
+        <View style={[Headerstyles.rectangle]}>
+          <View style={Headerstyles.spacer}>
+            <View style={Headerstyles.drawerButton}>
+              <Pressable
+                onPress={() => navigation.openDrawer()}
+                style={{marginHorizontal: 8}}
+                android_ripple={{color: '#888', borderless: true, radius: 20}}>
+                <Text style={Headerstyles.threeLines}>≡</Text>
+              </Pressable>
             </View>
-          </View>
-          {this.state.searching && (
-            <FlatList
-              data={this.state.data}
-              keyExtractor={item => item.id}
-              windowSize={1}
-              renderItem={this.renderItem}
-              style={{height: '100%', paddingVertical: 20, width: '100%'}}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="on-drag"
+            <TextInput
+              placeholder="Поиск по словарю"
+              placeholderTextColor="#888"
+              style={Headerstyles.input}
+              value={this.state.searchValue}
+              onChangeText={text => this.handleSearch(text)}
             />
-          )}
+          </View>
         </View>
-      </SafeAreaView>
+        {this.state.searching && (
+          <FlatList
+            data={this.state.data}
+            keyExtractor={item => item.id}
+            windowSize={1}
+            renderItem={this.renderItem}
+            style={{height: '100%', paddingVertical: 20, width: '100%'}}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          />
+        )}
+      </View>
     );
   }
 }

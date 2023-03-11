@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useRoute} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import History from '../Screens/History';
 import Dictionary from '../Screens/Dictionary';
@@ -37,6 +37,8 @@ export const Navigation = () => {
   const MainScreen = () => <Main darkMode={darkMode} />;
   const HistoryScreen = () => <History darkMode={darkMode} />;
   const DictionaryScreen = () => <Dictionary darkMode={darkMode} />;
+  const ResultEnScreen = () => <ResultEn darkMode={darkMode} />;
+  const ResultRuScreen = () => <ResultRu darkMode={darkMode} />;
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -99,12 +101,12 @@ export const Navigation = () => {
         />
         <Drawer.Screen
           name="ResultEn"
-          component={ResultEn}
+          component={ResultEnScreen}
           options={{drawerItemStyle: {display: 'none'}}}
         />
         <Drawer.Screen
           name="ResultRu"
-          component={ResultRu}
+          component={ResultRuScreen}
           options={{drawerItemStyle: {display: 'none'}}}
         />
       </Drawer.Navigator>

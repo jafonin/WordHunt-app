@@ -1,21 +1,26 @@
+import {StatusBar} from 'react-native';
 import {StyleSheet} from 'react-native';
+import {defaultLight} from '../Global';
 
 export const lightStyles = StyleSheet.create({
   rectangle: {
-    height: 85,
+    height: StatusBar.currentHeight + 55,
     width: '100%',
     backgroundColor: '#1d415d',
     shadowColor: '#000000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 6,
     elevation: 15,
+  },
+  ripple: {
+    color: defaultLight.rippleColor,
   },
   spacer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    marginTop: 27,
+    marginTop: StatusBar.currentHeight,
   },
   threeLines: {
     textAlign: 'center',

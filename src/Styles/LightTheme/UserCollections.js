@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {defaultLight} from '../Global';
 
 export const lightStyles = StyleSheet.create({
   body: {flex: 1, backgroundColor: '#fff'},
@@ -32,6 +33,9 @@ export const lightStyles = StyleSheet.create({
     paddingHorizontal: '2%',
     width: '46%',
     height: '100%',
+  },
+  ripple: {
+    color: defaultLight.rippleColor,
   },
   listItem: {
     marginVertical: 4,

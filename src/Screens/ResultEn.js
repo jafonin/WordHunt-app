@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {Text, View, Image, Pressable} from 'react-native';
-import Header from '../Components/Header';
-import {ResultStyles} from '../Styles/LightTheme/ResultScreen';
+import {useRoute} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {ScrollView} from 'react-native-gesture-handler';
+import {Text, View, Image, Pressable, ScrollView} from 'react-native';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
+import Header from '../Components/Header';
+import {lightStyles} from '../Styles/LightTheme/ResultScreen';
+import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -68,26 +69,28 @@ class ResultPage extends Component {
     }
   }
 
-  description(item) {
-    return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+  renderDescription(word, ResultStyles) {
+    return Object.values(word).map((translation, index) => {
       return (
-        <View key={index}>
-          {Object.values(word).map((translation, index) => {
-            return (
-              <View key={index} style={{marginVertical: 10}}>
-                <StyledText style={ResultStyles.translationItalic}>{translation.w}</StyledText>
-                <StyledText style={ResultStyles.translation}>
-                  {'- ' + translation.t.join('\n\n- ')}
-                </StyledText>
-              </View>
-            );
-          })}
+        <View key={index} style={{marginVertical: 15}}>
+          <StyledText style={ResultStyles.translationItalic}>{translation.w}</StyledText>
+          <StyledText style={ResultStyles.translation}>
+            {'- ' + translation.t.join('\n\n- ')}
+          </StyledText>
         </View>
       );
     });
   }
 
+  description(item) {
+    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
+    return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+      return <View key={index}>{this.renderDescription(word, ResultStyles)}</View>;
+    });
+  }
+
   transcriptions(item) {
+    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View style={ResultStyles.transcriptions}>
         <View>
@@ -113,11 +116,12 @@ class ResultPage extends Component {
   }
 
   render() {
+    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
     const imgSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
     const page = this.state.data.map(item => (
-      <View key={item.id} style={ResultStyles.body}>
+      <View key={item.id} style={ResultStyles.spacer}>
         <View style={ResultStyles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={ResultStyles.titleWord}>
@@ -144,12 +148,9 @@ class ResultPage extends Component {
       </View>
     ));
     return (
-      <View style={{flex: 1}}>
-        <Header />
-        <ScrollView
-          keyboardDismissMode="on-drag"
-          keyboardShouldPersistTaps="handled"
-          style={{backgroundColor: '#fff'}}>
+      <View style={ResultStyles.body}>
+        <Header darkMode={this.props.darkMode} />
+        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           {page}
         </ScrollView>
       </View>
@@ -157,8 +158,9 @@ class ResultPage extends Component {
   }
 }
 
-export default function ResultEn({route, props}) {
+export default function ResultEn({darkMode, ...props}) {
+  const route = useRoute();
   const {word} = route.params;
   const {id} = route.params;
-  return <ResultPage {...props} _word={word} _id={id} />;
+  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} />;
 }

@@ -78,7 +78,7 @@ class _renderHistory extends PureComponent {
       <View key={id} style={styles.listItem}>
         <Pressable
           onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
-          android_ripple={{color: '#d1d1d1'}}
+          android_ripple={styles.ripple}
           style={{flex: 1}}>
           <View style={{flexDirection: 'row', flex: 1, marginLeft: 12, marginRight: 55}}>
             <Icon
