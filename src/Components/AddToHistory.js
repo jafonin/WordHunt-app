@@ -12,7 +12,7 @@ export const setData = async (
   let currentDate = new Date().toLocaleDateString();
   let currentTime = new Date().toLocaleTimeString();
   let currentTimeDate = currentTime + ',' + currentDate;
-  console.log(currentTimeDate);
+  // console.log(currentTimeDate);
   let en_ru_id = /[A-Za-z]/.test(word) ? 'en_id' : 'ru_id';
   try {
     await dbHistory.transaction(async tx => {

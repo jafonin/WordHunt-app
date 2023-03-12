@@ -85,6 +85,10 @@ class Search extends PureComponent {
     );
   };
 
+  clearSearchField = () => {
+    return this.setState({searchValue: null, searching: false, data: []});
+  };
+
   renderItem = ({item}) => {
     const {word} = item;
     const {id} = item;
@@ -135,16 +139,30 @@ class Search extends PureComponent {
                 <Text style={Headerstyles.threeLines}>≡</Text>
               </Pressable>
             </View>
-            <TextInput
-              placeholder="Поиск по словарю"
-              placeholderTextColor="#888"
-              style={Headerstyles.input}
-              value={this.state.searchValue}
-              onChangeText={text => this.handleSearch(text)}
-            />
+            <View style={Headerstyles.inputBackgroud}>
+              <TextInput
+                placeholder="Поиск по словарю"
+                placeholderTextColor="#888"
+                style={Headerstyles.input}
+                value={this.state.searchValue}
+                onChangeText={text => this.handleSearch(text)}
+              />
+              <Pressable
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => this.clearSearchField()}>
+                <Icon
+                  name={this.state.searching ? 'clear' : 'search'}
+                  size={24}
+                  style={Headerstyles.clearButton}
+                />
+              </Pressable>
+            </View>
           </View>
         </View>
-        {this.state.searching && (
+        {this.state.searching ? (
           <FlatList
             data={this.state.data}
             keyExtractor={item => item.id}
@@ -154,7 +172,7 @@ class Search extends PureComponent {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           />
-        )}
+        ) : null}
       </View>
     );
   }

@@ -34,8 +34,7 @@ export const lightStyles = StyleSheet.create({
   },
   input: {
     backgroundColor: defaultLight.backgroundColor,
-    width: '80%',
-    height: '70%',
+    width: '90%',
     justifyContent: 'center',
     alignContent: 'center',
     borderRadius: 5,
@@ -43,6 +42,17 @@ export const lightStyles = StyleSheet.create({
     paddingHorizontal: 15,
     fontFamily: 'georgia',
     fontSize: 16,
+  },
+  inputBackgroud: {
+    width: '80%',
+    height: '70%',
+    alignContent: 'center',
+    backgroundColor: defaultLight.backgroundColor,
+    flexDirection: 'row',
+    borderRadius: 6,
+  },
+  clearButton: {
+    color: defaultLight.fontColor,
   },
   itemButton: {
     height: 55,

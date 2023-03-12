@@ -18,15 +18,25 @@ export const darkStyles = StyleSheet.create({
   drawerButton: lightStyles.drawerButton,
   input: {
     backgroundColor: defaultDark.backgroundColor,
-    width: '80%',
-    height: '70%',
+    width: '90%',
     justifyContent: 'center',
     alignContent: 'center',
     borderRadius: 5,
     paddingHorizontal: 15,
-    fontFamily: 'georgia',
+    fontFamily: defaultDark.fontFamily,
     fontSize: 16,
     color: defaultDark.fontColor,
+  },
+  inputBackgroud: {
+    width: '80%',
+    height: '70%',
+    alignContent: 'center',
+    backgroundColor: defaultDark.backgroundColor,
+    flexDirection: 'row',
+    borderRadius: 6,
+  },
+  clearButton: {
+    color: defaultDark.grayFont,
   },
   itemButton: lightStyles.itemButton,
   itemText: [

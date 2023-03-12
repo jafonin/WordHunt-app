@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useIsFocused} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {Text, View, Image, Pressable, ScrollView} from 'react-native';
 import StyledText from 'react-native-styled-text';
@@ -23,7 +23,7 @@ class ResultPage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps._word !== this.props._word) {
+    if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
       this.setState({data: [], inDictionary: false});
       this.fetchData(this.props._id, this.props._word);
     }
@@ -162,5 +162,6 @@ export default function ResultEn({darkMode, ...props}) {
   const route = useRoute();
   const {word} = route.params;
   const {id} = route.params;
-  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} />;
+  const isFocused = useIsFocused();
+  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} isFocused={isFocused} />;
 }

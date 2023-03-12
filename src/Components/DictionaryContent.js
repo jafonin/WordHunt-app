@@ -1,5 +1,5 @@
 import {useNavigation, useIsFocused} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
@@ -13,7 +13,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderDictionary extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: []};
+    this.state = {data: [], items: null};
   }
 
   componentDidMount() {
@@ -24,6 +24,9 @@ class _renderDictionary extends PureComponent {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
     }
+    // if (prevProps.isFocused !== this.props.isFocused && prevState.data !== this.state.data) {
+    //   this.fetchData();
+    // }
   }
 
   fetchData() {
@@ -69,6 +72,14 @@ class _renderDictionary extends PureComponent {
     );
   };
 
+  deleteFromDictionary = (word, {item}) => {
+    const newItems = this.state.data.filter(i => i.id !== item.id);
+    this.setState({data: newItems});
+    return dbDic.transaction(tx => {
+      tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
+    });
+  };
+
   _renderItem = ({item}) => {
     const {word} = item;
     const {id} = item;
@@ -79,15 +90,10 @@ class _renderDictionary extends PureComponent {
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
-          style={{justifyContent: 'center', marginHorizontal: 15}}
-          android_ripple={{color: styles.ripple.color, borderless: true, radius: 20}}>
-          <Icon name="bookmark" size={24} style={[styles.icon]} />
-        </Pressable>
-        <Pressable
           onPress={() => this.navigateOnPress(word, id)}
           android_ripple={styles.ripple}
           style={{flex: 1}}>
-          <View style={{flexDirection: 'row', flex: 1, marginRight: 15}}>
+          <View style={{flexDirection: 'row', flex: 1, marginLeft: 25}}>
             <Text style={{textAlignVertical: 'center', width: '100%'}}>
               <Text style={styles.text}>{word}</Text>
               {transcription_us ? (
@@ -96,6 +102,12 @@ class _renderDictionary extends PureComponent {
               <Text style={styles.translation}> - {t_inline}</Text>
             </Text>
           </View>
+        </Pressable>
+        <Pressable
+          onPress={() => this.deleteFromDictionary(word, {item})}
+          style={{justifyContent: 'center', marginLeft: 5, marginRight: 15}}
+          android_ripple={{color: styles.ripple.color, borderless: true, radius: 20}}>
+          <Icon name="delete" size={24} style={[styles.icon]} />
         </Pressable>
       </View>
     );

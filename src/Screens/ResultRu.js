@@ -7,7 +7,7 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useIsFocused} from '@react-navigation/native';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -20,6 +20,7 @@ class ResultPage extends PureComponent {
       ruEnDicSectionOne: [],
       ruEnDicSectionTwo: [],
       inDictionary: false,
+      isRendered: false,
     };
   }
 
@@ -34,7 +35,7 @@ class ResultPage extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps._word !== this.props._word) {
+    if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
       this.setState({
         ruEnWordData: [],
         ruEnDicSectionOne: [],
@@ -107,7 +108,7 @@ class ResultPage extends PureComponent {
 
   onButtonPress(t_inline) {
     const {_word} = this.props;
-    this.setState({inDictionary: !this.state.inDictionary});
+    // this.isImageRed(!this.state.inDictionary);
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
         tx.executeSql('INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)', [
@@ -120,7 +121,12 @@ class ResultPage extends PureComponent {
         tx.executeSql("DELETE FROM dictionary WHERE word = '" + _word + "'", []);
       });
     }
+    this.setState({inDictionary: !this.state.inDictionary});
   }
+
+  // isImageRed(inDictionary) {
+  //   return;
+  // }
 
   renderLemma(lemma, ResultStyles) {
     return (
@@ -254,5 +260,7 @@ export default function ResultRu({darkMode, ...props}) {
   const route = useRoute();
   const {word} = route.params;
   const {id} = route.params;
-  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} />;
+  const isFocused = useIsFocused();
+
+  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} isFocused={isFocused} />;
 }
