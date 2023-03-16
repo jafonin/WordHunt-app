@@ -161,9 +161,9 @@ class ResultPage extends PureComponent {
         <View style={{marginTop: 10, marginBottom: 20}}>
           <Text style={ResultStyles.translation}>{item.t_inline}</Text>
         </View>
-        {item.lemma !== item.word && item.lemma !== ''
-          ? this.renderLemma(item.lemma, ResultStyles)
-          : null}
+        {item.lemma !== item.word &&
+          item.lemma !== '' &&
+          this.renderLemma(item.lemma, ResultStyles)}
       </View>
     ));
 
@@ -184,37 +184,33 @@ class ResultPage extends PureComponent {
                 )}
               </Text>
             </Pressable>
-            <Text>
-              {Object.values(itemTr.l).map((word, index) => {
-                const _length = itemTr.l.length;
-                return (
-                  <View key={index} style={{flexDirection: 'row', flex: 1}}>
-                    <Pressable>
-                      <Text>
-                        <StyledText
-                          style={[ResultStyles.translation, {textDecorationLine: 'underline'}]}>
-                          {index + 1 !== _length || _length !== 0 ? word : word}
-                        </StyledText>
-                        <Text style={ResultStyles.translation}>
-                          {index + 1 !== _length || (_length !== 0 && itemTr.w.length) ? ', ' : ''}
-                        </Text>
+            {itemTr.l.map((word, index) => {
+              const _length = itemTr.l.length;
+              return (
+                <View key={index} style={{flexDirection: 'row', flex: 1}}>
+                  <Pressable>
+                    <Text>
+                      <StyledText
+                        style={[ResultStyles.translation, {textDecorationLine: 'underline'}]}>
+                        {index + 1 !== _length || _length !== 0 ? word : word}
+                      </StyledText>
+                      <Text style={ResultStyles.translation}>
+                        {index + 1 !== _length || (_length !== 0 && itemTr.w.length) ? ', ' : ''}
                       </Text>
-                    </Pressable>
-                  </View>
-                );
-              })}
-            </Text>
-            <Text>
-              {Object.values(itemTr.w).map((word, index) => {
-                return (
-                  <View key={index} style={{flexDirection: 'row', flex: 1}}>
-                    <StyledText style={ResultStyles.translation}>
-                      {index + 1 !== itemTr.w.length ? word + ', ' : word}
-                    </StyledText>
-                  </View>
-                );
-              })}
-            </Text>
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })}
+            {itemTr.w.map((word, index) => {
+              return (
+                <View key={index} style={{flexDirection: 'row', flex: 1}}>
+                  <StyledText style={ResultStyles.translation}>
+                    {index + 1 !== itemTr.w.length ? word + ', ' : word}
+                  </StyledText>
+                </View>
+              );
+            })}
           </Text>
         </View>
       );
@@ -222,7 +218,7 @@ class ResultPage extends PureComponent {
 
     const renderBodySectionOne = this.state.ruEnDicSectionOne.map((item, index) => {
       return (
-        <View key={index} style={{flex: 1, flexDirection: 'row'}}>
+        <View key={`${item.id}-${index}`} style={{flex: 1, flexDirection: 'row'}}>
           <RenderSection item={item} />
         </View>
       );
@@ -230,7 +226,7 @@ class ResultPage extends PureComponent {
 
     const renderBodySectionTwo = this.state.ruEnDicSectionTwo.map((item, index) => {
       return (
-        <View key={index} style={{flexDirection: 'row', flex: 1}}>
+        <View key={`${item.id}-${index}`} style={{flexDirection: 'row', flex: 1}}>
           <RenderSection item={item} />
         </View>
       );

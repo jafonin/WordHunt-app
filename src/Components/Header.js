@@ -36,7 +36,7 @@ class Search extends PureComponent {
       this.setState({searching: false, data: []});
     }
     this.setState({searchValue: text});
-    this.fetchData(text);
+    this.fetchData(text.trim());
   }
 
   fetchData = async searchValue => {
@@ -123,6 +123,8 @@ class Search extends PureComponent {
     } else null;
   };
 
+  keyExtractor = item => item.id.toString();
+
   render() {
     const Headerstyles = this.props.darkMode ? darkStyles : lightStyles;
     const {navigation} = this.props;
@@ -143,9 +145,11 @@ class Search extends PureComponent {
               <TextInput
                 placeholder="Поиск по словарю"
                 placeholderTextColor="#888"
+                returnKeyType="search"
                 style={Headerstyles.input}
                 value={this.state.searchValue}
                 onChangeText={text => this.handleSearch(text)}
+                // onKeyPress={() => console.log(this.state.searchValue)}
               />
               <Pressable
                 style={{
@@ -165,7 +169,7 @@ class Search extends PureComponent {
         {this.state.searching ? (
           <FlatList
             data={this.state.data}
-            keyExtractor={item => item.id}
+            keyExtractor={this.keyExtractor}
             windowSize={1}
             renderItem={this.renderItem}
             style={{height: '100%', paddingVertical: 20, width: '100%'}}

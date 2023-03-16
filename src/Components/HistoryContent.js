@@ -6,6 +6,7 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useCallback} from 'react';
 
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
@@ -66,13 +67,7 @@ class _renderHistory extends PureComponent {
   };
 
   _renderItem = ({item}) => {
-    const {word} = item;
-    const {id} = item;
-    const {t_inline} = item;
-    const {transcription_us} = item;
-    const {transcription_uk} = item;
-    const {en_id} = item;
-    const {ru_id} = item;
+    const {id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id} = item;
     const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View key={id} style={styles.listItem}>
@@ -94,16 +89,21 @@ class _renderHistory extends PureComponent {
       </View>
     );
   };
+
+  keyExtractor = item => item.id.toString();
+
   render() {
     return (
       <View style={{flex: 1}}>
         <FlatList
           contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
-          keyExtractor={item => item.id}
+          keyExtractor={this.keyExtractor}
           renderItem={this._renderItem}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
+          initialNumToRender={20}
+          windowSize={13}
         />
       </View>
     );
