@@ -8,6 +8,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import {useRoute, useIsFocused} from '@react-navigation/native';
+import {ActivityIndicator} from 'react-native';
 
 const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -20,7 +21,7 @@ class ResultPage extends PureComponent {
       ruEnDicSectionOne: [],
       ruEnDicSectionTwo: [],
       inDictionary: false,
-      isRendered: false,
+      isLoading: true,
     };
   }
 
@@ -30,6 +31,7 @@ class ResultPage extends PureComponent {
       ruEnDicSectionOne: [],
       ruEnDicSectionTwo: [],
       inDictionary: false,
+      isLoading: true,
     });
     this.fetchData(this.props._id, this.props._word);
   }
@@ -41,6 +43,7 @@ class ResultPage extends PureComponent {
         ruEnDicSectionOne: [],
         ruEnDicSectionTwo: [],
         inDictionary: false,
+        isLoading: true,
       });
       this.fetchData(this.props._id, this.props._word);
     }
@@ -84,10 +87,12 @@ class ResultPage extends PureComponent {
           this.setState({
             ruEnDicSectionOne: sectionOne,
             ruEnDicSectionTwo: sectionTwo,
+            isLoading: false,
           });
         } else {
           this.setState({
             ruEnDicSectionOne: temp,
+            isLoading: false,
           });
         }
       });
@@ -108,7 +113,6 @@ class ResultPage extends PureComponent {
 
   onButtonPress(t_inline) {
     const {_word} = this.props;
-    // this.isImageRed(!this.state.inDictionary);
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
         tx.executeSql('INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)', [
@@ -123,10 +127,6 @@ class ResultPage extends PureComponent {
     }
     this.setState({inDictionary: !this.state.inDictionary});
   }
-
-  // isImageRed(inDictionary) {
-  //   return;
-  // }
 
   renderLemma(lemma, ResultStyles) {
     return (
@@ -144,6 +144,7 @@ class ResultPage extends PureComponent {
 
     const renderTitle = this.state.ruEnWordData.map(item => (
       <View key={item.id}>
+        {/* {this.setState({isLoading: true})} */}
         <View style={ResultStyles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={ResultStyles.titleWord}>
@@ -220,6 +221,7 @@ class ResultPage extends PureComponent {
       return (
         <View key={`${item.id}-${index}`} style={{flex: 1, flexDirection: 'row'}}>
           <RenderSection item={item} />
+          {/* {this.setState({isLoading: false})} */}
         </View>
       );
     });
@@ -231,22 +233,34 @@ class ResultPage extends PureComponent {
         </View>
       );
     });
-
     return (
       <View style={ResultStyles.body}>
         <Header darkMode={this.props.darkMode} />
-        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
-          <View style={[ResultStyles.spacer]}>
-            {renderTitle}
-            {renderBodySectionOne}
-            <View style={{marginTop: 35}}>
-              <Text style={ResultStyles.translationItalic}>
-                Родственные слова, либо редко употребляемые в данном значении
-              </Text>
+        {this.state.isLoading ? (
+          <ActivityIndicator
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+            size="large"
+            color="#007AFF"
+          />
+        ) : (
+          <ScrollView
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            style={{flex: 1}}>
+            <View style={[ResultStyles.spacer]}>
+              {renderTitle}
+              {renderBodySectionOne}
+              {this.state.ruEnDicSectionTwo.length > 0 && (
+                <View style={{marginTop: 35}}>
+                  <Text style={ResultStyles.translationItalic}>
+                    Родственные слова, либо редко употребляемые в данном значении
+                  </Text>
+                </View>
+              )}
+              {renderBodySectionTwo}
             </View>
-            {renderBodySectionTwo}
-          </View>
-        </ScrollView>
+          </ScrollView>
+        )}
       </View>
     );
   }

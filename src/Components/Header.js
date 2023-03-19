@@ -78,11 +78,10 @@ class Search extends PureComponent {
 
   navigateOnPress = (id, word) => {
     const {navigation} = this.props;
-    return (
-      navigation.jumpTo(this.state.goTo, {word: word, id: id}),
-      this.setState({searching: false, searchValue: null, data: []}),
-      Keyboard.dismiss()
-    );
+    return this.setState({searching: false, searchValue: null, data: []}, () => {
+      // Keyboard.dismiss();
+      navigation.jumpTo(this.state.goTo, {word: word, id: id});
+    });
   };
 
   clearSearchField = () => {
