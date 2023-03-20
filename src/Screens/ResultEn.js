@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {Text, View, Image, Pressable, ScrollView} from 'react-native';
+import {Text, View, Image, Pressable, ScrollView, Keyboard} from 'react-native';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import Header from '../Components/Header';
@@ -24,6 +24,7 @@ class ResultPage extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
+      Keyboard.dismiss();
       this.setState({data: [], inDictionary: false});
       this.fetchData(this.props._id, this.props._word);
     }

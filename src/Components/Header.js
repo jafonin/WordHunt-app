@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TextInput,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {lightStyles} from '../Styles/LightTheme/Header';
@@ -78,10 +79,13 @@ class Search extends PureComponent {
 
   navigateOnPress = (id, word) => {
     const {navigation} = this.props;
-    return this.setState({searching: false, searchValue: null, data: []}, () => {
+    const {goTo} = this.state;
+    return (
+      this.setState({searching: false, searchValue: null, data: []}),
       // Keyboard.dismiss();
-      navigation.jumpTo(this.state.goTo, {word: word, id: id});
-    });
+      // this.dismissKeyboard();
+      navigation.jumpTo(goTo, {word: word, id: id})
+    );
   };
 
   clearSearchField = () => {
@@ -123,6 +127,7 @@ class Search extends PureComponent {
   };
 
   keyExtractor = item => item.id.toString();
+  dismissKeyboard = () => Keyboard.dismiss();
 
   render() {
     const Headerstyles = this.props.darkMode ? darkStyles : lightStyles;
@@ -166,6 +171,7 @@ class Search extends PureComponent {
           </View>
         </View>
         {this.state.searching ? (
+          // <TouchableWithoutFeedback onPress={() => this.dismissKeyboard()}>
           <FlatList
             data={this.state.data}
             keyExtractor={this.keyExtractor}
@@ -175,7 +181,8 @@ class Search extends PureComponent {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           />
-        ) : null}
+        ) : // </TouchableWithoutFeedback>
+        null}
       </View>
     );
   }

@@ -62,6 +62,7 @@ export const Navigation = () => {
           component={MainScreen}
           options={{
             drawerLabel: 'Главная',
+
             drawerIcon: () => (
               <Icon
                 name="home"

@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {Text, View, Image, Pressable} from 'react-native';
+import {Text, View, Image, Pressable, Keyboard} from 'react-native';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
@@ -27,21 +27,22 @@ class ResultPage extends PureComponent {
 
   componentDidMount() {
     this.setState({
-      ruEnWordData: [],
-      ruEnDicSectionOne: [],
-      ruEnDicSectionTwo: [],
+      // ruEnWordData: [],
+      // ruEnDicSectionOne: [],
+      // ruEnDicSectionTwo: [],
       inDictionary: false,
-      isLoading: true,
+      // isLoading: true,
     });
     this.fetchData(this.props._id, this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
+      Keyboard.dismiss();
       this.setState({
-        ruEnWordData: [],
-        ruEnDicSectionOne: [],
-        ruEnDicSectionTwo: [],
+        // ruEnWordData: [],
+        // ruEnDicSectionOne: [],
+        // ruEnDicSectionTwo: [],
         inDictionary: false,
         isLoading: true,
       });
@@ -51,7 +52,7 @@ class ResultPage extends PureComponent {
 
   fetchData = async (_id, _word) => {
     var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
-    var wordId = 0;
+    // var wordId = 0;
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         var temp = [];
@@ -73,28 +74,16 @@ class ResultPage extends PureComponent {
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
         let temp = [];
-
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
-        if (temp[temp.length - 1].section == 2) {
-          let sectionTwo = [];
-          for (let i = temp.length - 1; temp[i].section == 2; --i) {
-            sectionTwo.push(temp[i]);
-          }
-          let sectionOne = temp.slice(0, -sectionTwo.length);
-          sectionTwo = sectionTwo.reverse();
-          this.setState({
-            ruEnDicSectionOne: sectionOne,
-            ruEnDicSectionTwo: sectionTwo,
-            isLoading: false,
-          });
-        } else {
-          this.setState({
-            ruEnDicSectionOne: temp,
-            isLoading: false,
-          });
-        }
+        let sectionOne = temp.filter(item => item.section === 1);
+        let sectionTwo = temp.filter(item => item.section === 2);
+        this.setState({
+          ruEnDicSectionOne: sectionOne,
+          ruEnDicSectionTwo: sectionTwo,
+          isLoading: false,
+        });
       });
     });
 
