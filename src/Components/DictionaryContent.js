@@ -66,6 +66,7 @@ class _renderDictionary extends PureComponent {
     } catch (error) {
       console.log(error);
     }
+
     return (
       navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
       this.setState({data: []})
@@ -122,7 +123,7 @@ class _renderDictionary extends PureComponent {
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
           initialNumToRender={20}
-          windowSize={13}
+          windowSize={7}
         />
       </View>
     );

@@ -48,14 +48,12 @@ class Search extends PureComponent {
           "FROM en_ru_word WHERE t_mix IS NOT NULL AND t_inline IS NOT NULL AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
-        // var db = dbEn;
         this.setState({goTo: 'ResultEn'});
       } else {
         var query =
           "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE t_inline IS NOT '' AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
-        // var db = dbRu;
         this.setState({goTo: 'ResultRu'});
       }
       try {
@@ -80,11 +78,8 @@ class Search extends PureComponent {
   navigateOnPress = (id, word) => {
     const {navigation} = this.props;
     const {goTo} = this.state;
-    return (
-      this.setState({searching: false, searchValue: null, data: []}),
-      // Keyboard.dismiss();
-      // this.dismissKeyboard();
-      navigation.jumpTo(goTo, {word: word, id: id})
+    return this.setState({searching: false, searchValue: null, data: []}, () =>
+      navigation.jumpTo(goTo, {word: word, id: id}),
     );
   };
 
@@ -104,7 +99,10 @@ class Search extends PureComponent {
         <View key={id}>
           <Pressable
             style={Headerstyles.itemButton}
-            onPress={() => this.navigateOnPress(id, word)}
+            onPress={() => {
+              Keyboard.dismiss();
+              this.navigateOnPress(id, word);
+            }}
             android_ripple={Headerstyles.ripple}>
             <View
               style={{
@@ -127,7 +125,6 @@ class Search extends PureComponent {
   };
 
   keyExtractor = item => item.id.toString();
-  dismissKeyboard = () => Keyboard.dismiss();
 
   render() {
     const Headerstyles = this.props.darkMode ? darkStyles : lightStyles;
@@ -171,7 +168,6 @@ class Search extends PureComponent {
           </View>
         </View>
         {this.state.searching ? (
-          // <TouchableWithoutFeedback onPress={() => this.dismissKeyboard()}>
           <FlatList
             data={this.state.data}
             keyExtractor={this.keyExtractor}
@@ -181,8 +177,7 @@ class Search extends PureComponent {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           />
-        ) : // </TouchableWithoutFeedback>
-        null}
+        ) : null}
       </View>
     );
   }

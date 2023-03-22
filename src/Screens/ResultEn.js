@@ -18,15 +18,15 @@ class ResultPage extends Component {
   }
 
   componentDidMount() {
-    this.setState({data: [], inDictionary: false});
+    this.setState({data: []});
     this.fetchData(this.props._id, this.props._word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
-      Keyboard.dismiss();
-      this.setState({data: [], inDictionary: false});
-      this.fetchData(this.props._id, this.props._word);
+      this.fetchData(this.props._id, this.props._word, () =>
+        this.setState({data: [], inDictionary: false}),
+      );
     }
   }
 
@@ -43,12 +43,16 @@ class ResultPage extends Component {
         },
       );
     });
-    dbDic.transaction(tx => {
-      tx.executeSql("SELECT * FROM dictionary WHERE word = '" + _word + "'", [], (tx, results) => {
-        var dictionaryTemp = [];
-        dictionaryTemp.push(results.rows.item(0));
-        dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
-      });
+    await dbDic.transaction(async tx => {
+      await tx.executeSql(
+        "SELECT * FROM dictionary WHERE word = '" + _word + "'",
+        [],
+        (tx, results) => {
+          var dictionaryTemp = [];
+          dictionaryTemp.push(results.rows.item(0));
+          dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
+        },
+      );
     });
   };
 

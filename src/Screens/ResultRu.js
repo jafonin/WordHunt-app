@@ -38,7 +38,7 @@ class ResultPage extends PureComponent {
 
   componentDidUpdate(prevProps) {
     if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
-      Keyboard.dismiss();
+      // Keyboard.dismiss();
       this.setState({
         // ruEnWordData: [],
         // ruEnDicSectionOne: [],
@@ -51,18 +51,18 @@ class ResultPage extends PureComponent {
   }
 
   fetchData = async (_id, _word) => {
-    var ruEnWordQuery = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
+    let ruEnWordQuery = "SELECT * FROM ru_en_word WHERE word = '" + _word + "'";
     // var wordId = 0;
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
-        var temp = [];
+        let temp = [];
         temp.push(results.rows.item(0));
         this.setState({ruEnWordData: temp});
         setData(_word, temp[0].t_inline, _id);
       });
     });
 
-    var ruEnWordDicQuery =
+    let ruEnWordDicQuery =
       'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.id, en_ru_word.transcription_us ' +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
@@ -92,7 +92,7 @@ class ResultPage extends PureComponent {
         "SELECT * FROM dictionary WHERE word = '" + _word + "'",
         [],
         (tx, results) => {
-          var dictionaryTemp = [];
+          let dictionaryTemp = [];
           dictionaryTemp.push(results.rows.item(0));
           dictionaryTemp[0].word.length > 0 ? this.setState({inDictionary: true}) : null;
         },
@@ -100,11 +100,12 @@ class ResultPage extends PureComponent {
     });
   };
 
-  onButtonPress(t_inline) {
+  onButtonPress(id, t_inline) {
     const {_word} = this.props;
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
-        tx.executeSql('INSERT OR IGNORE INTO dictionary (word, t_inline) VALUES (?,?)', [
+        tx.executeSql('INSERT OR IGNORE INTO dictionary (id, word, t_inline) VALUES (?,?,?)', [
+          id,
           _word,
           t_inline,
         ]);
@@ -142,7 +143,7 @@ class ResultPage extends PureComponent {
             <Text style={ResultStyles.rank}>{item.rank}</Text>
           </View>
           <Pressable
-            onPress={() => this.onButtonPress(item.t_inline)}
+            onPress={() => this.onButtonPress(item.id, item.t_inline)}
             android_ripple={ResultStyles.ripple}
             style={ResultStyles.flagButton}>
             <Image source={imgSource} style={ResultStyles.image} />

@@ -20,7 +20,7 @@ class _renderHistory extends PureComponent {
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
     }
@@ -103,7 +103,7 @@ class _renderHistory extends PureComponent {
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
           initialNumToRender={20}
-          windowSize={13}
+          windowSize={7}
         />
       </View>
     );
