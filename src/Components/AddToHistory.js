@@ -9,10 +9,6 @@ export const setData = async (
   transcription_us = null,
   transcription_uk = null,
 ) => {
-  let currentDate = new Date().toLocaleDateString();
-  let currentTime = new Date().toLocaleTimeString();
-  let currentTimeDate = currentTime + ',' + currentDate;
-  // console.log(currentTimeDate);
   let en_ru_id = /[A-Za-z]/.test(word) ? 'en_id' : 'ru_id';
   try {
     await dbHistory.transaction(async tx => {
@@ -24,7 +20,7 @@ export const setData = async (
       );
       await tx.executeSql(
         "UPDATE History SET time = '" +
-          currentTimeDate.toLowerCase() +
+          Math.floor(Date.now() / 1000) +
           "' WHERE word = '" +
           word.toLowerCase() +
           "'",

@@ -19,33 +19,32 @@ class ResultPage extends Component {
 
   componentDidMount() {
     this.setState({data: []});
-    this.fetchData(this.props._id, this.props._word);
+    this.fetchData(this.props.id, this.props.word);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps._word !== this.props._word || prevProps.isFocused !== this.props.isFocused) {
-      this.fetchData(this.props._id, this.props._word, () =>
-        this.setState({data: [], inDictionary: false}),
-      );
+    if (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) {
+      this.setState({data: [], inDictionary: false});
+      this.fetchData(this.props.id, this.props.word);
     }
   }
 
-  fetchData = async (_id, _word) => {
+  fetchData = async (id, word) => {
     await db.transaction(async tx => {
       await tx.executeSql(
-        "SELECT * FROM en_ru_word WHERE word = '" + _word + "'",
+        "SELECT * FROM en_ru_word WHERE word = '" + word + "'",
         [],
         (tx, results) => {
           var temp = [];
           temp.push(results.rows.item(0));
           this.setState({data: temp});
-          setData(_word, temp[0].t_inline, _id, temp[0].transcription_us);
+          setData(word, temp[0].t_inline, id, temp[0].transcription_us);
         },
       );
     });
     await dbDic.transaction(async tx => {
       await tx.executeSql(
-        "SELECT * FROM dictionary WHERE word = '" + _word + "'",
+        "SELECT * FROM dictionary WHERE word = '" + word + "'",
         [],
         (tx, results) => {
           var dictionaryTemp = [];
@@ -57,21 +56,20 @@ class ResultPage extends Component {
   };
 
   onButtonPress(t_inline, transcription_us, transcription_uk) {
-    const {_word} = this.props;
-    // var toggle = !this.state.inDictionary;
-    this.setState({inDictionary: !this.state.inDictionary});
+    const {word} = this.props;
     if (!this.state.inDictionary) {
       dbDic.transaction(tx => {
         tx.executeSql(
           'INSERT OR IGNORE INTO dictionary (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
-          [_word, t_inline, transcription_us, transcription_uk],
+          [word, t_inline, transcription_us, transcription_uk],
         );
       });
     } else {
       dbDic.transaction(tx => {
-        tx.executeSql("DELETE FROM dictionary WHERE word = '" + _word + "'", []);
+        tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
       });
     }
+    this.setState({inDictionary: !this.state.inDictionary});
   }
 
   renderDescription(word, ResultStyles) {
@@ -168,5 +166,5 @@ export default function ResultEn({darkMode, ...props}) {
   const {word} = route.params;
   const {id} = route.params;
   const isFocused = useIsFocused();
-  return <ResultPage {...props} _word={word} _id={id} darkMode={darkMode} isFocused={isFocused} />;
+  return <ResultPage {...props} word={word} id={id} darkMode={darkMode} isFocused={isFocused} />;
 }

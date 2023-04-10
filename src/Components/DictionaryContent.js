@@ -13,7 +13,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderDictionary extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: [], items: null};
+    this.state = {data: [], items: null, visible: false};
   }
 
   componentDidMount() {
@@ -73,12 +73,18 @@ class _renderDictionary extends PureComponent {
     );
   };
 
-  deleteFromDictionary = (word, {item}) => {
-    const newItems = this.state.data.filter(i => i.id !== item.id);
-    this.setState({data: newItems});
+  deleteFromDictionary = word => {
+    console.log('Deleted from dictionary' + word);
     return dbDic.transaction(tx => {
       tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
     });
+  };
+
+  deleteFromList = (word, {item}) => {
+    const deletedItem = item;
+    const newItems = this.state.data.filter(i => i.id !== item.id);
+    this.setState({data: newItems, visible: true});
+    return null;
   };
 
   _renderItem = ({item}) => {
@@ -101,7 +107,7 @@ class _renderDictionary extends PureComponent {
           </View>
         </Pressable>
         <Pressable
-          onPress={() => this.deleteFromDictionary(word, {item})}
+          onPress={() => this.deleteFromList(word, {item})}
           style={{justifyContent: 'center', marginLeft: 5, marginRight: 15}}
           android_ripple={{color: styles.ripple.color, borderless: true, radius: 20}}>
           <Icon name="delete" size={24} style={[styles.icon]} />
@@ -113,6 +119,33 @@ class _renderDictionary extends PureComponent {
   keyExtractor = item => item.id.toString();
 
   render() {
+    PopUpMenu = word => {
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: '#323232',
+            paddingHorizontal: 15,
+            paddingVertical: 15,
+            position: 'absolute',
+            bottom: 10,
+            left: 10,
+            right: 10,
+            borderRadius: 6,
+            // zIndex: 1000,
+          }}>
+          <Text>Объект удален</Text>
+          <Pressable onPress={() => this.deleteFromDictionary(word)}>
+            <Text>Ок</Text>
+          </Pressable>
+          <Pressable>
+            <Text>Отменить</Text>
+          </Pressable>
+        </View>
+      );
+    };
     return (
       <View style={{flex: 1}}>
         <FlatList
@@ -125,6 +158,7 @@ class _renderDictionary extends PureComponent {
           initialNumToRender={20}
           windowSize={7}
         />
+        {this.state.visible && <PopUpMenu />}
       </View>
     );
   }
