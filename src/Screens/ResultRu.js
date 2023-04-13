@@ -259,6 +259,5 @@ export default function ResultRu({darkMode, ...props}) {
   const {word} = route.params;
   const {id} = route.params;
   const isFocused = useIsFocused();
-
   return <ResultPage {...props} word={word} id={id} darkMode={darkMode} isFocused={isFocused} />;
 }

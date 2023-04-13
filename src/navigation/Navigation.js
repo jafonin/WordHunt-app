@@ -6,6 +6,7 @@ import Dictionary from '../Screens/Dictionary';
 import Main from '../Screens/Main';
 import ResultEn from '../Screens/ResultEn';
 import ResultRu from '../Screens/ResultRu';
+import Settings from '../Screens/Settings';
 import CustomDrawer from '../Components/CustomDrawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useState} from 'react';
@@ -39,6 +40,7 @@ export const Navigation = () => {
   const DictionaryScreen = () => <Dictionary darkMode={darkMode} />;
   const ResultEnScreen = () => <ResultEn darkMode={darkMode} />;
   const ResultRuScreen = () => <ResultRu darkMode={darkMode} />;
+  const SettingsScreen = () => <Settings darkMode={darkMode} />;
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -62,7 +64,6 @@ export const Navigation = () => {
           component={MainScreen}
           options={{
             drawerLabel: 'Главная',
-
             drawerIcon: () => (
               <Icon
                 name="home"
@@ -109,6 +110,20 @@ export const Navigation = () => {
           name="ResultRu"
           component={ResultRuScreen}
           options={{drawerItemStyle: {display: 'none'}}}
+        />
+        <Drawer.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            drawerLabel: 'Настройки',
+            drawerIcon: () => (
+              <Icon
+                name="settings"
+                size={24}
+                style={{marginRight: -20, color: drawerStyle.TintColor}}
+              />
+            ),
+          }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

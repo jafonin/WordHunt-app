@@ -4,6 +4,7 @@ import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer'
 import {SafeAreaView} from 'react-native';
 import {Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Icon} from 'react-native-vector-icons/MaterialIcons';
 
 const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   const toggleDarkMode = async () => {
@@ -33,6 +34,12 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
       <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 22}}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
+
+      {/* <Pressable>
+        <Text style={{fontSize: 16, fontFamily: 'georgia', color: '#fff3d6', margin: 20}}>
+          Настройки
+        </Text>
+      </Pressable> */}
     </SafeAreaView>
   );
 };
