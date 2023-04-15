@@ -1,12 +1,10 @@
 import {useNavigation, useIsFocused} from '@react-navigation/native';
-import React from 'react';
-import {PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import {View, Text, FlatList, Pressable} from 'react-native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useCallback} from 'react';
 
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
@@ -20,23 +18,28 @@ class _renderHistory extends PureComponent {
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
     }
   }
 
   fetchData() {
-    var query = 'SELECT * FROM History ORDER BY time DESC';
     try {
       dbHistory.transaction(tx => {
-        tx.executeSql(query, [], (tx, results) => {
-          let temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
-          }
-          this.setState({data: temp});
-        });
+        tx.executeSql(
+          'SELECT id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id FROM History ORDER BY time DESC',
+          [],
+          (tx, results) => {
+            let temp = [];
+
+            for (let i = 0; i < results.rows.length; ++i) {
+              temp.push(results.rows.item(i));
+            }
+
+            this.setState({data: temp});
+          },
+        );
       });
     } catch (error) {
       console.log(error);
@@ -45,13 +48,12 @@ class _renderHistory extends PureComponent {
 
   navigateOnPress = (word, id) => {
     const {navigation} = this.props;
-    let currentDate = new Date().toLocaleString();
     try {
       dbHistory.transaction(tx => {
         tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
         tx.executeSql(
           "UPDATE History SET time = '" +
-            currentDate.toLowerCase() +
+            Math.floor(Date.now() / 1000) +
             "' WHERE word = '" +
             word.toLowerCase() +
             "'",
@@ -60,15 +62,14 @@ class _renderHistory extends PureComponent {
     } catch (error) {
       console.log(error);
     }
-    return (
-      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
-      this.setState({data: []})
-    );
+    return navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id});
+    // this.setState({data: []})
   };
 
   _renderItem = ({item}) => {
     const {id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id} = item;
     const styles = this.props.darkMode ? darkStyles : lightStyles;
+    // console.log(word);
     return (
       <View key={id} style={styles.listItem}>
         <Pressable

@@ -6,6 +6,7 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Swipeable} from 'react-native-gesture-handler';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
@@ -13,20 +14,17 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderDictionary extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: [], items: null};
+    this.state = {data: []};
   }
 
   componentDidMount() {
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
     }
-    // if (prevProps.isFocused !== this.props.isFocused && prevState.data !== this.state.data) {
-    //   this.fetchData();
-    // }
   }
 
   fetchData() {
@@ -39,10 +37,7 @@ class _renderDictionary extends PureComponent {
             temp.push(results.rows.item(i));
           }
           this.setState({data: temp});
-        }),
-          function (tx, err) {
-            alert('not found'); // НЕ РАБОТАЕТ
-          };
+        });
       });
     } catch (error) {
       console.log(error);
@@ -82,9 +77,13 @@ class _renderDictionary extends PureComponent {
     });
   };
 
-  // deleteFromList = (word, {item}) => {
-  //   const newItems = this.state.data.filter(i => i.id !== item.id);
-  //   this.setState({data: newItems});
+  // deleteFromList = async ({item}) => {
+  //   let newItems = this.state.data.filter(i => i.id !== item.id);
+  //   // console.log('newItems');
+  //   // console.log(newItems);
+  //   this.setState({data: newItems}, () => {
+  //     // console.log(this.state.prevData);
+  //   });
   //   return null;
   // };
 
@@ -108,10 +107,10 @@ class _renderDictionary extends PureComponent {
           </View>
         </Pressable>
         <Pressable
-          onPress={() =>
+          onPress={() => {
             Alert.alert(
               '',
-              'Вы увеерны?',
+              'Вы уверны?',
               [
                 {
                   text: 'Отмена',
@@ -120,9 +119,9 @@ class _renderDictionary extends PureComponent {
                 },
                 {text: 'OK', onPress: () => this.deleteFromDictionary(word, {item})},
               ],
-              {cancelable: true},
-            )
-          }
+              {cancelable: true, userInterfaceStyle: this.props.darkMode ? 'dark' : 'light'},
+            );
+          }}
           style={{justifyContent: 'center', marginLeft: 5, marginRight: 15}}
           android_ripple={{color: styles.ripple.color, borderless: true, radius: 20}}>
           <Icon name="delete" size={24} style={[styles.icon]} />
