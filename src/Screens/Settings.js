@@ -1,8 +1,8 @@
-import {Text, View} from 'react-native';
+import {Text, View, ScrollView} from 'react-native';
 import React, {Component} from 'react';
 import Header from '../Components/Header';
-import {lightStyles} from '../Styles/LightTheme/ResultScreen';
-import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
+import {lightStyles} from '../Styles/LightTheme/Settings';
+import {darkStyles} from '../Styles/DarkTheme/Settings';
 
 class SettingsPage extends Component {
   render() {
@@ -10,7 +10,15 @@ class SettingsPage extends Component {
     return (
       <View style={ResultStyles.body}>
         <Header darkMode={this.props.darkMode} />
-        <Text>Settings</Text>
+
+        <ScrollView
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          style={{flex: 1}}>
+          <View style={[ResultStyles.spacer]}>
+            <Text> </Text>
+          </View>
+        </ScrollView>
       </View>
     );
   }

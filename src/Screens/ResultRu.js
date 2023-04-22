@@ -31,7 +31,7 @@ class ResultPage extends PureComponent {
       // ruEnDicSectionOne: [],
       // ruEnDicSectionTwo: [],
       inDictionary: false,
-      // isLoading: true,
+      isLoading: true,
     });
     this.fetchData(this.props.id, this.props.word);
   }
@@ -132,7 +132,6 @@ class ResultPage extends PureComponent {
 
     const renderTitle = this.state.ruEnWordData.map(item => (
       <View key={item.id}>
-        {/* {this.setState({isLoading: true})} */}
         <View style={ResultStyles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
             <Text style={ResultStyles.titleWord}>
@@ -156,7 +155,7 @@ class ResultPage extends PureComponent {
       </View>
     ));
 
-    const RenderSection = ({item}) => {
+    const renderSection = ({item}) => {
       const itemTr = JSON.parse(item.tr).lw[0];
       return (
         <View style={{marginVertical: 7, flex: 1}}>
@@ -205,11 +204,10 @@ class ResultPage extends PureComponent {
       );
     };
 
-    const renderBodySectionOne = this.state.ruEnDicSectionOne.map((item, index) => {
+    const renderBodySectionOne = this.state.ruEnDicSectionOne.map(item => {
       return (
-        <View key={`${item.id}-${index}`} style={{flex: 1, flexDirection: 'row'}}>
-          <RenderSection item={item} />
-          {/* {this.setState({isLoading: false})} */}
+        <View key={item.id} style={{flexDirection: 'row', flex: 1}}>
+          {renderSection({item})}
         </View>
       );
     });
@@ -217,7 +215,7 @@ class ResultPage extends PureComponent {
     const renderBodySectionTwo = this.state.ruEnDicSectionTwo.map((item, index) => {
       return (
         <View key={`${item.id}-${index}`} style={{flexDirection: 'row', flex: 1}}>
-          <RenderSection item={item} />
+          {renderSection({item})}
         </View>
       );
     });

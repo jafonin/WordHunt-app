@@ -1,20 +1,18 @@
-import {View, Text, Pressable, ScrollView} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Pressable, ScrollView, Image, SafeAreaView} from 'react-native';
 import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
-import {SafeAreaView} from 'react-native';
-import {Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import HistoryContent from './HistoryContent';
 import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {useEffect} from 'react';
+import {darkStyles} from '../Styles/DarkTheme/CustomDrawer';
+import {lightStyles} from '../Styles/LightTheme/CustomDrawer';
 
 const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   const navigation = useNavigation();
   const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
   const [data, setData] = useState([]);
+  const styles = darkMode ? darkStyles : lightStyles;
   useEffect(() => {
     fetchData();
   });
@@ -62,8 +60,22 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
       word: word,
       id: id,
     });
-    // this.setState({data: []})
   };
+
+  const drawerHistory = () =>
+    data.map((item, index) => {
+      return (
+        <View key={`${index}`} style={styles.spacer}>
+          <Pressable
+            style={{flexDirection: 'row', flex: 1, height: 45, alignItems: 'center'}}
+            android_ripple={styles.ripple}
+            onPress={() => navigateOnPress(item.word, item.en_id ? item.en_id : item.ru_id)}>
+            <Icon name="history" size={24} style={styles.icon} />
+            <Text style={styles.text}>{item.word}</Text>
+          </Pressable>
+        </View>
+      );
+    });
 
   return (
     <View style={{flex: 1}}>
@@ -72,40 +84,21 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
           <View
             style={{
               flex: 1,
-
               backgroundColor: darkMode ? '#17344a' : '#1d415d',
               justifyContent: 'flex-end',
             }}>
             <Pressable onPress={toggleDarkMode}>
               <Text style={{color: '#888', margin: 20}}>Сменить тему</Text>
             </Pressable>
-            <Image
-              source={require('../img/logo.png')}
-              style={{width: 191, height: 24, marginBottom: 25, marginLeft: 15}}
-            />
+            <Image source={require('../img/logo.png')} style={styles.image} />
           </View>
         </SafeAreaView>
 
         <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 22}}>
           <DrawerItemList {...props} />
         </DrawerContentScrollView>
-
-        {data.map((item, index) => {
-          return (
-            <View
-              key={`${index}`}
-              style={{paddingVertical: 10, flexDirection: 'row', marginHorizontal: 17, flex: 1}}>
-              <Pressable
-                style={{flexDirection: 'row', flex: 1}}
-                onPress={() => navigateOnPress(item.word, item.en_id ? item.en_id : item.ru_id)}>
-                <Icon name="history" size={26} />
-                <Text style={{fontSize: 17, fontFamily: 'georgia', flex: 1, marginLeft: 12}}>
-                  {item.word}
-                </Text>
-              </Pressable>
-            </View>
-          );
-        })}
+        <View style={styles.separator}></View>
+        <View style={{flex: 1}}>{drawerHistory()}</View>
       </ScrollView>
 
       {/* <Pressable>
