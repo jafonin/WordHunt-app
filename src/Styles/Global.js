@@ -5,6 +5,7 @@ const defaultDark = {
   fontColor: '#f5f5f5',
   grayFont: '#aaaaaa',
   lightBlueFont: '#1696b6',
+  lighterBlueFont: '#1BB4DA',
   fontFamily: 'georgia',
 };
 

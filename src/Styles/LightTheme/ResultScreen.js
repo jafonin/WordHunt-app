@@ -7,8 +7,7 @@ export const lightStyles = StyleSheet.create({
     backgroundColor: defaultLight.backgroundColor,
   },
   spacer: {
-    marginTop: 30,
-    marginHorizontal: 20,
+    flex: 1,
   },
   title: {
     marginBottom: 15,

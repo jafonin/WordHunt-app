@@ -10,6 +10,7 @@ import {setData} from '../Components/AddToHistory';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native';
 import {defaultDark, defaultLight} from '../Styles/Global';
+import {SectionList} from 'react-native';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -57,8 +58,8 @@ class ResultPage extends PureComponent {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         let temp = [];
         temp.push(results.rows.item(0));
-        console.log(temp);
-        this.setState({ruEnWordData: temp});
+
+        this.setState({ruEnWordData: temp[0]});
         setData(word, temp[0].t_inline, id);
       });
     });
@@ -144,82 +145,66 @@ class ResultPage extends PureComponent {
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
 
-    const renderTitle = this.state.ruEnWordData.map(item => (
-      <View key={item.id}>
-        <View style={ResultStyles.title}>
-          <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
-            <Text style={ResultStyles.titleWord}>
-              {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
-            </Text>
-            <Text style={ResultStyles.rank}>{item.rank}</Text>
-          </View>
-          <Pressable
-            onPress={() => this.onButtonPress(item.id, item.t_inline)}
-            android_ripple={ResultStyles.ripple}
-            style={ResultStyles.flagButton}>
-            <Image source={imgSource} style={ResultStyles.image} />
-          </Pressable>
-        </View>
-        <View style={{marginTop: 10, marginBottom: 20}}>
-          <Text style={ResultStyles.translation}>{item.t_inline}</Text>
-        </View>
-        {item.lemma !== item.word &&
-          item.lemma !== '' &&
-          this.renderLemma(item.lemma, ResultStyles)}
-      </View>
-    ));
-
-    const renderSection = ({item}, index) => {
-      const tInline = item.t_inline.split(', ');
-
+    const RenderTitle = ({item}) => {
       return (
-        <View style={{marginVertical: 7, flex: 1, flexDirection: 'row'}}>
-          <Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
-                  {item.en_word + ' '}
-                </Text>
-                {item.transcription_us ? (
-                  <Text style={ResultStyles.translation}>
-                    {'|' + item.transcription_us + '|' + ' — '}
-                  </Text>
-                ) : (
-                  <Text style={ResultStyles.translation}>{' — '}</Text>
-                )}
-              </View>
+        <View key={item.id}>
+          <View style={ResultStyles.title}>
+            <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
+              <Text style={ResultStyles.titleWord}>
+                {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+              </Text>
+              <Text style={ResultStyles.rank}>{item.rank}</Text>
             </View>
-            {tInline.map((word, index) => {
-              const _length = tInline.length;
-              return (
-                <View key={index}>
-                  <Text style={ResultStyles.translation}>
-                    {word + (index + 1 !== _length ? ', ' : '')}
-                  </Text>
-                </View>
-              );
-            })}
-          </Text>
+            <Pressable
+              onPress={() => this.onButtonPress(item.id, item.t_inline)}
+              android_ripple={ResultStyles.ripple}
+              style={ResultStyles.flagButton}>
+              <Image source={imgSource} style={ResultStyles.image} />
+            </Pressable>
+          </View>
+          <View style={{marginTop: 10, marginBottom: 20}}>
+            <Text style={ResultStyles.translation}>{item.t_inline}</Text>
+          </View>
+          {item.lemma !== item.word &&
+            item.lemma !== '' &&
+            this.renderLemma(item.lemma, ResultStyles)}
         </View>
       );
     };
 
-    const renderBodySectionOne = this.state.ruEnDicSectionOne.map((item, index) => {
+    const renderSection = ({item, index}) => {
+      const tInline = item.t_inline.toString();
+      const itemOriginal = item.original
+        ? item.original.toString() + ' — ' + item.translation.toString()
+        : null;
       return (
-        <View key={`${item.id}`} style={{flex: 1}}>
-          {renderSection({item}, index)}
-        </View>
-      );
-    });
+        <View style={{marginTop: 12}}>
+          <Text selectable={true}>
+            <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
+            <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
+              {item.en_word}
+            </Text>
+            <Text style={[ResultStyles.translation, {color: '#aaa'}]}>
+              {item.transcription_us ? ' |' + item.transcription_us + '|' + ' — ' : ' — '}
+            </Text>
+            <Text style={ResultStyles.translation}>{tInline + '\n'}</Text>
 
-    const renderBodySectionTwo = this.state.ruEnDicSectionTwo.map((item, index) => {
-      return (
-        <View key={`${item.id}}`} style={{flexDirection: 'row', flex: 1}}>
-          {renderSection({item}, index)}
+            {item.translation && (
+              <Text style={[ResultStyles.translation, {color: '#aaa', fontSize: 17}]}>
+                {itemOriginal}
+              </Text>
+              // <Text>
+              //   <Text style={[ResultStyles.translation, {fontSize: 17}]}>
+              //     {(index >= 9 ? ' ' : '') + item.translation}
+              //   </Text>
+
+              // </Text>
+            )}
+          </Text>
         </View>
       );
-    });
+    };
+    const keyExtractor = item => item.id.toString();
     return (
       <View style={ResultStyles.body}>
         <Header darkMode={this.props.darkMode} />
@@ -230,23 +215,30 @@ class ResultPage extends PureComponent {
             color="#007AFF"
           />
         ) : (
-          <ScrollView
-            keyboardDismissMode="on-drag"
-            keyboardShouldPersistTaps="handled"
-            style={{flex: 1}}>
-            <View style={ResultStyles.spacer}>
-              {renderTitle}
-              {renderBodySectionOne}
-              {this.state.ruEnDicSectionTwo.length > 0 && (
-                <View style={{marginTop: 35}}>
-                  <Text style={ResultStyles.translationItalic}>
-                    Родственные слова, либо редко употребляемые в данном значении
+          <View style={ResultStyles.spacer}>
+            <SectionList
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="always"
+              sections={[
+                {title: '', data: this.state.ruEnDicSectionOne},
+                {
+                  title: 'Родственные слова, либо редко употребляемые в данном значении',
+                  data: this.state.ruEnDicSectionTwo,
+                },
+              ]}
+              renderItem={renderSection}
+              renderSectionHeader={({section}) =>
+                section.title.length > 0 ? (
+                  <Text style={[ResultStyles.translationItalic, {marginTop: 35}]}>
+                    {section.title}
                   </Text>
-                </View>
-              )}
-              {renderBodySectionTwo}
-            </View>
-          </ScrollView>
+                ) : null
+              }
+              ListHeaderComponent={<RenderTitle item={this.state.ruEnWordData} />}
+              keyExtractor={keyExtractor}
+              contentContainerStyle={{paddingVertical: 25, paddingHorizontal: 20}}
+            />
+          </View>
         )}
       </View>
     );

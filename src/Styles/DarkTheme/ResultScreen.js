@@ -7,8 +7,7 @@ export const darkStyles = StyleSheet.create({
     backgroundColor: defaultDark.backgroundColor,
   },
   spacer: {
-    marginTop: 30,
-    marginHorizontal: 20,
+    flex: 1,
   },
   title: {
     marginBottom: 15,

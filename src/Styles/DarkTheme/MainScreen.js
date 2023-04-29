@@ -4,7 +4,7 @@ import {defaultDark} from '../Global';
 export const darkStyles = StyleSheet.create({
   title: {
     fontSize: 18,
-    color: '#6d93b0',
+    color: defaultDark.lightBlueFont,
     fontFamily: defaultDark.fontFamily,
     fontWeight: '800',
     marginBottom: 20,
