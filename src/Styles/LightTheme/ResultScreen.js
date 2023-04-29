@@ -8,7 +8,7 @@ export const lightStyles = StyleSheet.create({
   },
   spacer: {
     marginTop: 30,
-    marginHorizontal: 25,
+    marginHorizontal: 20,
   },
   title: {
     marginBottom: 15,
@@ -51,12 +51,23 @@ export const lightStyles = StyleSheet.create({
     color: defaultLight.fontColor,
     fontSize: 18,
   },
+  translationLink: {
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.blueFont,
+    fontSize: 18,
+  },
   translationItalic: {
     fontFamily: defaultLight.fontFamily,
     fontStyle: 'italic',
     fontSize: 18,
     marginBottom: 7,
     color: defaultLight.blueFont,
+  },
+  positionNumber: {
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.grayFont,
+    fontSize: 16,
+    alignSelf: 'center',
   },
   image: {
     width: 14,

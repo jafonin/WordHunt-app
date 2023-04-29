@@ -8,7 +8,7 @@ export const darkStyles = StyleSheet.create({
   },
   spacer: {
     marginTop: 30,
-    marginHorizontal: 25,
+    marginHorizontal: 20,
   },
   title: {
     marginBottom: 15,
@@ -51,12 +51,23 @@ export const darkStyles = StyleSheet.create({
     color: defaultDark.fontColor,
     fontSize: 18,
   },
+  translationLink: {
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.lightBlueFont,
+    fontSize: 18,
+  },
   translationItalic: {
     fontFamily: defaultDark.fontFamily,
     fontStyle: 'italic',
     fontSize: 18,
     marginBottom: 10,
     color: defaultDark.lightBlueFont,
+  },
+  positionNumber: {
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.grayFont,
+    fontSize: 16,
+    alignSelf: 'flex-end',
   },
   image: {
     width: 14,

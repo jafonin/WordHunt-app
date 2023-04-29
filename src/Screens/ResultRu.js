@@ -9,8 +9,9 @@ import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native';
+import {defaultDark, defaultLight} from '../Styles/Global';
 
-const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
 class ResultPage extends PureComponent {
@@ -56,18 +57,30 @@ class ResultPage extends PureComponent {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         let temp = [];
         temp.push(results.rows.item(0));
+        console.log(temp);
         this.setState({ruEnWordData: temp});
         setData(word, temp[0].t_inline, id);
       });
     });
 
+    // let ruEnWordDicQuery =
+    //   'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.id, en_ru_word.transcription_us ' +
+    //   'FROM ru_en_word_dic ' +
+    //   'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
+    //   "WHERE ru_en_word_dic.ru_word_id = '" +
+    //   id +
+    //   "' ORDER BY section, word_order";
     let ruEnWordDicQuery =
-      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.id, en_ru_word.transcription_us ' +
+      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.is_link, ru_en_word_dic.id, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
+      'ru_en_word_dic_ex.ex_order, en_ru_sentence.original, en_ru_sentence.translation ' +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
+      'LEFT JOIN ru_en_word_dic_ex ON ru_en_word_dic.id=ru_en_word_dic_ex.ru_dic_id ' +
+      'LEFT JOIN en_ru_sentence ON ru_en_word_dic_ex.ex_id=en_ru_sentence.id ' +
       "WHERE ru_en_word_dic.ru_word_id = '" +
       id +
-      "' ORDER BY section, word_order";
+      "' AND en_ru_word.t_inline NOT NULL " +
+      'ORDER BY section, word_order';
 
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
@@ -75,6 +88,7 @@ class ResultPage extends PureComponent {
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
+        // debugger;
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
         this.setState({
@@ -133,7 +147,7 @@ class ResultPage extends PureComponent {
     const renderTitle = this.state.ruEnWordData.map(item => (
       <View key={item.id}>
         <View style={ResultStyles.title}>
-          <View style={{flexDirection: 'row', flex: 1}}>
+          <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
             <Text style={ResultStyles.titleWord}>
               {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
@@ -155,14 +169,18 @@ class ResultPage extends PureComponent {
       </View>
     ));
 
-    const renderSection = ({item}) => {
-      const itemTr = JSON.parse(item.tr).lw[0];
+    const renderSection = ({item}, index) => {
+      const tInline = item.t_inline.split(', ');
+
       return (
-        <View style={{marginVertical: 7, flex: 1}}>
+        <View style={{marginVertical: 7, flex: 1, flexDirection: 'row'}}>
           <Text>
-            <Pressable>
-              <Text>
-                <Text style={ResultStyles.translation}>{'- ' + item.en_word + ' '}</Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
+                  {item.en_word + ' '}
+                </Text>
                 {item.transcription_us ? (
                   <Text style={ResultStyles.translation}>
                     {'|' + item.transcription_us + '|' + ' — '}
@@ -170,32 +188,15 @@ class ResultPage extends PureComponent {
                 ) : (
                   <Text style={ResultStyles.translation}>{' — '}</Text>
                 )}
-              </Text>
-            </Pressable>
-            {itemTr.l.map((word, index) => {
-              const _length = itemTr.l.length;
+              </View>
+            </View>
+            {tInline.map((word, index) => {
+              const _length = tInline.length;
               return (
-                <View key={index} style={{flexDirection: 'row', flex: 1}}>
-                  <Pressable>
-                    <Text>
-                      <StyledText
-                        style={[ResultStyles.translation, {textDecorationLine: 'underline'}]}>
-                        {index + 1 !== _length || _length !== 0 ? word : word}
-                      </StyledText>
-                      <Text style={ResultStyles.translation}>
-                        {index + 1 !== _length || (_length !== 0 && itemTr.w.length) ? ', ' : ''}
-                      </Text>
-                    </Text>
-                  </Pressable>
-                </View>
-              );
-            })}
-            {itemTr.w.map((word, index) => {
-              return (
-                <View key={index} style={{flexDirection: 'row', flex: 1}}>
-                  <StyledText style={ResultStyles.translation}>
-                    {index + 1 !== itemTr.w.length ? word + ', ' : word}
-                  </StyledText>
+                <View key={index}>
+                  <Text style={ResultStyles.translation}>
+                    {word + (index + 1 !== _length ? ', ' : '')}
+                  </Text>
                 </View>
               );
             })}
@@ -204,18 +205,18 @@ class ResultPage extends PureComponent {
       );
     };
 
-    const renderBodySectionOne = this.state.ruEnDicSectionOne.map(item => {
+    const renderBodySectionOne = this.state.ruEnDicSectionOne.map((item, index) => {
       return (
-        <View key={item.id} style={{flexDirection: 'row', flex: 1}}>
-          {renderSection({item})}
+        <View key={`${item.id}`} style={{flex: 1}}>
+          {renderSection({item}, index)}
         </View>
       );
     });
 
     const renderBodySectionTwo = this.state.ruEnDicSectionTwo.map((item, index) => {
       return (
-        <View key={`${item.id}-${index}`} style={{flexDirection: 'row', flex: 1}}>
-          {renderSection({item})}
+        <View key={`${item.id}}`} style={{flexDirection: 'row', flex: 1}}>
+          {renderSection({item}, index)}
         </View>
       );
     });
@@ -233,7 +234,7 @@ class ResultPage extends PureComponent {
             keyboardDismissMode="on-drag"
             keyboardShouldPersistTaps="handled"
             style={{flex: 1}}>
-            <View style={[ResultStyles.spacer]}>
+            <View style={ResultStyles.spacer}>
               {renderTitle}
               {renderBodySectionOne}
               {this.state.ruEnDicSectionTwo.length > 0 && (

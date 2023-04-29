@@ -4,7 +4,7 @@ const defaultDark = {
   backgroundColor: '#1F1F1F',
   fontColor: '#f5f5f5',
   grayFont: '#aaaaaa',
-  lightBlueFont: '#1BB4DA',
+  lightBlueFont: '#1696b6',
   fontFamily: 'georgia',
 };
 
@@ -13,6 +13,7 @@ const defaultLight = {
   header: '#1d415d',
   backgroundColor: '#fff',
   fontColor: '#213646',
+  grayFont: '#aaaaaa',
   blueFont: '#0f687e',
   fontFamily: 'georgia',
 };

@@ -132,7 +132,7 @@ class Search extends PureComponent {
     const {inputProps} = this.props;
     return (
       <View>
-        <View style={[Headerstyles.rectangle]}>
+        <View style={Headerstyles.rectangle}>
           <View style={Headerstyles.spacer}>
             <View style={Headerstyles.drawerButton}>
               <Pressable
