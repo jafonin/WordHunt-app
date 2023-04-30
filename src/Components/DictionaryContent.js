@@ -6,10 +6,9 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Swipeable} from 'react-native-gesture-handler';
+import {setData} from './AddToHistory';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
-const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 
 class _renderDictionary extends PureComponent {
   constructor(props) {
@@ -46,21 +45,7 @@ class _renderDictionary extends PureComponent {
 
   navigateOnPress = (word, id) => {
     const {navigation} = this.props;
-    let currentDate = new Date().toLocaleString();
-    try {
-      dbHistory.transaction(tx => {
-        tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
-        tx.executeSql(
-          "UPDATE History SET time = '" +
-            currentDate.toLowerCase() +
-            "' WHERE word = '" +
-            word.toLowerCase() +
-            "'",
-        );
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setData(word, id);
 
     return (
       navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
@@ -72,24 +57,16 @@ class _renderDictionary extends PureComponent {
     console.log('Deleted from dictionary ' + word);
     const newItems = this.state.data.filter(i => i.id !== item.id);
     this.setState({data: newItems});
+
     return dbDic.transaction(tx => {
       tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
     });
   };
 
-  // deleteFromList = async ({item}) => {
-  //   let newItems = this.state.data.filter(i => i.id !== item.id);
-  //   // console.log('newItems');
-  //   // console.log(newItems);
-  //   this.setState({data: newItems}, () => {
-  //     // console.log(this.state.prevData);
-  //   });
-  //   return null;
-  // };
-
   _renderItem = ({item}) => {
     const {id, word, t_inline, transcription_us, transcription_uk} = item;
     const styles = this.props.darkMode ? darkStyles : lightStyles;
+
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
@@ -153,6 +130,7 @@ class _renderDictionary extends PureComponent {
 export default function DictionaryContent({darkMode, ...props}) {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+
   return (
     <_renderDictionary
       {...props}

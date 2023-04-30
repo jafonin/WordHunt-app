@@ -58,12 +58,14 @@ export const Navigation = () => {
           drawerActiveBackgroundColor: drawerStyle.backgroudColor,
           drawerActiveTintColor: drawerStyle.TintColor,
           drawerInactiveTintColor: drawerStyle.TintColor,
+          keyboardDismissMode: 'on-drag',
         }}>
         <Drawer.Screen
           name="Main"
           component={MainScreen}
           options={{
             drawerLabel: 'Главная',
+
             drawerIcon: () => (
               <Icon
                 name="home"
@@ -109,7 +111,7 @@ export const Navigation = () => {
         <Drawer.Screen
           name="ResultRu"
           component={ResultRuScreen}
-          options={{drawerItemStyle: {display: 'none'}}}
+          options={{drawerItemStyle: {display: 'none'}, onOpen: () => console.log('opened')}}
         />
         <Drawer.Screen
           name="Settings"

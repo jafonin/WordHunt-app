@@ -38,7 +38,7 @@ class ResultPage extends Component {
           var temp = [];
           temp.push(results.rows.item(0));
           this.setState({data: temp});
-          setData(word, temp[0].t_inline, id, temp[0].transcription_us);
+          setData(word, id, temp[0].t_inline, temp[0].transcription_us);
         },
       );
     });
@@ -54,7 +54,7 @@ class ResultPage extends Component {
       );
     });
   };
-
+  //ДОБАВИТЬ ТАЙМШТАМП
   onButtonPress(t_inline, transcription_us, transcription_uk) {
     const {word} = this.props;
     if (!this.state.inDictionary) {
@@ -84,7 +84,7 @@ class ResultPage extends Component {
       );
     });
   }
-
+  // ПЕРЕМЕСТИТЬ В RENDER(){  }
   description(item) {
     const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
     return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
@@ -120,7 +120,7 @@ class ResultPage extends Component {
 
   render() {
     const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
-    const imgSource = this.state.inDictionary
+    const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
     const page = this.state.data.map(item => (
@@ -138,7 +138,7 @@ class ResultPage extends Component {
             }
             android_ripple={ResultStyles.ripple}
             style={ResultStyles.flagButton}>
-            <Image source={imgSource} style={ResultStyles.image} />
+            <Image source={imageSource} style={ResultStyles.image} />
           </Pressable>
         </View>
         {item.transcription_us !== null || item.transcription_uk !== null

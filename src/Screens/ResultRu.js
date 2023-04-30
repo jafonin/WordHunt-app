@@ -1,16 +1,15 @@
 import React, {PureComponent} from 'react';
-import {Text, View, Image, Pressable, Keyboard} from 'react-native';
+import {Text, View, Image, Pressable, DrawerLayoutAndroid} from 'react-native';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {ScrollView} from 'react-native-gesture-handler';
-import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native';
 import {defaultDark, defaultLight} from '../Styles/Global';
 import {SectionList} from 'react-native';
+import {Swipeable} from 'react-native-gesture-handler';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -29,11 +28,10 @@ class ResultPage extends PureComponent {
 
   componentDidMount() {
     this.setState({
-      // ruEnWordData: [],
-      // ruEnDicSectionOne: [],
-      // ruEnDicSectionTwo: [],
       inDictionary: false,
       isLoading: true,
+      selectable: null,
+      selectedId: null,
     });
     this.fetchData(this.props.id, this.props.word);
   }
@@ -41,11 +39,10 @@ class ResultPage extends PureComponent {
   componentDidUpdate(prevProps) {
     if (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) {
       this.setState({
-        // ruEnWordData: [],
-        // ruEnDicSectionOne: [],
-        // ruEnDicSectionTwo: [],
         inDictionary: false,
         isLoading: true,
+        selectable: null,
+        selectedId: null,
       });
       this.fetchData(this.props.id, this.props.word);
     }
@@ -53,24 +50,16 @@ class ResultPage extends PureComponent {
 
   fetchData = async (id, word) => {
     let ruEnWordQuery = "SELECT * FROM ru_en_word WHERE word = '" + word + "'";
-    // var wordId = 0;
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         let temp = [];
         temp.push(results.rows.item(0));
 
         this.setState({ruEnWordData: temp[0]});
-        setData(word, temp[0].t_inline, id);
+        setData(word, id, temp[0].t_inline);
       });
     });
 
-    // let ruEnWordDicQuery =
-    //   'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.id, en_ru_word.transcription_us ' +
-    //   'FROM ru_en_word_dic ' +
-    //   'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
-    //   "WHERE ru_en_word_dic.ru_word_id = '" +
-    //   id +
-    //   "' ORDER BY section, word_order";
     let ruEnWordDicQuery =
       'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.is_link, ru_en_word_dic.id, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
       'ru_en_word_dic_ex.ex_order, en_ru_sentence.original, en_ru_sentence.translation ' +
@@ -89,7 +78,6 @@ class ResultPage extends PureComponent {
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
-        // debugger;
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
         this.setState({
@@ -112,7 +100,7 @@ class ResultPage extends PureComponent {
       );
     });
   };
-
+  //ДОБАВИТЬ ТАЙМШТАМП
   onButtonPress(id, t_inline) {
     const {word} = this.props;
     if (!this.state.inDictionary) {
@@ -128,15 +116,7 @@ class ResultPage extends PureComponent {
         tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
       });
     }
-    this.setState({inDictionary: !this.state.inDictionary});
-  }
-
-  renderLemma(lemma, ResultStyles) {
-    return (
-      <View>
-        <Text style={ResultStyles.translation}>Смотрите также: {lemma}</Text>
-      </View>
-    );
+    this.setState(prevState => ({inDictionary: !prevState.inDictionary}));
   }
 
   render() {
@@ -144,6 +124,14 @@ class ResultPage extends PureComponent {
     const imgSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
+
+    const renderLemma = (lemma, ResultStyles) => {
+      return (
+        <View>
+          <Text style={ResultStyles.translation}>Смотрите также: {lemma}</Text>
+        </View>
+      );
+    };
 
     const RenderTitle = ({item}) => {
       return (
@@ -165,46 +153,48 @@ class ResultPage extends PureComponent {
           <View style={{marginTop: 10, marginBottom: 20}}>
             <Text style={ResultStyles.translation}>{item.t_inline}</Text>
           </View>
-          {item.lemma !== item.word &&
-            item.lemma !== '' &&
-            this.renderLemma(item.lemma, ResultStyles)}
+          {item.lemma !== item.word && item.lemma !== '' && renderLemma(item.lemma, ResultStyles)}
         </View>
       );
     };
 
     const renderSection = ({item, index}) => {
       const tInline = item.t_inline.toString();
-      const itemOriginal = item.original
-        ? item.original.toString() + ' — ' + item.translation.toString()
-        : null;
       return (
-        <View style={{marginTop: 12}}>
-          <Text selectable={true}>
+        <View style={{marginTop: 15}}>
+          <Text
+          // onLongPress={() => this.setState({selectable: true, selectedId: item.id})}
+          // style={{
+          //   backgroundColor:
+          //     this.state.selectedId == item.id && this.state.selectable ? '#333' : null,
+          // }}
+          >
             <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
             <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
               {item.en_word}
             </Text>
-            <Text style={[ResultStyles.translation, {color: '#aaa'}]}>
+            <Text style={ResultStyles.transcriptionWord}>
               {item.transcription_us ? ' |' + item.transcription_us + '|' + ' — ' : ' — '}
             </Text>
-            <Text style={ResultStyles.translation}>{tInline + '\n'}</Text>
-
-            {item.translation && (
-              <Text style={[ResultStyles.translation, {color: '#aaa', fontSize: 17}]}>
-                {itemOriginal}
-              </Text>
-              // <Text>
-              //   <Text style={[ResultStyles.translation, {fontSize: 17}]}>
-              //     {(index >= 9 ? ' ' : '') + item.translation}
-              //   </Text>
-
-              // </Text>
-            )}
+            <Text style={ResultStyles.translation}>{tInline}</Text>
           </Text>
+          {item.translation && (
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{width: 10}}></Text>
+              <Text>
+                <Text style={ResultStyles.translationSentence}>{item.translation.toString()}</Text>
+                <Text style={ResultStyles.translationSentenceGray}>
+                  {' — ' + item.original.toString()}
+                </Text>
+              </Text>
+            </View>
+          )}
         </View>
       );
     };
+
     const keyExtractor = item => item.id.toString();
+
     return (
       <View style={ResultStyles.body}>
         <Header darkMode={this.props.darkMode} />

@@ -42,12 +42,22 @@ export const darkStyles = StyleSheet.create({
   },
   transcriptionWord: {
     fontFamily: defaultDark.fontFamily,
-    color: defaultDark.fontColor,
+    color: defaultDark.grayFont,
     fontSize: 18,
   },
   translation: {
     fontFamily: defaultDark.fontFamily,
     color: defaultDark.fontColor,
+    fontSize: 18,
+  },
+  translationSentence: {
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.fontColor,
+    fontSize: 18,
+  },
+  translationSentenceGray: {
+    fontFamily: defaultDark.fontFamily,
+    color: defaultDark.grayFont,
     fontSize: 18,
   },
   translationLink: {

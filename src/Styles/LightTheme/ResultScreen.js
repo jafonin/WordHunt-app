@@ -42,12 +42,22 @@ export const lightStyles = StyleSheet.create({
   },
   transcriptionWord: {
     fontFamily: defaultLight.fontFamily,
-    color: defaultLight.fontColor,
+    color: defaultLight.grayFont,
     fontSize: 18,
   },
   translation: {
     fontFamily: defaultLight.fontFamily,
     color: defaultLight.fontColor,
+    fontSize: 18,
+  },
+  translationSentence: {
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.fontColor,
+    fontSize: 18,
+  },
+  translationSentenceGray: {
+    fontFamily: defaultLight.fontFamily,
+    color: defaultLight.grayFont,
     fontSize: 18,
   },
   translationLink: {

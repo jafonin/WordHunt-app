@@ -100,12 +100,6 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
         <View style={styles.separator}></View>
         <View style={{flex: 1}}>{drawerHistory()}</View>
       </ScrollView>
-
-      {/* <Pressable>
-        <Text style={{fontSize: 16, fontFamily: 'georgia', color: '#fff3d6', margin: 20}}>
-          Настройки
-        </Text>
-      </Pressable> */}
     </View>
   );
 };
