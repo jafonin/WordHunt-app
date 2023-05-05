@@ -72,43 +72,41 @@ class ResultPage extends Component {
     this.setState({inDictionary: !this.state.inDictionary});
   }
 
-  renderDescription(word, ResultStyles) {
+  renderDescription(word, styles) {
     return Object.values(word).map((translation, index) => {
       return (
         <View key={index} style={{marginVertical: 15}}>
-          <StyledText style={ResultStyles.translationItalic}>{translation.w}</StyledText>
-          <StyledText style={ResultStyles.translation}>
-            {'- ' + translation.t.join('\n\n- ')}
-          </StyledText>
+          <StyledText style={styles.translationItalic}>{translation.w}</StyledText>
+          <StyledText style={styles.translation}>{'- ' + translation.t.join('\n\n- ')}</StyledText>
         </View>
       );
     });
   }
   // ПЕРЕМЕСТИТЬ В RENDER(){  }
   description(item) {
-    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-      return <View key={index}>{this.renderDescription(word, ResultStyles)}</View>;
+      return <View key={index}>{this.renderDescription(word, styles)}</View>;
     });
   }
 
   transcriptions(item) {
-    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
-      <View style={ResultStyles.transcriptions}>
+      <View style={styles.transcriptions}>
         <View>
           {item.transcription_us !== null ? (
             <Text>
-              <Text style={[ResultStyles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
-              <Text style={[ResultStyles.transcriptionWord, {marginLeft: 7}]}>
+              <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
+              <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
                 |{item.transcription_us}|
               </Text>
             </Text>
           ) : null}
           {item.transcription_uk !== null ? (
             <Text>
-              <Text style={[ResultStyles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
-              <Text style={[ResultStyles.transcriptionWord, {marginLeft: 7}]}>
+              <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
+              <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
                 |{item.transcription_uk}|
               </Text>
             </Text>
@@ -119,39 +117,39 @@ class ResultPage extends Component {
   }
 
   render() {
-    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
     const page = this.state.data.map(item => (
-      <View key={item.id} style={ResultStyles.spacer}>
-        <View style={ResultStyles.title}>
+      <View key={item.id} style={styles.spacer}>
+        <View style={styles.title}>
           <View style={{flexDirection: 'row', flex: 1}}>
-            <Text style={ResultStyles.titleWord}>
+            <Text style={styles.titleWord}>
               {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
             </Text>
-            <Text style={ResultStyles.rank}>{item.rank}</Text>
+            <Text style={styles.rank}>{item.rank}</Text>
           </View>
           <Pressable
             onPress={() =>
               this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
             }
-            android_ripple={ResultStyles.ripple}
-            style={ResultStyles.flagButton}>
-            <Image source={imageSource} style={ResultStyles.image} />
+            android_ripple={styles.ripple}
+            style={styles.flagButton}>
+            <Image source={imageSource} style={styles.image} />
           </Pressable>
         </View>
         {item.transcription_us !== null || item.transcription_uk !== null
           ? this.transcriptions(item)
           : null}
         <View style={{marginVertical: 10}}>
-          <Text style={ResultStyles.translation}>{item.t_inline}</Text>
+          <Text style={styles.translation}>{item.t_inline}</Text>
         </View>
         <View>{this.description(item)}</View>
       </View>
     ));
     return (
-      <View style={ResultStyles.body}>
+      <View style={styles.body}>
         <Header darkMode={this.props.darkMode} />
         <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           {page}

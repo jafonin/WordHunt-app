@@ -16,17 +16,20 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   useEffect(() => {
     fetchData();
   });
-  const fetchData = () => {
-    let query = 'SELECT word, en_id, ru_id FROM History ORDER BY time DESC LIMIT 5';
+  const fetchData = async () => {
     try {
-      dbHistory.transaction(tx => {
-        tx.executeSql(query, [], (tx, results) => {
-          let temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
-          }
-          setData(temp);
-        });
+      await dbHistory.transaction(async tx => {
+        await tx.executeSql(
+          'SELECT word, en_id, ru_id FROM History ORDER BY time DESC LIMIT 5',
+          [],
+          (tx, results) => {
+            let temp = [];
+            for (let i = 0; i < results.rows.length; ++i) {
+              temp.push(results.rows.item(i));
+            }
+            setData(temp);
+          },
+        );
       });
     } catch (error) {
       console.log(error);
@@ -41,11 +44,10 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
       console.log(error);
     }
   };
-  const navigateOnPress = (word, id) => {
+  const navigateOnPress = async (word, id) => {
     try {
-      dbHistory.transaction(tx => {
-        tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
-        tx.executeSql(
+      await dbHistory.transaction(async tx => {
+        await tx.executeSql(
           "UPDATE History SET time = '" +
             Math.floor(Date.now() / 1000) +
             "' WHERE word = '" +

@@ -1,15 +1,19 @@
+import {StatusBar} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {lightStyles} from '../LightTheme/Header';
 import {defaultDark} from '../Global';
 
 export const darkStyles = StyleSheet.create({
-  rectangle: [
-    lightStyles.rectangle,
-    {
-      backgroundColor: '#17344a',
-      shadowColor: '#888',
-    },
-  ],
+  rectangle: {
+    height: StatusBar.currentHeight + 55,
+    width: '100%',
+    backgroundColor: '#17344a',
+    shadowColor: '#888',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 15,
+  },
   ripple: {
     color: defaultDark.rippleColor,
   },
@@ -20,7 +24,8 @@ export const darkStyles = StyleSheet.create({
     backgroundColor: defaultDark.backgroundColor,
     width: '90%',
     justifyContent: 'center',
-    alignContent: 'center',
+    textAlignVertical: 'center',
+    paddingVertical: 0,
     borderRadius: 5,
     paddingHorizontal: 15,
     fontFamily: defaultDark.fontFamily,
@@ -39,16 +44,16 @@ export const darkStyles = StyleSheet.create({
     color: defaultDark.grayFont,
   },
   itemButton: lightStyles.itemButton,
-  itemText: [
-    lightStyles.itemText,
-    {
-      color: '#aaaaaa',
-    },
-  ],
-  icon: [
-    lightStyles.icon,
-    {
-      color: '#c7c7c7',
-    },
-  ],
+  itemText: {
+    fontSize: 17,
+    fontFamily: defaultDark.fontFamily,
+    marginLeft: 15,
+    width: '100%',
+    color: '#aaa',
+  },
+  icon: {
+    marginLeft: 2,
+    textAlignVertical: 'center',
+    color: '#c7c7c7',
+  },
 });

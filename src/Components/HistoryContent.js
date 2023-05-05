@@ -18,25 +18,23 @@ class _renderHistory extends PureComponent {
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
     }
   }
 
-  fetchData() {
+  fetchData = async () => {
     try {
-      dbHistory.transaction(tx => {
-        tx.executeSql(
+      await dbHistory.transaction(async tx => {
+        await tx.executeSql(
           'SELECT id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id FROM History ORDER BY time DESC',
           [],
           (tx, results) => {
             let temp = [];
-
             for (let i = 0; i < results.rows.length; ++i) {
               temp.push(results.rows.item(i));
             }
-
             this.setState({data: temp});
           },
         );
@@ -44,14 +42,13 @@ class _renderHistory extends PureComponent {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  navigateOnPress = (word, id) => {
+  navigateOnPress = async (word, id) => {
     const {navigation} = this.props;
     try {
-      dbHistory.transaction(tx => {
-        tx.executeSql('INSERT OR IGNORE INTO History (word) VALUES (?)', [word]);
-        tx.executeSql(
+      await dbHistory.transaction(async tx => {
+        await tx.executeSql(
           "UPDATE History SET time = '" +
             Math.floor(Date.now() / 1000) +
             "' WHERE word = '" +

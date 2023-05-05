@@ -9,7 +9,6 @@ import {useRoute, useIsFocused} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native';
 import {defaultDark, defaultLight} from '../Styles/Global';
 import {SectionList} from 'react-native';
-import {Swipeable} from 'react-native-gesture-handler';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -30,19 +29,18 @@ class ResultPage extends PureComponent {
     this.setState({
       inDictionary: false,
       isLoading: true,
-      selectable: null,
-      selectedId: null,
     });
     this.fetchData(this.props.id, this.props.word);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) {
+    if (
+      (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) &&
+      this.props.isFocused
+    ) {
       this.setState({
         inDictionary: false,
         isLoading: true,
-        selectable: null,
-        selectedId: null,
       });
       this.fetchData(this.props.id, this.props.word);
     }
@@ -54,15 +52,15 @@ class ResultPage extends PureComponent {
       await tx.executeSql(ruEnWordQuery, [], (tx, results) => {
         let temp = [];
         temp.push(results.rows.item(0));
-
         this.setState({ruEnWordData: temp[0]});
         setData(word, id, temp[0].t_inline);
       });
     });
-
+    //В sentence_id хранятся через ~ различные строки их нужно разделить
     let ruEnWordDicQuery =
       'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.is_link, ru_en_word_dic.id, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
-      'ru_en_word_dic_ex.ex_order, en_ru_sentence.original, en_ru_sentence.translation ' +
+      "GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation, GROUP_CONCAT(en_ru_sentence.id, '~') as sentence_id " +
+      // 'as examples ' +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
       'LEFT JOIN ru_en_word_dic_ex ON ru_en_word_dic.id=ru_en_word_dic_ex.ru_dic_id ' +
@@ -70,8 +68,8 @@ class ResultPage extends PureComponent {
       "WHERE ru_en_word_dic.ru_word_id = '" +
       id +
       "' AND en_ru_word.t_inline NOT NULL " +
-      'ORDER BY section, word_order';
-
+      'GROUP BY ru_en_word_dic.id ORDER BY section, word_order';
+    console.log(ruEnWordDicQuery);
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
         let temp = [];
@@ -80,6 +78,8 @@ class ResultPage extends PureComponent {
         }
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
+        console.log(temp);
+        debugger;
         this.setState({
           ruEnDicSectionOne: sectionOne,
           ruEnDicSectionTwo: sectionTwo,
@@ -101,19 +101,18 @@ class ResultPage extends PureComponent {
     });
   };
   //ДОБАВИТЬ ТАЙМШТАМП
-  onButtonPress(id, t_inline) {
+  async onButtonPress(id, t_inline) {
     const {word} = this.props;
     if (!this.state.inDictionary) {
-      dbDic.transaction(tx => {
-        tx.executeSql('INSERT OR IGNORE INTO dictionary (id, word, t_inline) VALUES (?,?,?)', [
-          id,
-          word,
-          t_inline,
-        ]);
+      await dbDic.transaction(async tx => {
+        await tx.executeSql(
+          'INSERT OR IGNORE INTO dictionary (id, word, t_inline) VALUES (?,?,?)',
+          [id, word, t_inline],
+        );
       });
     } else {
-      dbDic.transaction(tx => {
-        tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
+      await dbDic.transaction(async tx => {
+        await tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
       });
     }
     this.setState(prevState => ({inDictionary: !prevState.inDictionary}));
@@ -159,16 +158,13 @@ class ResultPage extends PureComponent {
     };
 
     const renderSection = ({item, index}) => {
+      {
+        console.log(item);
+      }
       const tInline = item.t_inline.toString();
       return (
         <View style={{marginTop: 15}}>
-          <Text
-          // onLongPress={() => this.setState({selectable: true, selectedId: item.id})}
-          // style={{
-          //   backgroundColor:
-          //     this.state.selectedId == item.id && this.state.selectable ? '#333' : null,
-          // }}
-          >
+          <Text>
             <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
             <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
               {item.en_word}
@@ -178,7 +174,7 @@ class ResultPage extends PureComponent {
             </Text>
             <Text style={ResultStyles.translation}>{tInline}</Text>
           </Text>
-          {item.translation && (
+          {/* {item.translation && (
             <View style={{flexDirection: 'row'}}>
               <Text style={{width: 10}}></Text>
               <Text>
@@ -188,12 +184,10 @@ class ResultPage extends PureComponent {
                 </Text>
               </Text>
             </View>
-          )}
+          )} */}
         </View>
       );
     };
-
-    const keyExtractor = item => item.id.toString();
 
     return (
       <View style={ResultStyles.body}>
@@ -212,7 +206,10 @@ class ResultPage extends PureComponent {
               sections={[
                 {title: '', data: this.state.ruEnDicSectionOne},
                 {
-                  title: 'Родственные слова, либо редко употребляемые в данном значении',
+                  title:
+                    this.state.ruEnDicSectionTwo.length > 0
+                      ? 'Родственные слова, либо редко употребляемые в данном значении'
+                      : '',
                   data: this.state.ruEnDicSectionTwo,
                 },
               ]}
@@ -225,7 +222,7 @@ class ResultPage extends PureComponent {
                 ) : null
               }
               ListHeaderComponent={<RenderTitle item={this.state.ruEnWordData} />}
-              keyExtractor={keyExtractor}
+              keyExtractor={(item, index) => item.id}
               contentContainerStyle={{paddingVertical: 25, paddingHorizontal: 20}}
             />
           </View>

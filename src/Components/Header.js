@@ -66,7 +66,7 @@ class Search extends PureComponent {
             this.setState({data: temp});
           }),
             function (tx, err) {
-              alert('not found'); // НЕ РАБОТАЕТ
+              alert('not found');
             };
         });
       } catch (error) {
