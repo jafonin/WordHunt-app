@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {Text, View, Image, Pressable, DrawerLayoutAndroid} from 'react-native';
+import {Text, View, Image, Pressable} from 'react-native';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
@@ -56,11 +56,10 @@ class ResultPage extends PureComponent {
         setData(word, id, temp[0].t_inline);
       });
     });
-    //В sentence_id хранятся через ~ различные строки их нужно разделить
     let ruEnWordDicQuery =
-      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ru_en_word_dic.is_link, ru_en_word_dic.id, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
-      "GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation, GROUP_CONCAT(en_ru_sentence.id, '~') as sentence_id " +
-      // 'as examples ' +
+      'SELECT ru_en_word_dic.en_word, ru_en_word_dic.tr, ru_en_word_dic.section, ' +
+      'ru_en_word_dic.is_link, ru_en_word_dic.id, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
+      "GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation " +
       'FROM ru_en_word_dic ' +
       'LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word ' +
       'LEFT JOIN ru_en_word_dic_ex ON ru_en_word_dic.id=ru_en_word_dic_ex.ru_dic_id ' +
@@ -69,17 +68,23 @@ class ResultPage extends PureComponent {
       id +
       "' AND en_ru_word.t_inline NOT NULL " +
       'GROUP BY ru_en_word_dic.id ORDER BY section, word_order';
-    console.log(ruEnWordDicQuery);
     await db.transaction(async tx => {
       await tx.executeSql(ruEnWordDicQuery, [], (tx, results) => {
         let temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
+          if (temp[i].translation != null) {
+            temp[i].translation = temp[i].translation.split('~');
+            temp[i].original = temp[i].original.split('~');
+            temp[i].examples = temp[i].translation.map(
+              (elem, index) => `${elem} — ${temp[i].original[index]}`,
+            );
+          }
         }
+
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
-        console.log(temp);
-        debugger;
+
         this.setState({
           ruEnDicSectionOne: sectionOne,
           ruEnDicSectionTwo: sectionTwo,
@@ -158,9 +163,6 @@ class ResultPage extends PureComponent {
     };
 
     const renderSection = ({item, index}) => {
-      {
-        console.log(item);
-      }
       const tInline = item.t_inline.toString();
       return (
         <View style={{marginTop: 15}}>
@@ -174,17 +176,15 @@ class ResultPage extends PureComponent {
             </Text>
             <Text style={ResultStyles.translation}>{tInline}</Text>
           </Text>
-          {/* {item.translation && (
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{width: 10}}></Text>
-              <Text>
-                <Text style={ResultStyles.translationSentence}>{item.translation.toString()}</Text>
-                <Text style={ResultStyles.translationSentenceGray}>
-                  {' — ' + item.original.toString()}
+          {item.examples &&
+            item.examples.map((example, index) => (
+              <View key={index} style={{flexDirection: 'row'}}>
+                <Text style={{width: 10}}></Text>
+                <Text>
+                  <Text style={ResultStyles.translationSentence}>{example}</Text>
                 </Text>
-              </Text>
-            </View>
-          )} */}
+              </View>
+            ))}
         </View>
       );
     };

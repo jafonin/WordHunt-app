@@ -44,29 +44,26 @@ class _renderDictionary extends PureComponent {
   }
 
   navigateOnPress = (word, id) => {
-    const {navigation} = this.props;
-    setData(word, id);
-
+    // const {navigation} = this.props;
     return (
-      navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id}),
+      this.props.navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {
+        word: word,
+        id: id,
+      }),
       this.setState({data: []})
     );
   };
 
   deleteFromDictionary = (word, {item}) => {
-    console.log('Deleted from dictionary ' + word);
     const newItems = this.state.data.filter(i => i.id !== item.id);
     this.setState({data: newItems});
-
     return dbDic.transaction(tx => {
       tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
     });
   };
 
-  _renderItem = ({item}) => {
+  renderItem = ({item}, styles) => {
     const {id, word, t_inline, transcription_us, transcription_uk} = item;
-    const styles = this.props.darkMode ? darkStyles : lightStyles;
-
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
@@ -76,9 +73,7 @@ class _renderDictionary extends PureComponent {
           <View style={{flexDirection: 'row', flex: 1, marginLeft: 25}}>
             <Text style={{textAlignVertical: 'center', width: '100%'}}>
               <Text style={styles.text}>{word}</Text>
-              {transcription_us ? (
-                <Text style={styles.transcription}> |{transcription_us}|</Text>
-              ) : null}
+              {transcription_us && <Text style={styles.transcription}> |{transcription_us}|</Text>}
               <Text style={styles.translation}> - {t_inline}</Text>
             </Text>
           </View>
@@ -89,11 +84,7 @@ class _renderDictionary extends PureComponent {
               '',
               'Вы уверны?',
               [
-                {
-                  text: 'Отмена',
-                  onPress: () => {},
-                  style: 'cancel',
-                },
+                {text: 'Отмена', onPress: () => {}, style: 'cancel'},
                 {text: 'OK', onPress: () => this.deleteFromDictionary(word, {item})},
               ],
               {cancelable: true, userInterfaceStyle: this.props.darkMode ? 'dark' : 'light'},
@@ -107,16 +98,26 @@ class _renderDictionary extends PureComponent {
     );
   };
 
+  renderEmptyList = styles => {
+    return (
+      <View style={{justifyContent: 'center', alignItems: 'center', flex: 0.8}}>
+        <Text style={styles.text}>Здесь появится Ваш словарь</Text>
+      </View>
+    );
+  };
+
   keyExtractor = item => item.id.toString();
 
   render() {
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View style={{flex: 1}}>
         <FlatList
           contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
           keyExtractor={this.keyExtractor}
-          renderItem={this._renderItem}
+          renderItem={item => this.renderItem(item, styles)}
+          ListEmptyComponent={this.renderEmptyList(styles)}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
           initialNumToRender={20}

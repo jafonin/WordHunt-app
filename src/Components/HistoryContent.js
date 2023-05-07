@@ -60,13 +60,10 @@ class _renderHistory extends PureComponent {
       console.log(error);
     }
     return navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id});
-    // this.setState({data: []})
   };
 
-  _renderItem = ({item}) => {
+  renderItem = ({item}, styles) => {
     const {id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id} = item;
-    const styles = this.props.darkMode ? darkStyles : lightStyles;
-    // console.log(word);
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
@@ -88,16 +85,27 @@ class _renderHistory extends PureComponent {
     );
   };
 
+  renderEmptyList = styles => {
+    return (
+      <View style={{justifyContent: 'center', alignItems: 'center', flex: 0.8}}>
+        <Text style={styles.text}>Здесь появится история запросов</Text>
+      </View>
+    );
+  };
+
   keyExtractor = item => item.id.toString();
 
   render() {
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
+    // debugger;
     return (
       <View style={{flex: 1}}>
         <FlatList
           contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
           keyExtractor={this.keyExtractor}
-          renderItem={this._renderItem}
+          renderItem={item => this.renderItem(item, styles)}
+          ListEmptyComponent={this.renderEmptyList(styles)}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
           initialNumToRender={20}

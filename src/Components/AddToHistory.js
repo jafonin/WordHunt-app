@@ -10,22 +10,18 @@ export const setData = async (
   transcription_uk = null,
 ) => {
   let en_ru_id = /[A-Za-z]/.test(word) ? 'en_id' : 'ru_id';
-  debugger;
+  let time = Math.floor(Date.now() / 1000);
   try {
     await dbHistory.transaction(async tx => {
       await tx.executeSql(
-        "UPDATE History SET time = '" +
-          Math.floor(Date.now() / 1000) +
-          "' WHERE word = '" +
-          word.toLowerCase() +
-          "'",
+        "UPDATE History SET time = '" + time + "' WHERE word = '" + word.toLowerCase() + "'",
         // console.log('updated: ' + {word}),
       ),
         await tx.executeSql(
           'INSERT OR IGNORE INTO History (word, t_inline, ' +
             en_ru_id +
-            ', transcription_us, transcription_uk) VALUES (?,?,?,?,?)',
-          [word, t_inline, id, transcription_us, transcription_uk],
+            ', time, transcription_us, transcription_uk) VALUES (?,?,?,?,?,?)',
+          [word, t_inline, id, time, transcription_us, transcription_uk],
           // console.log('insert: ' + {word}),
         );
     });
