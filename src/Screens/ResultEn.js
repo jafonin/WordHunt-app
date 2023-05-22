@@ -1,46 +1,84 @@
 import React, {Component} from 'react';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {Text, View, Image, Pressable, ScrollView, Keyboard} from 'react-native';
+import {Text, View, Image, Pressable, SectionList, ActivityIndicator} from 'react-native';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 
-const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
 class ResultPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {data: [], inDictionary: false};
+    this.state = {
+      headerData: [],
+      descriptionData: [],
+      inDictionary: false,
+      isLoading: true,
+    };
   }
 
   componentDidMount() {
-    this.setState({data: []});
+    this.setState({isLoading: true});
     this.fetchData(this.props.id, this.props.word);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) {
-      this.setState({data: [], inDictionary: false});
+      this.setState({inDictionary: false, isLoading: true});
       this.fetchData(this.props.id, this.props.word);
     }
   }
 
   fetchData = async (id, word) => {
+    let enRuWordDicQuery =
+      'SELECT id, rank, word, t_inline, transcription_us, transcription_uk ' +
+      'FROM en_ru_word ' +
+      "WHERE id='" +
+      id +
+      "'";
+
+    let enRuSentenceDicQuery =
+      'SELECT tech_part_of_speach.ru_full, en_ru_word_dic_tr.id, ' +
+      "en_ru_word_dic_tr.variant, GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation " +
+      'FROM en_ru_word_dic_pos ' +
+      'LEFT JOIN tech_part_of_speach ON en_ru_word_dic_pos.pos_code=tech_part_of_speach.code ' +
+      'LEFT JOIN en_ru_word_dic_tr ON en_ru_word_dic_pos.id=en_ru_word_dic_tr.pos_id ' +
+      'LEFT JOIN en_ru_word_dic_tr_ex ON en_ru_word_dic_tr.id=en_ru_word_dic_tr_ex.tr_id ' +
+      'LEFT JOIN en_ru_sentence ON en_ru_word_dic_tr_ex.ex_id=en_ru_sentence.id ' +
+      "WHERE en_ru_word_dic_pos.word_id = '" +
+      id +
+      "' AND en_ru_sentence.original NOT NULL " +
+      'GROUP BY en_ru_word_dic_tr.id ORDER BY en_ru_word_dic_pos.pos_order, en_ru_word_dic_tr.tr_order';
     await db.transaction(async tx => {
-      await tx.executeSql(
-        "SELECT * FROM en_ru_word WHERE word = '" + word + "'",
-        [],
-        (tx, results) => {
-          var temp = [];
-          temp.push(results.rows.item(0));
-          this.setState({data: temp});
-          setData(word, id, temp[0].t_inline, temp[0].transcription_us);
-        },
-      );
+      await tx.executeSql(enRuWordDicQuery, [], (tx, results) => {
+        var headerDataTemp = [];
+        headerDataTemp.push(results.rows.item(0));
+        this.setState({headerData: headerDataTemp[0], isLoading: false});
+      });
+      await tx.executeSql(enRuSentenceDicQuery, [], (tx, results) => {
+        var descriptionDataTemp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          descriptionDataTemp.push(results.rows.item(i));
+          descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
+          descriptionDataTemp[i].original = descriptionDataTemp[i].original.split('~');
+          descriptionDataTemp[i].examples = descriptionDataTemp[i].original.map(
+            (elem, index) => `${elem} — ${descriptionDataTemp[i].translation[index]}`,
+          );
+          delete descriptionDataTemp[i].translation;
+          delete descriptionDataTemp[i].original;
+        }
+        this.setState({
+          descriptionData: descriptionDataTemp,
+        });
+        console.log(this.state.headerData);
+        console.log(this.state.descriptionData);
+        setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
+      });
     });
     await dbDic.transaction(async tx => {
       await tx.executeSql(
@@ -121,39 +159,114 @@ class ResultPage extends Component {
     const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
-    const page = this.state.data.map(item => (
-      <View key={item.id} style={styles.spacer}>
-        <View style={styles.title}>
-          <View style={{flexDirection: 'row', flex: 1}}>
-            <Text style={styles.titleWord}>
-              {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
-            </Text>
-            <Text style={styles.rank}>{item.rank}</Text>
+
+    const RenderTitle = ({item}) => {
+      debugger;
+      return (
+        <View key={item.id}>
+          <View style={styles.title}>
+            <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
+              <Text style={styles.titleWord}>
+                {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+              </Text>
+              <Text style={styles.rank}>{item.rank}</Text>
+            </View>
+            <Pressable
+              onPress={() => this.onButtonPress(item.id, item.t_inline)}
+              android_ripple={styles.ripple}
+              style={styles.flagButton}>
+              <Image source={imageSource} style={styles.image} />
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() =>
-              this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
-            }
-            android_ripple={styles.ripple}
-            style={styles.flagButton}>
-            <Image source={imageSource} style={styles.image} />
-          </Pressable>
+          <View style={{marginTop: 10, marginBottom: 20}}>
+            <Text style={styles.translation}>{item.t_inline}</Text>
+          </View>
         </View>
-        {item.transcription_us !== null || item.transcription_uk !== null
-          ? this.transcriptions(item)
-          : null}
-        <View style={{marginVertical: 10}}>
-          <Text style={styles.translation}>{item.t_inline}</Text>
+      );
+    };
+
+    const renderSection = ({item, index}) => {
+      // const tInline = item.t_inline.toString();
+
+      return (
+        <View style={{marginTop: 15}}>
+          {/* <Text>
+            <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
+            <Text style={[styles.translation, {color: defaultDark.lightBlueFont}]}>
+              {item.en_word}
+            </Text>
+            <Text style={styles.transcriptionWord}>
+              {item.transcription_us ? ' |' + item.transcription_us + '|' + ' — ' : ' — '}
+            </Text>
+            <Text style={styles.translation}>{tInline}</Text>
+          </Text> */}
+          {item.examples &&
+            item.examples.map((example, index) => (
+              <View key={index} style={{flexDirection: 'row'}}>
+                <Text style={{width: 10}}></Text>
+                <Text>
+                  <Text style={styles.translationSentence}>{example}</Text>
+                </Text>
+              </View>
+            ))}
         </View>
-        <View>{this.description(item)}</View>
-      </View>
-    ));
+      );
+    };
+
+    // const page = this.state.headerData.map(item => (
+    //   <View key={item.id} style={styles.spacer}>
+    //     <View style={styles.title}>
+    //       <View style={{flexDirection: 'row', flex: 1}}>
+    //         <Text style={styles.titleWord}>
+    //           {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
+    //         </Text>
+    //         <Text style={styles.rank}>{item.rank}</Text>
+    //       </View>
+    //       <Pressable
+    //         onPress={() =>
+    //           this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
+    //         }
+    //         android_ripple={styles.ripple}
+    //         style={styles.flagButton}>
+    //         <Image source={imageSource} style={styles.image} />
+    //       </Pressable>
+    //     </View>
+    //     {item.transcription_us !== null || item.transcription_uk !== null
+    //       ? this.transcriptions(item)
+    //       : null}
+    //     <View style={{marginVertical: 10}}>
+    //       <Text style={styles.translation}>{item.t_inline}</Text>
+    //     </View>
+    //     <View>{this.description(item)}</View>
+    //   </View>
+    // ));
     return (
       <View style={styles.body}>
         <Header darkMode={this.props.darkMode} />
-        <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
+
+        {this.state.isLoading ? (
+          <ActivityIndicator
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+            size="large"
+            color="#007AFF"
+          />
+        ) : (
+          <View style={styles.spacer}>
+            <SectionList
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="always"
+              sections={[{title: '', data: this.state.descriptionData}]}
+              renderItem={renderSection}
+              renderSectionHeader={null}
+              ListHeaderComponent={<RenderTitle item={this.state.headerData} />}
+              keyExtractor={(item, index) => item.id}
+              contentContainerStyle={{paddingVertical: 25, paddingHorizontal: 20}}
+            />
+          </View>
+        )}
+        {/* <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
           {page}
-        </ScrollView>
+        </ScrollView> */}
       </View>
     );
   }

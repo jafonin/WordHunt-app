@@ -80,7 +80,10 @@ class ResultPage extends PureComponent {
               (elem, index) => `${elem} — ${temp[i].original[index]}`,
             );
           }
+          delete temp[i].translation;
+          delete temp[i].original;
         }
+        console.log(temp);
 
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
@@ -125,7 +128,7 @@ class ResultPage extends PureComponent {
 
   render() {
     const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
-    const imgSource = this.state.inDictionary
+    const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
 
@@ -151,7 +154,7 @@ class ResultPage extends PureComponent {
               onPress={() => this.onButtonPress(item.id, item.t_inline)}
               android_ripple={ResultStyles.ripple}
               style={ResultStyles.flagButton}>
-              <Image source={imgSource} style={ResultStyles.image} />
+              <Image source={imageSource} style={ResultStyles.image} />
             </Pressable>
           </View>
           <View style={{marginTop: 10, marginBottom: 20}}>
