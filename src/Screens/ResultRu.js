@@ -1,14 +1,12 @@
 import React, {PureComponent} from 'react';
-import {Text, View, Image, Pressable} from 'react-native';
+import {useRoute, useIsFocused} from '@react-navigation/native';
+import {openDatabase} from 'react-native-sqlite-storage';
+import {Text, View, Image, Pressable, SectionList, ActivityIndicator} from 'react-native';
+import {setData} from '../Components/AddToHistory';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
-import {openDatabase} from 'react-native-sqlite-storage';
-import {setData} from '../Components/AddToHistory';
-import {useRoute, useIsFocused} from '@react-navigation/native';
-import {ActivityIndicator} from 'react-native';
 import {defaultDark, defaultLight} from '../Styles/Global';
-import {SectionList} from 'react-native';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -83,7 +81,6 @@ class ResultPage extends PureComponent {
           delete temp[i].translation;
           delete temp[i].original;
         }
-        console.log(temp);
 
         let sectionOne = temp.filter(item => item.section === 1);
         let sectionTwo = temp.filter(item => item.section === 2);
@@ -127,15 +124,15 @@ class ResultPage extends PureComponent {
   }
 
   render() {
-    const ResultStyles = this.props.darkMode ? darkStyles : lightStyles;
+    const styles = this.props.darkMode ? darkStyles : lightStyles;
     const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
 
-    const renderLemma = (lemma, ResultStyles) => {
+    const renderLemma = (lemma, styles) => {
       return (
         <View>
-          <Text style={ResultStyles.translation}>Смотрите также: {lemma}</Text>
+          <Text style={styles.translation}>Смотрите также: {lemma}</Text>
         </View>
       );
     };
@@ -143,48 +140,49 @@ class ResultPage extends PureComponent {
     const RenderTitle = ({item}) => {
       return (
         <View key={item.id}>
-          <View style={ResultStyles.title}>
+          <View style={styles.title}>
             <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
-              <Text style={ResultStyles.titleWord}>
+              <Text style={styles.titleWord}>
                 {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
               </Text>
-              <Text style={ResultStyles.rank}>{item.rank}</Text>
+              <Text style={styles.rank}>{item.rank}</Text>
             </View>
             <Pressable
               onPress={() => this.onButtonPress(item.id, item.t_inline)}
-              android_ripple={ResultStyles.ripple}
-              style={ResultStyles.flagButton}>
-              <Image source={imageSource} style={ResultStyles.image} />
+              android_ripple={styles.ripple}
+              style={styles.flagButton}>
+              <Image source={imageSource} style={styles.image} />
             </Pressable>
           </View>
           <View style={{marginTop: 10, marginBottom: 20}}>
-            <Text style={ResultStyles.translation}>{item.t_inline}</Text>
+            <Text style={styles.translation}>{item.t_inline}</Text>
           </View>
-          {item.lemma !== item.word && item.lemma !== '' && renderLemma(item.lemma, ResultStyles)}
+          {item.lemma !== item.word && item.lemma !== '' && renderLemma(item.lemma, styles)}
         </View>
       );
     };
 
     const renderSection = ({item, index}) => {
       const tInline = item.t_inline.toString();
+
       return (
         <View style={{marginTop: 15}}>
           <Text>
-            <Text style={ResultStyles.positionNumber}>{index + 1 + '  '}</Text>
-            <Text style={[ResultStyles.translation, {color: defaultDark.lightBlueFont}]}>
+            <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
+            <Text style={[styles.translation, {color: defaultDark.lightBlueFont}]}>
               {item.en_word}
             </Text>
-            <Text style={ResultStyles.transcriptionWord}>
+            <Text style={styles.transcriptionWord}>
               {item.transcription_us ? ' |' + item.transcription_us + '|' + ' — ' : ' — '}
             </Text>
-            <Text style={ResultStyles.translation}>{tInline}</Text>
+            <Text style={styles.translation}>{tInline}</Text>
           </Text>
           {item.examples &&
             item.examples.map((example, index) => (
               <View key={index} style={{flexDirection: 'row'}}>
                 <Text style={{width: 10}}></Text>
                 <Text>
-                  <Text style={ResultStyles.translationSentence}>{example}</Text>
+                  <Text style={styles.translationSentence}>{example}</Text>
                 </Text>
               </View>
             ))}
@@ -193,7 +191,7 @@ class ResultPage extends PureComponent {
     };
 
     return (
-      <View style={ResultStyles.body}>
+      <View style={styles.body}>
         <Header darkMode={this.props.darkMode} />
         {this.state.isLoading ? (
           <ActivityIndicator
@@ -202,7 +200,7 @@ class ResultPage extends PureComponent {
             color="#007AFF"
           />
         ) : (
-          <View style={ResultStyles.spacer}>
+          <View style={styles.spacer}>
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
@@ -219,9 +217,7 @@ class ResultPage extends PureComponent {
               renderItem={renderSection}
               renderSectionHeader={({section}) =>
                 section.title.length > 0 ? (
-                  <Text style={[ResultStyles.translationItalic, {marginTop: 35}]}>
-                    {section.title}
-                  </Text>
+                  <Text style={[styles.translationItalic, {marginTop: 35}]}>{section.title}</Text>
                 ) : null
               }
               ListHeaderComponent={<RenderTitle item={this.state.ruEnWordData} />}

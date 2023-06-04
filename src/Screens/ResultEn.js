@@ -1,12 +1,25 @@
 import React, {Component} from 'react';
 import {useRoute, useIsFocused} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
-import {Text, View, Image, Pressable, SectionList, ActivityIndicator} from 'react-native';
+import {
+  Text,
+  View,
+  Image,
+  Pressable,
+  SectionList,
+  ActivityIndicator,
+  Animated,
+  LayoutAnimation,
+  TouchableWithoutFeedback,
+  UIManager,
+  Platform,
+} from 'react-native';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
 import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
+import {defaultDark, defaultLight} from '../Styles/Global';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -19,6 +32,8 @@ class ResultPage extends Component {
       descriptionData: [],
       inDictionary: false,
       isLoading: true,
+      expandedExamples: [],
+      // value: new Animated.Value(0),
     };
   }
 
@@ -61,23 +76,7 @@ class ResultPage extends Component {
         this.setState({headerData: headerDataTemp[0], isLoading: false});
       });
       await tx.executeSql(enRuSentenceDicQuery, [], (tx, results) => {
-        var descriptionDataTemp = [];
-        for (let i = 0; i < results.rows.length; ++i) {
-          descriptionDataTemp.push(results.rows.item(i));
-          descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
-          descriptionDataTemp[i].original = descriptionDataTemp[i].original.split('~');
-          descriptionDataTemp[i].examples = descriptionDataTemp[i].original.map(
-            (elem, index) => `${elem} — ${descriptionDataTemp[i].translation[index]}`,
-          );
-          delete descriptionDataTemp[i].translation;
-          delete descriptionDataTemp[i].original;
-        }
-        this.setState({
-          descriptionData: descriptionDataTemp,
-        });
-        console.log(this.state.headerData);
-        console.log(this.state.descriptionData);
-        setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
+        this.configureData(results.rows);
       });
     });
     await dbDic.transaction(async tx => {
@@ -92,6 +91,34 @@ class ResultPage extends Component {
       );
     });
   };
+
+  configureData(results) {
+    var descriptionDataTemp = [];
+    for (let i = 0; i < results.length; ++i) {
+      descriptionDataTemp.push(results.item(i));
+      descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
+      descriptionDataTemp[i].original = descriptionDataTemp[i].original.split('~');
+      descriptionDataTemp[i].examples = descriptionDataTemp[i].original.map(
+        (elem, index) => `${elem} — ${descriptionDataTemp[i].translation[index]}`,
+      );
+      delete descriptionDataTemp[i].translation;
+      delete descriptionDataTemp[i].original;
+    }
+
+    const groupedData = descriptionDataTemp.reduce((acc, item) => {
+      if (!acc[item.ru_full]) {
+        acc[item.ru_full] = {title: item.ru_full, data: []};
+      }
+      acc[item.ru_full].data.push(item);
+      return acc;
+    }, {});
+
+    const result = Object.values(groupedData);
+    this.setState({
+      descriptionData: result,
+    });
+    setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
+  }
   //ДОБАВИТЬ ТАЙМШТАМП
   onButtonPress(t_inline, transcription_us, transcription_uk) {
     const {word} = this.props;
@@ -110,60 +137,62 @@ class ResultPage extends Component {
     this.setState({inDictionary: !this.state.inDictionary});
   }
 
-  renderDescription(word, styles) {
-    return Object.values(word).map((translation, index) => {
-      return (
-        <View key={index} style={{marginVertical: 15}}>
-          <StyledText style={styles.translationItalic}>{translation.w}</StyledText>
-          <StyledText style={styles.translation}>{'- ' + translation.t.join('\n\n- ')}</StyledText>
-        </View>
-      );
-    });
-  }
+  // renderDescription(word, styles) {
+  //   return Object.values(word).map((translation, index) => {
+  //     return (
+  //       <View key={index} style={{marginVertical: 15}}>
+  //         <StyledText style={styles.translationItalic}>{translation.w}</StyledText>
+  //         <StyledText style={styles.translation}>{'- ' + translation.t.join('\n\n- ')}</StyledText>
+  //       </View>
+  //     );
+  //   });
+  // }
   // ПЕРЕМЕСТИТЬ В RENDER(){  }
-  description(item) {
-    const styles = this.props.darkMode ? darkStyles : lightStyles;
-    return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-      return <View key={index}>{this.renderDescription(word, styles)}</View>;
-    });
-  }
+  // description(item) {
+  //   const styles = this.props.darkMode ? darkStyles : lightStyles;
+  //   return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
+  //     return <View key={index}>{this.renderDescription(word, styles)}</View>;
+  //   });
+  // }
 
-  transcriptions(item) {
-    const styles = this.props.darkMode ? darkStyles : lightStyles;
-    return (
-      <View style={styles.transcriptions}>
-        <View>
-          {item.transcription_us !== null ? (
-            <Text>
-              <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
-              <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
-                |{item.transcription_us}|
-              </Text>
-            </Text>
-          ) : null}
-          {item.transcription_uk !== null ? (
-            <Text>
-              <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
-              <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
-                |{item.transcription_uk}|
-              </Text>
-            </Text>
-          ) : null}
-        </View>
-      </View>
-    );
-  }
+  // transcriptions(item) {
+  //   const styles = this.props.darkMode ? darkStyles : lightStyles;
+  //   return (
+  //     <View style={styles.transcriptions}>
+  //       <View>
+  //         {item.transcription_us !== null ? (
+  //           <Text>
+  //             <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
+  //             <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
+  //               |{item.transcription_us}|
+  //             </Text>
+  //           </Text>
+  //         ) : null}
+  //         {item.transcription_uk !== null ? (
+  //           <Text>
+  //             <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
+  //             <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
+  //               |{item.transcription_uk}|
+  //             </Text>
+  //           </Text>
+  //         ) : null}
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   render() {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
     const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
 
     const RenderTitle = ({item}) => {
-      debugger;
       return (
-        <View key={item.id}>
+        <View>
           <View style={styles.title}>
             <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
               <Text style={styles.titleWord}>
@@ -185,30 +214,67 @@ class ResultPage extends Component {
       );
     };
 
-    const renderSection = ({item, index}) => {
-      // const tInline = item.t_inline.toString();
+    const toggleExample = id => {
+      this.setState(prevState => {
+        const expandedExamples = [...prevState.expandedExamples];
+        const existingIndex = expandedExamples.indexOf(id);
+        if (expandedExamples.includes(id)) {
+          expandedExamples.splice(existingIndex, 1);
+        } else {
+          expandedExamples.push(id);
+        }
+        return {expandedExamples};
+      });
+      // LayoutAnimation.configureNext({
+      //   duration: 300,
+      //   create: {type: 'linear', property: 'opacity'},
+      //   update: {type: 'linear', property: 'opacity'},
+      //   delete: {type: 'linear', property: 'opacity'},
+      // });
+    };
 
+    const renderSection = ({item, index}) => {
+      const isExists = this.state.expandedExamples.includes(item.id);
+      const example = item.examples.join('\n');
       return (
         <View style={{marginTop: 15}}>
-          {/* <Text>
+          <Text>
             <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
-            <Text style={[styles.translation, {color: defaultDark.lightBlueFont}]}>
-              {item.en_word}
-            </Text>
-            <Text style={styles.transcriptionWord}>
-              {item.transcription_us ? ' |' + item.transcription_us + '|' + ' — ' : ' — '}
-            </Text>
-            <Text style={styles.translation}>{tInline}</Text>
-          </Text> */}
-          {item.examples &&
-            item.examples.map((example, index) => (
-              <View key={index} style={{flexDirection: 'row'}}>
-                <Text style={{width: 10}}></Text>
-                <Text>
-                  <Text style={styles.translationSentence}>{example}</Text>
-                </Text>
-              </View>
-            ))}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                toggleExample(item.id);
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.Presets.easeInEaseOut,
+                  //   {
+                  //   duration: 300,
+                  //   create: {type: 'linear', property: 'opacity'},
+                  //   update: {type: 'linear', property: 'opacity'},
+                  //   delete: {type: 'linear', property: 'opacity'},
+                  // }
+                );
+              }}>
+              <StyledText
+                style={[styles.translation, {color: defaultDark.lightBlueFont}]}
+                textStyles={{i: [styles.translation, {color: 'gray', fontStyle: 'italic'}]}}>
+                {item.variant}
+              </StyledText>
+            </TouchableWithoutFeedback>
+          </Text>
+          {isExists && (
+            <Animated.View
+              style={{
+                marginVertical: 3,
+              }}>
+              {item.examples.map((example, index) => (
+                <View key={index} style={{flexDirection: 'row'}}>
+                  <Text style={{width: 10}}></Text>
+                  <Text>
+                    <Text style={styles.translationSentence}>{example}</Text>
+                  </Text>
+                </View>
+              ))}
+            </Animated.View>
+          )}
         </View>
       );
     };
@@ -255,12 +321,18 @@ class ResultPage extends Component {
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
-              sections={[{title: '', data: this.state.descriptionData}]}
+              sections={this.state.descriptionData}
               renderItem={renderSection}
-              renderSectionHeader={null}
+              renderSectionHeader={({section}) =>
+                section.title.length > 0 ? (
+                  <Text style={[styles.translationItalic, {marginTop: 20}]}>{section.title}</Text>
+                ) : null
+              }
               ListHeaderComponent={<RenderTitle item={this.state.headerData} />}
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item, index) => '$item.id - $index'}
               contentContainerStyle={{paddingVertical: 25, paddingHorizontal: 20}}
+              // initialNumToRender={20}
+              // windowSize={15}
             />
           </View>
         )}
