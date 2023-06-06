@@ -1,22 +1,13 @@
 import React, {PureComponent} from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  Keyboard,
-  SafeAreaView,
-  TextInput,
-  Platform,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {View, Text, Pressable, FlatList, Keyboard, TextInput, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {lightStyles} from '../Styles/LightTheme/Header';
 import {darkStyles} from '../Styles/DarkTheme/Header';
 import {openDatabase} from 'react-native-sqlite-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 
-const db = openDatabase({name: 'ru_en_word.db', createFromLocation: 1});
+const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 
 class Search extends PureComponent {
   constructor(props) {
@@ -45,7 +36,7 @@ class Search extends PureComponent {
       if (/[A-Za-z]/.test(searchValue)) {
         var query =
           'SELECT id, word, t_inline, transcription_us, transcription_uk ' +
-          "FROM en_ru_word WHERE t_mix IS NOT NULL AND t_inline IS NOT NULL AND word LIKE '" +
+          "FROM en_ru_word WHERE t_inline IS NOT NULL AND word LIKE '" +
           searchValue.toLowerCase() +
           "%' ORDER BY rank LIMIT 10";
         this.setState({goTo: 'ResultEn'});
@@ -53,7 +44,7 @@ class Search extends PureComponent {
         var query =
           "SELECT id, word, t_inline, lemma FROM ru_en_word WHERE t_inline IS NOT '' AND word LIKE '" +
           searchValue.toLowerCase() +
-          "%' ORDER BY rank LIMIT 10";
+          "%' ORDER BY id LIMIT 10";
         this.setState({goTo: 'ResultRu'});
       }
       try {
@@ -168,7 +159,9 @@ class Search extends PureComponent {
           </View>
         </View>
         {this.state.searching ? (
-          <FlatList
+          <Animated.FlatList
+            entering={FadeIn}
+            exiting={FadeOut}
             data={this.state.data}
             keyExtractor={this.keyExtractor}
             windowSize={1}

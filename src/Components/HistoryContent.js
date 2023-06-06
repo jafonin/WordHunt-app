@@ -11,7 +11,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 class _renderHistory extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {data: []};
+    this.state = {data: [], isEmpty: false};
   }
 
   componentDidMount() {
@@ -21,6 +21,7 @@ class _renderHistory extends PureComponent {
   componentDidUpdate(prevProps) {
     if (prevProps.isFocused !== this.props.isFocused) {
       this.fetchData();
+      this.setState({isEmpty: false});
     }
   }
 
@@ -35,7 +36,7 @@ class _renderHistory extends PureComponent {
             for (let i = 0; i < results.rows.length; ++i) {
               temp.push(results.rows.item(i));
             }
-            this.setState({data: temp});
+            results.rows.length == 0 ? this.setState({isEmpty: true}) : this.setState({data: temp});
           },
         );
       });
@@ -59,7 +60,10 @@ class _renderHistory extends PureComponent {
     } catch (error) {
       console.log(error);
     }
-    return navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {word: word, id: id});
+    return navigation.navigate(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {
+      word: word,
+      id: id,
+    });
   };
 
   renderItem = ({item}, styles) => {
@@ -105,11 +109,11 @@ class _renderHistory extends PureComponent {
           data={this.state.data}
           keyExtractor={this.keyExtractor}
           renderItem={item => this.renderItem(item, styles)}
-          ListEmptyComponent={this.renderEmptyList(styles)}
+          ListEmptyComponent={this.state.isEmpty ? this.renderEmptyList(styles) : null}
           keyboardDismissMode={'on-drag'}
           keyboardShouldPersistTaps={'always'}
           initialNumToRender={20}
-          windowSize={7}
+          windowSize={15}
         />
       </View>
     );

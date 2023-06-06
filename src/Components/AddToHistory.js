@@ -5,7 +5,7 @@ const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
 export const setData = async (
   word,
   id,
-  t_inline = null,
+  t_inline,
   transcription_us = null,
   transcription_uk = null,
 ) => {

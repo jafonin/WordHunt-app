@@ -14,22 +14,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 
-export const Navigation = () => {
-  const [darkMode, setDarkMode] = useState(false);
+export const Navigation = ({darkMode, setDarkMode, ...props}) => {
+  // const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    async function getTheme() {
-      try {
-        const theme = await AsyncStorage.getItem('theme');
-        if (theme !== null) {
-          setDarkMode(JSON.parse(theme));
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getTheme();
-  }, []);
+  // useEffect(() => {
+  //   async function getTheme() {
+  //     try {
+  //       const theme = await AsyncStorage.getItem('theme');
+  //       if (theme !== null) {
+  //         setDarkMode(JSON.parse(theme));
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   getTheme();
+  // }, []);
 
   const drawerStyle = darkMode
     ? {backgroudColor: '#242424', TintColor: '#fff3d6'}

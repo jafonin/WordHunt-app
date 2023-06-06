@@ -7,6 +7,8 @@ import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
+import Animated, {FadeInLeft, FadeOutRight} from 'react-native-reanimated';
+import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -106,19 +108,23 @@ class ResultPage extends PureComponent {
     });
   };
   //ДОБАВИТЬ ТАЙМШТАМП
-  async onButtonPress(id, t_inline) {
+  async onButtonPress(t_inline) {
     const {word} = this.props;
+    const {id} = this.props;
+
     if (!this.state.inDictionary) {
-      await dbDic.transaction(async tx => {
-        await tx.executeSql(
-          'INSERT OR IGNORE INTO dictionary (id, word, t_inline) VALUES (?,?,?)',
-          [id, word, t_inline],
-        );
-      });
+      setDictionaryData(word, id, t_inline);
+      //   await dbDic.transaction(async tx => {
+      //     await tx.executeSql(
+      //       'INSERT OR IGNORE INTO dictionary (id, word, t_inline) VALUES (?,?,?)',
+      //       [id, word, t_inline],
+      //     );
+      //   });
     } else {
-      await dbDic.transaction(async tx => {
-        await tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
-      });
+      deleteDictionaryData(word, id);
+      //   await dbDic.transaction(async tx => {
+      //     await tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
+      //   });
     }
     this.setState(prevState => ({inDictionary: !prevState.inDictionary}));
   }
@@ -148,7 +154,7 @@ class ResultPage extends PureComponent {
               <Text style={styles.rank}>{item.rank}</Text>
             </View>
             <Pressable
-              onPress={() => this.onButtonPress(item.id, item.t_inline)}
+              onPress={() => this.onButtonPress(item.t_inline)}
               android_ripple={styles.ripple}
               style={styles.flagButton}>
               <Image source={imageSource} style={styles.image} />

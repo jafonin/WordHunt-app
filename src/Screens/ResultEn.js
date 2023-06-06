@@ -8,11 +8,7 @@ import {
   Pressable,
   SectionList,
   ActivityIndicator,
-  Animated,
-  LayoutAnimation,
   TouchableWithoutFeedback,
-  UIManager,
-  Platform,
 } from 'react-native';
 import StyledText from 'react-native-styled-text';
 import {setData} from '../Components/AddToHistory';
@@ -20,6 +16,8 @@ import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
+import Animated, {FadeIn, FadeInLeft, FadeOutRight} from 'react-native-reanimated';
+import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -33,7 +31,6 @@ class ResultPage extends Component {
       inDictionary: false,
       isLoading: true,
       expandedExamples: [],
-      // value: new Animated.Value(0),
     };
   }
 
@@ -74,6 +71,7 @@ class ResultPage extends Component {
         var headerDataTemp = [];
         headerDataTemp.push(results.rows.item(0));
         this.setState({headerData: headerDataTemp[0], isLoading: false});
+        setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
       });
       await tx.executeSql(enRuSentenceDicQuery, [], (tx, results) => {
         this.configureData(results.rows);
@@ -117,24 +115,18 @@ class ResultPage extends Component {
     this.setState({
       descriptionData: result,
     });
-    setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
   }
   //ДОБАВИТЬ ТАЙМШТАМП
-  onButtonPress(t_inline, transcription_us, transcription_uk) {
+  onButtonPress(t_inline, transcription_us, transcription_uk = null) {
     const {word} = this.props;
+    const {id} = this.props;
+
     if (!this.state.inDictionary) {
-      dbDic.transaction(tx => {
-        tx.executeSql(
-          'INSERT OR IGNORE INTO dictionary (word, t_inline, transcription_us, transcription_uk) VALUES (?,?,?,?)',
-          [word, t_inline, transcription_us, transcription_uk],
-        );
-      });
+      setDictionaryData(word, id, t_inline, transcription_us, transcription_uk);
     } else {
-      dbDic.transaction(tx => {
-        tx.executeSql("DELETE FROM dictionary WHERE word = '" + word + "'", []);
-      });
+      deleteDictionaryData(word, id);
     }
-    this.setState({inDictionary: !this.state.inDictionary});
+    this.setState(prevState => ({inDictionary: !prevState.inDictionary}));
   }
 
   // renderDescription(word, styles) {
@@ -186,13 +178,10 @@ class ResultPage extends Component {
     const imageSource = this.state.inDictionary
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
-    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
 
-    const RenderTitle = ({item}) => {
+    const RenderTitle = ({item, index}) => {
       return (
-        <View>
+        <View key={index}>
           <View style={styles.title}>
             <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
               <Text style={styles.titleWord}>
@@ -201,7 +190,7 @@ class ResultPage extends Component {
               <Text style={styles.rank}>{item.rank}</Text>
             </View>
             <Pressable
-              onPress={() => this.onButtonPress(item.id, item.t_inline)}
+              onPress={() => this.onButtonPress(item.t_inline, item.transcription_us)}
               android_ripple={styles.ripple}
               style={styles.flagButton}>
               <Image source={imageSource} style={styles.image} />
@@ -218,6 +207,7 @@ class ResultPage extends Component {
       this.setState(prevState => {
         const expandedExamples = [...prevState.expandedExamples];
         const existingIndex = expandedExamples.indexOf(id);
+
         if (expandedExamples.includes(id)) {
           expandedExamples.splice(existingIndex, 1);
         } else {
@@ -225,33 +215,18 @@ class ResultPage extends Component {
         }
         return {expandedExamples};
       });
-      // LayoutAnimation.configureNext({
-      //   duration: 300,
-      //   create: {type: 'linear', property: 'opacity'},
-      //   update: {type: 'linear', property: 'opacity'},
-      //   delete: {type: 'linear', property: 'opacity'},
-      // });
     };
 
     const renderSection = ({item, index}) => {
       const isExists = this.state.expandedExamples.includes(item.id);
-      const example = item.examples.join('\n');
+      const example = isExists ? item.examples.join('\n') : null;
       return (
-        <View style={{marginTop: 15}}>
+        <View style={{marginTop: 15}} key={index}>
           <Text>
             <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
             <TouchableWithoutFeedback
               onPress={() => {
                 toggleExample(item.id);
-                LayoutAnimation.configureNext(
-                  LayoutAnimation.Presets.easeInEaseOut,
-                  //   {
-                  //   duration: 300,
-                  //   create: {type: 'linear', property: 'opacity'},
-                  //   update: {type: 'linear', property: 'opacity'},
-                  //   delete: {type: 'linear', property: 'opacity'},
-                  // }
-                );
               }}>
               <StyledText
                 style={[styles.translation, {color: defaultDark.lightBlueFont}]}
@@ -262,17 +237,13 @@ class ResultPage extends Component {
           </Text>
           {isExists && (
             <Animated.View
+              entering={FadeInLeft}
+              exiting={FadeOutRight}
               style={{
                 marginVertical: 3,
+                flex: 1,
               }}>
-              {item.examples.map((example, index) => (
-                <View key={index} style={{flexDirection: 'row'}}>
-                  <Text style={{width: 10}}></Text>
-                  <Text>
-                    <Text style={styles.translationSentence}>{example}</Text>
-                  </Text>
-                </View>
-              ))}
+              <Text style={styles.translationSentence}>{example}</Text>
             </Animated.View>
           )}
         </View>
@@ -306,10 +277,10 @@ class ResultPage extends Component {
     //     <View>{this.description(item)}</View>
     //   </View>
     // ));
+    const keyExtractor = item => item.id.toString();
     return (
       <View style={styles.body}>
         <Header darkMode={this.props.darkMode} />
-
         {this.state.isLoading ? (
           <ActivityIndicator
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -317,28 +288,21 @@ class ResultPage extends Component {
             color="#007AFF"
           />
         ) : (
-          <View style={styles.spacer}>
+          <Animated.View style={styles.spacer} entering={FadeIn}>
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
               sections={this.state.descriptionData}
               renderItem={renderSection}
-              renderSectionHeader={({section}) =>
-                section.title.length > 0 ? (
-                  <Text style={[styles.translationItalic, {marginTop: 20}]}>{section.title}</Text>
-                ) : null
-              }
+              renderSectionHeader={({section}) => (
+                <Text style={[styles.translationItalic, {marginTop: 20}]}>{section.title}</Text>
+              )}
               ListHeaderComponent={<RenderTitle item={this.state.headerData} />}
-              keyExtractor={(item, index) => '$item.id - $index'}
-              contentContainerStyle={{paddingVertical: 25, paddingHorizontal: 20}}
-              // initialNumToRender={20}
-              // windowSize={15}
+              keyExtractor={keyExtractor}
+              contentContainerStyle={{flexGrow: 1, paddingVertical: 25, paddingHorizontal: 20}}
             />
-          </View>
+          </Animated.View>
         )}
-        {/* <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled">
-          {page}
-        </ScrollView> */}
       </View>
     );
   }

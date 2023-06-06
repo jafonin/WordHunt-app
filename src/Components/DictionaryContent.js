@@ -7,6 +7,7 @@ import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {setData} from './AddToHistory';
+import Animated from 'react-native-reanimated';
 
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
 
@@ -27,7 +28,7 @@ class _renderDictionary extends PureComponent {
   }
 
   fetchData() {
-    var query = 'SELECT * FROM dictionary ORDER BY id DESC';
+    var query = 'SELECT * FROM dictionary ORDER BY time DESC';
     try {
       dbDic.transaction(tx => {
         tx.executeSql(query, [], (tx, results) => {
@@ -44,7 +45,6 @@ class _renderDictionary extends PureComponent {
   }
 
   navigateOnPress = (word, id) => {
-    // const {navigation} = this.props;
     return (
       this.props.navigation.jumpTo(/[A-Za-z]/.test(word) ? 'ResultEn' : 'ResultRu', {
         word: word,
@@ -63,11 +63,11 @@ class _renderDictionary extends PureComponent {
   };
 
   renderItem = ({item}, styles) => {
-    const {id, word, t_inline, transcription_us, transcription_uk} = item;
+    const {id, word, t_inline, transcription_us, transcription_uk, en_id, ru_id} = item;
     return (
       <View key={id} style={styles.listItem}>
         <Pressable
-          onPress={() => this.navigateOnPress(word, id)}
+          onPress={() => this.navigateOnPress(word, en_id ? en_id : ru_id)}
           android_ripple={styles.ripple}
           style={{flex: 1}}>
           <View style={{flexDirection: 'row', flex: 1, marginLeft: 25}}>
@@ -112,7 +112,7 @@ class _renderDictionary extends PureComponent {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
     return (
       <View style={{flex: 1}}>
-        <FlatList
+        <Animated.FlatList
           contentContainerStyle={{flexGrow: 1, paddingVertical: 14}}
           data={this.state.data}
           keyExtractor={this.keyExtractor}
