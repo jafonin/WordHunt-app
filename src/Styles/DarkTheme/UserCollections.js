@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {defaultDark} from '../Global';
 
+//TODO fontSize 17; place fontSize in global.js
 export const darkStyles = StyleSheet.create({
   body: {
     flex: 1,

@@ -11,6 +11,7 @@ import CustomDrawer from '../Components/CustomDrawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Header from '../Components/Header';
 
 const Drawer = createDrawerNavigator();
 
@@ -55,6 +56,7 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
           drawerType: 'slide',
           swipeEdgeWidth: 60,
           headerShown: false,
+          // header: () => <Header darkMode={darkMode} />,
           drawerActiveBackgroundColor: drawerStyle.backgroudColor,
           drawerActiveTintColor: drawerStyle.TintColor,
           drawerInactiveTintColor: drawerStyle.TintColor,

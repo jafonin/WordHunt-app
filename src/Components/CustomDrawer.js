@@ -14,7 +14,7 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   const [data, setData] = useState([]);
   const styles = darkMode ? darkStyles : lightStyles;
   useEffect(() => {
-    fetchData();
+    // fetchData();
   });
   const fetchData = async () => {
     try {

@@ -16,7 +16,15 @@ import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
-import Animated, {FadeIn, FadeInLeft, FadeOutRight} from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInLeft,
+  FadeInUp,
+  FadeOut,
+  FadeOutRight,
+  FadeOutUp,
+} from 'react-native-reanimated';
 import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
@@ -35,15 +43,23 @@ class ResultPage extends Component {
   }
 
   componentDidMount() {
-    this.setState({isLoading: true});
-    this.fetchData(this.props.id, this.props.word);
+    this.setState({isLoading: true}, () => {
+      this.fetchData(this.props.id, this.props.word);
+    });
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.word !== this.props.word || prevProps.isFocused !== this.props.isFocused) {
-      this.setState({inDictionary: false, isLoading: true});
-      this.fetchData(this.props.id, this.props.word);
+      this.setState(
+        {inDictionary: false, isLoading: true, headerData: [], descriptionData: []},
+        () => {
+          this.fetchData(this.props.id, this.props.word);
+        },
+      );
     }
+  }
+  componentWillUnmount() {
+    this.setState({isLoading: true});
   }
 
   fetchData = async (id, word) => {
@@ -70,7 +86,7 @@ class ResultPage extends Component {
       await tx.executeSql(enRuWordDicQuery, [], (tx, results) => {
         var headerDataTemp = [];
         headerDataTemp.push(results.rows.item(0));
-        this.setState({headerData: headerDataTemp[0], isLoading: false});
+        this.setState({headerData: headerDataTemp[0]});
         setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
       });
       await tx.executeSql(enRuSentenceDicQuery, [], (tx, results) => {
@@ -114,9 +130,10 @@ class ResultPage extends Component {
     const result = Object.values(groupedData);
     this.setState({
       descriptionData: result,
+      isLoading: false,
     });
   }
-  //ДОБАВИТЬ ТАЙМШТАМП
+
   onButtonPress(t_inline, transcription_us, transcription_uk = null) {
     const {word} = this.props;
     const {id} = this.props;
@@ -129,49 +146,20 @@ class ResultPage extends Component {
     this.setState(prevState => ({inDictionary: !prevState.inDictionary}));
   }
 
-  // renderDescription(word, styles) {
-  //   return Object.values(word).map((translation, index) => {
-  //     return (
-  //       <View key={index} style={{marginVertical: 15}}>
-  //         <StyledText style={styles.translationItalic}>{translation.w}</StyledText>
-  //         <StyledText style={styles.translation}>{'- ' + translation.t.join('\n\n- ')}</StyledText>
-  //       </View>
-  //     );
-  //   });
-  // }
-  // ПЕРЕМЕСТИТЬ В RENDER(){  }
-  // description(item) {
-  //   const styles = this.props.darkMode ? darkStyles : lightStyles;
-  //   return Object.values(JSON.parse(item.t_mix)).map((word, index) => {
-  //     return <View key={index}>{this.renderDescription(word, styles)}</View>;
-  //   });
-  // }
+  toggleExample(id) {
+    this.setState(prevState => {
+      const expandedExamples = [...prevState.expandedExamples];
+      const existingIndex = expandedExamples.indexOf(id);
 
-  // transcriptions(item) {
-  //   const styles = this.props.darkMode ? darkStyles : lightStyles;
-  //   return (
-  //     <View style={styles.transcriptions}>
-  //       <View>
-  //         {item.transcription_us !== null ? (
-  //           <Text>
-  //             <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>амер. </Text>
-  //             <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
-  //               |{item.transcription_us}|
-  //             </Text>
-  //           </Text>
-  //         ) : null}
-  //         {item.transcription_uk !== null ? (
-  //           <Text>
-  //             <Text style={[styles.transcriptionWord, {fontStyle: 'italic'}]}>брит. </Text>
-  //             <Text style={[styles.transcriptionWord, {marginLeft: 7}]}>
-  //               |{item.transcription_uk}|
-  //             </Text>
-  //           </Text>
-  //         ) : null}
-  //       </View>
-  //     </View>
-  //   );
-  // }
+      if (expandedExamples.includes(id)) {
+        expandedExamples.splice(existingIndex, 1);
+      } else {
+        expandedExamples.push(id);
+      }
+
+      return {expandedExamples};
+    });
+  }
 
   render() {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
@@ -183,7 +171,7 @@ class ResultPage extends Component {
       return (
         <View key={index}>
           <View style={styles.title}>
-            <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
+            <View style={{flexDirection: 'row', flex: 1}}>
               <Text style={styles.titleWord}>
                 {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
               </Text>
@@ -196,25 +184,31 @@ class ResultPage extends Component {
               <Image source={imageSource} style={styles.image} />
             </Pressable>
           </View>
-          <View style={{marginTop: 10, marginBottom: 20}}>
+          <View style={styles.transcriptions}>
+            {item.transcription_us.length > 0 && (
+              <StyledText
+                style={styles.transcriptionWord}
+                textStyles={{
+                  i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
+                }}>
+                {'<i>амер.</i> ' + '|' + item.transcription_us + '|'}
+              </StyledText>
+            )}
+            {item.transcription_uk.length > 0 && (
+              <StyledText
+                style={styles.transcriptionWord}
+                textStyles={{
+                  i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
+                }}>
+                {'<i>брит.</i> ' + '|' + item.transcription_uk + '|'}
+              </StyledText>
+            )}
+          </View>
+          <View style={{marginVertical: 15}}>
             <Text style={styles.translation}>{item.t_inline}</Text>
           </View>
         </View>
       );
-    };
-
-    const toggleExample = id => {
-      this.setState(prevState => {
-        const expandedExamples = [...prevState.expandedExamples];
-        const existingIndex = expandedExamples.indexOf(id);
-
-        if (expandedExamples.includes(id)) {
-          expandedExamples.splice(existingIndex, 1);
-        } else {
-          expandedExamples.push(id);
-        }
-        return {expandedExamples};
-      });
     };
 
     const renderSection = ({item, index}) => {
@@ -226,10 +220,10 @@ class ResultPage extends Component {
             <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
             <TouchableWithoutFeedback
               onPress={() => {
-                toggleExample(item.id);
+                this.toggleExample(item.id);
               }}>
               <StyledText
-                style={[styles.translation, {color: defaultDark.lightBlueFont}]}
+                style={styles.translation}
                 textStyles={{i: [styles.translation, {color: 'gray', fontStyle: 'italic'}]}}>
                 {item.variant}
               </StyledText>
@@ -237,10 +231,11 @@ class ResultPage extends Component {
           </Text>
           {isExists && (
             <Animated.View
-              entering={FadeInLeft}
-              exiting={FadeOutRight}
+              entering={FadeInUp}
+              exiting={FadeOutUp.duration(200)}
               style={{
                 marginVertical: 3,
+                marginLeft: 20,
                 flex: 1,
               }}>
               <Text style={styles.translationSentence}>{example}</Text>
@@ -249,34 +244,6 @@ class ResultPage extends Component {
         </View>
       );
     };
-
-    // const page = this.state.headerData.map(item => (
-    //   <View key={item.id} style={styles.spacer}>
-    //     <View style={styles.title}>
-    //       <View style={{flexDirection: 'row', flex: 1}}>
-    //         <Text style={styles.titleWord}>
-    //           {item.word.charAt(0).toUpperCase() + item.word.slice(1)}
-    //         </Text>
-    //         <Text style={styles.rank}>{item.rank}</Text>
-    //       </View>
-    //       <Pressable
-    //         onPress={() =>
-    //           this.onButtonPress(item.t_inline, item.transcription_us, item.transcription_uk)
-    //         }
-    //         android_ripple={styles.ripple}
-    //         style={styles.flagButton}>
-    //         <Image source={imageSource} style={styles.image} />
-    //       </Pressable>
-    //     </View>
-    //     {item.transcription_us !== null || item.transcription_uk !== null
-    //       ? this.transcriptions(item)
-    //       : null}
-    //     <View style={{marginVertical: 10}}>
-    //       <Text style={styles.translation}>{item.t_inline}</Text>
-    //     </View>
-    //     <View>{this.description(item)}</View>
-    //   </View>
-    // ));
     const keyExtractor = item => item.id.toString();
     return (
       <View style={styles.body}>
@@ -288,7 +255,7 @@ class ResultPage extends Component {
             color="#007AFF"
           />
         ) : (
-          <Animated.View style={styles.spacer} entering={FadeIn}>
+          <View style={styles.spacer}>
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
@@ -301,7 +268,7 @@ class ResultPage extends Component {
               keyExtractor={keyExtractor}
               contentContainerStyle={{flexGrow: 1, paddingVertical: 25, paddingHorizontal: 20}}
             />
-          </Animated.View>
+          </View>
         )}
       </View>
     );
