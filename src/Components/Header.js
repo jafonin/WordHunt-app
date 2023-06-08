@@ -5,7 +5,7 @@ import {lightStyles} from '../Styles/LightTheme/Header';
 import {darkStyles} from '../Styles/DarkTheme/Header';
 import {openDatabase} from 'react-native-sqlite-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
+import Animated, {FadeIn, FadeOut, SlideOutDown, ZoomOut} from 'react-native-reanimated';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 
@@ -161,7 +161,6 @@ class Search extends PureComponent {
         {this.state.searching ? (
           <Animated.FlatList
             entering={FadeIn}
-            exiting={FadeOut}
             data={this.state.data}
             keyExtractor={this.keyExtractor}
             windowSize={1}

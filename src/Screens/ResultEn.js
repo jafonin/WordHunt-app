@@ -22,6 +22,7 @@ import Animated, {
   FadeInLeft,
   FadeInUp,
   FadeOut,
+  FadeOutDown,
   FadeOutRight,
   FadeOutUp,
 } from 'react-native-reanimated';
@@ -36,6 +37,7 @@ class ResultPage extends Component {
     this.state = {
       headerData: [],
       descriptionData: [],
+      descriptionDataCrop: [],
       inDictionary: false,
       isLoading: true,
       expandedExamples: [],
@@ -57,9 +59,6 @@ class ResultPage extends Component {
         },
       );
     }
-  }
-  componentWillUnmount() {
-    this.setState({isLoading: true});
   }
 
   fetchData = async (id, word) => {
@@ -128,8 +127,14 @@ class ResultPage extends Component {
     }, {});
 
     const result = Object.values(groupedData);
+    var resultCrop = [];
+    for (let i = 0; i < result.length; ++i) {
+      resultCrop.push({title: result[i].title, data: result[i].data.slice(0, 10)});
+    }
+    console.log(resultCrop);
     this.setState({
       descriptionData: result,
+      descriptionDataCrop: resultCrop,
       isLoading: false,
     });
   }
@@ -159,6 +164,22 @@ class ResultPage extends Component {
 
       return {expandedExamples};
     });
+  }
+
+  loadMore(index, sectionLenght) {
+    const temp = this.state.descriptionData[index].data.slice(0, sectionLenght + 11);
+
+    let copyData = [...this.state.descriptionDataCrop];
+    copyData[index].data = temp;
+    console.log(copyData);
+
+    this.setState(prevState => {
+      let copyData = [...prevState.descriptionDataCrop];
+      copyData[index].data = temp;
+      return {descriptionDataCrop: copyData};
+    });
+    // console.log(section.data.length);
+    // return item.section.data.push(newData);
   }
 
   render() {
@@ -244,10 +265,28 @@ class ResultPage extends Component {
         </View>
       );
     };
+    const renderFooter = ({section}) => {
+      const index = this.state.descriptionDataCrop.findIndex(sec => sec.title === section.title);
+      const sectionLenght = [...section.data].length;
+      const dataLenght = [...this.state.descriptionData[index].data].length;
+
+      return (
+        <>
+          {sectionLenght < dataLenght && (
+            <Text
+              onPress={() => this.loadMore(index, sectionLenght)}
+              style={[styles.translation, {color: 'green', marginVertical: 5}]}>
+              Показать еще
+            </Text>
+          )}
+        </>
+      );
+    };
     const keyExtractor = item => item.id.toString();
     return (
       <View style={styles.body}>
         <Header darkMode={this.props.darkMode} />
+
         {this.state.isLoading ? (
           <ActivityIndicator
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -255,20 +294,21 @@ class ResultPage extends Component {
             color="#007AFF"
           />
         ) : (
-          <View style={styles.spacer}>
+          <Animated.View style={styles.spacer} entering={FadeInDown} exiting={FadeOutDown}>
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
-              sections={this.state.descriptionData}
+              sections={this.state.descriptionDataCrop}
               renderItem={renderSection}
               renderSectionHeader={({section}) => (
                 <Text style={[styles.translationItalic, {marginTop: 20}]}>{section.title}</Text>
               )}
+              renderSectionFooter={renderFooter}
               ListHeaderComponent={<RenderTitle item={this.state.headerData} />}
               keyExtractor={keyExtractor}
               contentContainerStyle={{flexGrow: 1, paddingVertical: 25, paddingHorizontal: 20}}
             />
-          </View>
+          </Animated.View>
         )}
       </View>
     );

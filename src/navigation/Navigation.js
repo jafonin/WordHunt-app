@@ -11,7 +11,8 @@ import CustomDrawer from '../Components/CustomDrawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../Components/Header';
+
+import Search from '../Screens/Search';
 
 const Drawer = createDrawerNavigator();
 
@@ -42,6 +43,8 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
   const ResultEnScreen = () => <ResultEn darkMode={darkMode} />;
   const ResultRuScreen = () => <ResultRu darkMode={darkMode} />;
   const SettingsScreen = () => <Settings darkMode={darkMode} />;
+  const SearchScreen = () => <Search darkMode={darkMode} />;
+  // const Header = () => <Header darkMode={darkMode} />;
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -56,7 +59,7 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
           drawerType: 'slide',
           swipeEdgeWidth: 60,
           headerShown: false,
-          // header: () => <Header darkMode={darkMode} />,
+          // header: Header,
           drawerActiveBackgroundColor: drawerStyle.backgroudColor,
           drawerActiveTintColor: drawerStyle.TintColor,
           drawerInactiveTintColor: drawerStyle.TintColor,
@@ -108,12 +111,14 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
         <Drawer.Screen
           name="ResultEn"
           component={ResultEnScreen}
-          options={{drawerItemStyle: {display: 'none'}}}
+          unmountOnBlur={true}
+          options={{drawerItemStyle: {display: 'none'}, unmountOnBlur: true}}
         />
         <Drawer.Screen
           name="ResultRu"
           component={ResultRuScreen}
-          options={{drawerItemStyle: {display: 'none'}, onOpen: () => console.log('opened')}}
+          unmountOnBlur={true}
+          options={{drawerItemStyle: {display: 'none'}, unmountOnBlur: true}}
         />
         <Drawer.Screen
           name="Settings"
