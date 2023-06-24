@@ -38,6 +38,7 @@ class ResultPage extends Component {
       headerData: [],
       descriptionData: [],
       descriptionDataCrop: [],
+      footerData: [],
       inDictionary: false,
       isLoading: true,
       expandedExamples: [],
@@ -63,15 +64,18 @@ class ResultPage extends Component {
 
   fetchData = async (id, word) => {
     let enRuWordDicQuery =
-      'SELECT id, rank, word, t_inline, transcription_us, transcription_uk ' +
+      'SELECT en_ru_word.id, en_ru_word.rank, en_ru_word.word, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
+      'en_ru_word.transcription_uk, en_ru_word_dic_word_forms_passive.form, en_ru_word_dic_word_forms_names.name, en_ru_word_dic_word_forms_names.name_str ' +
       'FROM en_ru_word ' +
-      "WHERE id='" +
+      'LEFT JOIN en_ru_word_dic_word_forms_passive ON en_ru_word.id=en_ru_word_dic_word_forms_passive.word_id ' +
+      'LEFT JOIN en_ru_word_dic_word_forms_names ON en_ru_word_dic_word_forms_passive.name_id=en_ru_word_dic_word_forms_names.id ' +
+      "WHERE en_ru_word.id='" +
       id +
       "'";
 
     let enRuSentenceDicQuery =
-      'SELECT tech_part_of_speach.ru_full, en_ru_word_dic_tr.id, ' +
-      "en_ru_word_dic_tr.variant, GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation " +
+      'SELECT tech_part_of_speach.ru_full, en_ru_word_dic_tr.id, en_ru_word_dic_tr.variant, ' +
+      "GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation " +
       'FROM en_ru_word_dic_pos ' +
       'LEFT JOIN tech_part_of_speach ON en_ru_word_dic_pos.pos_code=tech_part_of_speach.code ' +
       'LEFT JOIN en_ru_word_dic_tr ON en_ru_word_dic_pos.id=en_ru_word_dic_tr.pos_id ' +
@@ -81,9 +85,19 @@ class ResultPage extends Component {
       id +
       "' AND en_ru_sentence.original NOT NULL " +
       'GROUP BY en_ru_word_dic_tr.id ORDER BY en_ru_word_dic_pos.pos_order, en_ru_word_dic_tr.tr_order';
+
+    let enRuFormsDicQuery =
+      "SELECT GROUP_CONCAT(en_ru_word_dic_word_forms_names.name_str, '~') as name_str, " +
+      "GROUP_CONCAT(en_ru_word_dic_word_forms.form, '~') as form, tech_part_of_speach.en_full " +
+      'FROM en_ru_word_dic_word_forms ' +
+      'LEFT JOIN en_ru_word_dic_word_forms_names ON en_ru_word_dic_word_forms.name_id=en_ru_word_dic_word_forms_names.id ' +
+      'LEFT JOIN tech_part_of_speach ON en_ru_word_dic_word_forms.pos_code=tech_part_of_speach.code ' +
+      "WHERE en_ru_word_dic_word_forms.word_id= '" +
+      id +
+      "' GROUP BY tech_part_of_speach.en_full ORDER BY tech_part_of_speach.code DESC";
     await db.transaction(async tx => {
       await tx.executeSql(enRuWordDicQuery, [], (tx, results) => {
-        var headerDataTemp = [];
+        let headerDataTemp = [];
         headerDataTemp.push(results.rows.item(0));
         this.setState({headerData: headerDataTemp[0]});
         setData(word, id, headerDataTemp[0].t_inline, headerDataTemp[0].transcription_us);
@@ -91,13 +105,29 @@ class ResultPage extends Component {
       await tx.executeSql(enRuSentenceDicQuery, [], (tx, results) => {
         this.configureData(results.rows);
       });
+      await tx.executeSql(enRuFormsDicQuery, [], (tx, results) => {
+        let footerDataTemp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          footerDataTemp.push(results.rows.item(i));
+          footerDataTemp[i].name_str = footerDataTemp[i].name_str.split('~');
+          footerDataTemp[i].form = footerDataTemp[i].form.split('~');
+          footerDataTemp[i].forms_names = footerDataTemp[i].form.map(
+            (elem, index) => `${footerDataTemp[i].name_str[index]}: ${elem}`,
+          );
+          delete footerDataTemp[i].form;
+          delete footerDataTemp[i].name_str;
+        }
+
+        this.setState({footerData: footerDataTemp});
+        console.log(this.state.footerData);
+      });
     });
     await dbDic.transaction(async tx => {
       await tx.executeSql(
         "SELECT * FROM dictionary WHERE word = '" + word + "'",
         [],
         (tx, results) => {
-          var dictionaryTemp = [];
+          let dictionaryTemp = [];
           dictionaryTemp.push(results.rows.item(0));
           dictionaryTemp[0].word.length > 0 && this.setState({inDictionary: true});
         },
@@ -106,7 +136,7 @@ class ResultPage extends Component {
   };
 
   configureData(results) {
-    var descriptionDataTemp = [];
+    let descriptionDataTemp = [];
     for (let i = 0; i < results.length; ++i) {
       descriptionDataTemp.push(results.item(i));
       descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
@@ -127,7 +157,7 @@ class ResultPage extends Component {
     }, {});
 
     const result = Object.values(groupedData);
-    var resultCrop = [];
+    let resultCrop = [];
     for (let i = 0; i < result.length; ++i) {
       resultCrop.push({title: result[i].title, data: result[i].data.slice(0, 10)});
     }
@@ -166,12 +196,12 @@ class ResultPage extends Component {
     });
   }
 
-  loadMore(index, sectionLenght) {
+  loadCrop(index, sectionLenght) {
     const temp = this.state.descriptionData[index].data.slice(0, sectionLenght + 11);
 
-    let copyData = [...this.state.descriptionDataCrop];
-    copyData[index].data = temp;
-    console.log(copyData);
+    // let copyData = [...this.state.descriptionDataCrop];
+    // copyData[index].data = temp;
+    // console.log(copyData);
 
     this.setState(prevState => {
       let copyData = [...prevState.descriptionDataCrop];
@@ -188,7 +218,7 @@ class ResultPage extends Component {
       ? require('../img/pd_11.png')
       : require('../img/pd_00.png');
 
-    const RenderTitle = ({item, index}) => {
+    const Title = ({item, index}) => {
       return (
         <View key={index}>
           <View style={styles.title}>
@@ -232,7 +262,7 @@ class ResultPage extends Component {
       );
     };
 
-    const renderSection = ({item, index}) => {
+    const section = ({item, index}) => {
       const isExists = this.state.expandedExamples.includes(item.id);
       const example = isExists ? item.examples.join('\n') : null;
       return (
@@ -265,23 +295,56 @@ class ResultPage extends Component {
         </View>
       );
     };
-    const renderFooter = ({section}) => {
+    const sectionFooter = ({section}) => {
       const index = this.state.descriptionDataCrop.findIndex(sec => sec.title === section.title);
       const sectionLenght = [...section.data].length;
       const dataLenght = [...this.state.descriptionData[index].data].length;
 
       return (
-        <>
+        <View style={{flexDirection: 'row'}}>
           {sectionLenght < dataLenght && (
             <Text
-              onPress={() => this.loadMore(index, sectionLenght)}
-              style={[styles.translation, {color: 'green', marginVertical: 5}]}>
+              onPress={() => this.loadCrop(index, sectionLenght)}
+              style={[styles.translation, {color: 'green', marginVertical: 5, marginRight: 5}]}>
               Показать еще
             </Text>
           )}
-        </>
+          {sectionLenght > 10 && (
+            <Text
+              onPress={() => this.loadCrop(index, -1)}
+              style={[styles.translation, {color: 'gray', marginVertical: 5}]}>
+              Свернуть
+            </Text>
+          )}
+        </View>
       );
     };
+    const Footer = ({item, index}) => {
+      return (
+        item.length > 0 && (
+          <View key={index}>
+            <Text style={[styles.translationItalic, {marginTop: 20}]}>Формы слова</Text>
+            <View>
+              {item.map((partOfSpeech, index) => {
+                return (
+                  <View key={index} style={{marginVertical: 10}}>
+                    <Text style={styles.translationSentence}>{partOfSpeech.en_full}</Text>
+                    {partOfSpeech.forms_names.map((form_name, index) => {
+                      return (
+                        <View key={index}>
+                          <Text style={styles.translationSentence}>{form_name}</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )
+      );
+    };
+
     const keyExtractor = item => item.id.toString();
     return (
       <View style={styles.body}>
@@ -299,12 +362,13 @@ class ResultPage extends Component {
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
               sections={this.state.descriptionDataCrop}
-              renderItem={renderSection}
+              renderItem={section}
               renderSectionHeader={({section}) => (
                 <Text style={[styles.translationItalic, {marginTop: 20}]}>{section.title}</Text>
               )}
-              renderSectionFooter={renderFooter}
-              ListHeaderComponent={<RenderTitle item={this.state.headerData} />}
+              renderSectionFooter={sectionFooter}
+              ListHeaderComponent={<Title item={this.state.headerData} />}
+              ListFooterComponent={<Footer item={this.state.footerData} />}
               keyExtractor={keyExtractor}
               contentContainerStyle={{flexGrow: 1, paddingVertical: 25, paddingHorizontal: 20}}
             />
