@@ -132,8 +132,8 @@ class ResultPage extends PureComponent {
   render() {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
     const imageSource = this.state.inDictionary
-      ? require('../img/pd_11.png')
-      : require('../img/pd_00.png');
+      ? require('../../android/app/src/main/assets/www/img/pd_11.png')
+      : require('../../android/app/src/main/assets/www/img/pd_00.png');
 
     const renderLemma = (lemma, styles) => {
       return (

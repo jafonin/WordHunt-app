@@ -92,7 +92,10 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
             <Pressable onPress={toggleDarkMode}>
               <Text style={{color: '#888', margin: 20}}>Сменить тему</Text>
             </Pressable>
-            <Image source={require('../img/logo.png')} style={styles.image} />
+            <Image
+              source={require('../../android/app/src/main/assets/www/img/logo.png')}
+              style={styles.image}
+            />
           </View>
         </SafeAreaView>
 

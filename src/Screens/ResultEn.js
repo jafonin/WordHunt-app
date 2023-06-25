@@ -16,16 +16,7 @@ import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInLeft,
-  FadeInUp,
-  FadeOut,
-  FadeOutDown,
-  FadeOutRight,
-  FadeOutUp,
-} from 'react-native-reanimated';
+import Animated, {FadeInDown, FadeInUp, FadeOutDown, FadeOutUp} from 'react-native-reanimated';
 import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
@@ -83,7 +74,7 @@ class ResultPage extends Component {
       'LEFT JOIN en_ru_sentence ON en_ru_word_dic_tr_ex.ex_id=en_ru_sentence.id ' +
       "WHERE en_ru_word_dic_pos.word_id = '" +
       id +
-      "' AND en_ru_sentence.original NOT NULL " +
+      "' " +
       'GROUP BY en_ru_word_dic_tr.id ORDER BY en_ru_word_dic_pos.pos_order, en_ru_word_dic_tr.tr_order';
 
     let enRuFormsDicQuery =
@@ -119,7 +110,6 @@ class ResultPage extends Component {
         }
 
         this.setState({footerData: footerDataTemp});
-        console.log(this.state.footerData);
       });
     });
     await dbDic.transaction(async tx => {
@@ -139,11 +129,13 @@ class ResultPage extends Component {
     let descriptionDataTemp = [];
     for (let i = 0; i < results.length; ++i) {
       descriptionDataTemp.push(results.item(i));
-      descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
-      descriptionDataTemp[i].original = descriptionDataTemp[i].original.split('~');
-      descriptionDataTemp[i].examples = descriptionDataTemp[i].original.map(
-        (elem, index) => `${elem} — ${descriptionDataTemp[i].translation[index]}`,
-      );
+      if (descriptionDataTemp[i].original != null) {
+        descriptionDataTemp[i].translation = descriptionDataTemp[i].translation.split('~');
+        descriptionDataTemp[i].original = descriptionDataTemp[i].original.split('~');
+        descriptionDataTemp[i].examples = descriptionDataTemp[i].original.map(
+          (elem, index) => `${elem} — ${descriptionDataTemp[i].translation[index]}`,
+        );
+      }
       delete descriptionDataTemp[i].translation;
       delete descriptionDataTemp[i].original;
     }
@@ -161,7 +153,6 @@ class ResultPage extends Component {
     for (let i = 0; i < result.length; ++i) {
       resultCrop.push({title: result[i].title, data: result[i].data.slice(0, 10)});
     }
-    console.log(resultCrop);
     this.setState({
       descriptionData: result,
       descriptionDataCrop: resultCrop,
@@ -199,24 +190,18 @@ class ResultPage extends Component {
   loadCrop(index, sectionLenght) {
     const temp = this.state.descriptionData[index].data.slice(0, sectionLenght + 11);
 
-    // let copyData = [...this.state.descriptionDataCrop];
-    // copyData[index].data = temp;
-    // console.log(copyData);
-
     this.setState(prevState => {
       let copyData = [...prevState.descriptionDataCrop];
       copyData[index].data = temp;
       return {descriptionDataCrop: copyData};
     });
-    // console.log(section.data.length);
-    // return item.section.data.push(newData);
   }
 
   render() {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
     const imageSource = this.state.inDictionary
-      ? require('../img/pd_11.png')
-      : require('../img/pd_00.png');
+      ? require('../../android/app/src/main/assets/www/img/pd_11.png')
+      : require('../../android/app/src/main/assets/www/img/pd_00.png');
 
     const Title = ({item, index}) => {
       return (
@@ -268,15 +253,29 @@ class ResultPage extends Component {
       return (
         <View style={{marginTop: 15}} key={index}>
           <Text>
-            <Text style={styles.positionNumber}>{index + 1 + '  '}</Text>
+            <Text
+              style={[
+                styles.positionNumber,
+                item.examples != null ? {textDecorationLine: 'underline'} : null,
+              ]}>
+              {index + 1}
+            </Text>
             <TouchableWithoutFeedback
               onPress={() => {
-                this.toggleExample(item.id);
+                item.examples != null ? this.toggleExample(item.id) : null;
               }}>
               <StyledText
-                style={styles.translation}
-                textStyles={{i: [styles.translation, {color: 'gray', fontStyle: 'italic'}]}}>
-                {item.variant}
+                style={[styles.translation]}
+                textStyles={{
+                  i: [
+                    {
+                      color: 'gray',
+                      fontStyle: 'italic',
+                      fontSize: 16,
+                    },
+                  ],
+                }}>
+                {'  ' + item.variant}
               </StyledText>
             </TouchableWithoutFeedback>
           </Text>
