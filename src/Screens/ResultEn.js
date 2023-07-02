@@ -18,6 +18,8 @@ import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
 import Animated, {FadeInDown, FadeInUp, FadeOutDown, FadeOutUp} from 'react-native-reanimated';
 import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
+import Sound from 'react-native-sound';
+import sounds from '../Components/soundPath';
 
 const db = openDatabase({name: 'wordhunt_temp.db', createFromLocation: 1});
 const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
@@ -56,7 +58,8 @@ class ResultPage extends Component {
   fetchData = async (id, word) => {
     let enRuWordDicQuery =
       'SELECT en_ru_word.id, en_ru_word.rank, en_ru_word.word, en_ru_word.t_inline, en_ru_word.transcription_us, ' +
-      'en_ru_word.transcription_uk, en_ru_word_dic_word_forms_passive.form, en_ru_word_dic_word_forms_names.name, en_ru_word_dic_word_forms_names.name_str ' +
+      'en_ru_word.transcription_uk, en_ru_word_dic_word_forms_passive.form, en_ru_word_dic_word_forms_names.name, en_ru_word_dic_word_forms_names.name_str, ' +
+      'en_ru_word.sound_us, en_ru_word.sound_uk ' +
       'FROM en_ru_word ' +
       'LEFT JOIN en_ru_word_dic_word_forms_passive ON en_ru_word.id=en_ru_word_dic_word_forms_passive.word_id ' +
       'LEFT JOIN en_ru_word_dic_word_forms_names ON en_ru_word_dic_word_forms_passive.name_id=en_ru_word_dic_word_forms_names.id ' +
@@ -103,7 +106,7 @@ class ResultPage extends Component {
           footerDataTemp[i].name_str = footerDataTemp[i].name_str.split('~');
           footerDataTemp[i].form = footerDataTemp[i].form.split('~');
           footerDataTemp[i].forms_names = footerDataTemp[i].form.map(
-            (elem, index) => `${footerDataTemp[i].name_str[index]}: ${elem}`,
+            (elem, index) => `<i>${footerDataTemp[i].name_str[index]}:</i> ${elem}`,
           );
           delete footerDataTemp[i].form;
           delete footerDataTemp[i].name_str;
@@ -196,12 +199,28 @@ class ResultPage extends Component {
       return {descriptionDataCrop: copyData};
     });
   }
+  playSound(sound) {
+    const soundVar = new Sound(sound, error => {
+      if (error) {
+        console.log(error);
+      } else {
+        soundVar.play(success => {
+          success ? null : console.log('error');
+        });
+      }
+    });
+    // setTimeout(() => {
+    //   soundVar.play();
+    // }, 100);
+    // soundVar.release();
+  }
 
   render() {
     const styles = this.props.darkMode ? darkStyles : lightStyles;
-    const imageSource = this.state.inDictionary
+    const dictImage = this.state.inDictionary
       ? require('../../android/app/src/main/assets/www/img/pd_11.png')
       : require('../../android/app/src/main/assets/www/img/pd_00.png');
+    const playImage = require('../../android/app/src/main/assets/www/img/audio-black.png');
 
     const Title = ({item, index}) => {
       return (
@@ -217,27 +236,47 @@ class ResultPage extends Component {
               onPress={() => this.onButtonPress(item.t_inline, item.transcription_us)}
               android_ripple={styles.ripple}
               style={styles.flagButton}>
-              <Image source={imageSource} style={styles.image} />
+              <Image source={dictImage} style={styles.image} />
             </Pressable>
           </View>
           <View style={styles.transcriptions}>
             {item.transcription_us.length > 0 && (
-              <StyledText
-                style={styles.transcriptionWord}
-                textStyles={{
-                  i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
-                }}>
-                {'<i>амер.</i> ' + '|' + item.transcription_us + '|'}
-              </StyledText>
+              <View style={{flexDirection: 'row', marginRight: 20}}>
+                <StyledText
+                  style={styles.transcriptionWord}
+                  textStyles={{
+                    i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
+                  }}>
+                  {'<i>амер.</i> ' + '|' + item.transcription_us + '|'}
+                </StyledText>
+                {item.word in sounds.us && (
+                  <Pressable
+                    style={{marginLeft: 10}}
+                    onPress={() => this.playSound(sounds.us[item.word])}>
+                    <Image source={playImage} style={{width: 31, height: 31}} />
+                  </Pressable>
+                )}
+              </View>
             )}
             {item.transcription_uk.length > 0 && (
-              <StyledText
-                style={styles.transcriptionWord}
-                textStyles={{
-                  i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
-                }}>
-                {'<i>брит.</i> ' + '|' + item.transcription_uk + '|'}
-              </StyledText>
+              <View style={{flexDirection: 'row'}}>
+                <StyledText
+                  style={styles.transcriptionWord}
+                  textStyles={{
+                    i: [styles.transcriptionWord, {color: 'gray', fontStyle: 'italic'}],
+                  }}>
+                  {'<i>брит.</i> ' + '|' + item.transcription_uk + '|'}
+                </StyledText>
+                {item.word in sounds.uk && (
+                  <Pressable
+                    style={{marginLeft: 10}}
+                    onPress={() => {
+                      this.playSound(sounds.uk[item.word]);
+                    }}>
+                    <Image source={playImage} style={{width: 31, height: 31}} />
+                  </Pressable>
+                )}
+              </View>
             )}
           </View>
           <View style={{marginVertical: 15}}>
@@ -331,7 +370,19 @@ class ResultPage extends Component {
                     {partOfSpeech.forms_names.map((form_name, index) => {
                       return (
                         <View key={index}>
-                          <Text style={styles.translationSentence}>{form_name}</Text>
+                          <StyledText
+                            style={styles.translationSentence}
+                            textStyles={{
+                              i: [
+                                {
+                                  color: 'gray',
+                                  fontStyle: 'italic',
+                                  fontSize: 16,
+                                },
+                              ],
+                            }}>
+                            {form_name}
+                          </StyledText>
                         </View>
                       );
                     })}

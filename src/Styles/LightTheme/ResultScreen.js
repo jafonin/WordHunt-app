@@ -35,7 +35,7 @@ export const lightStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  transcriptions: {},
+  transcriptions: {flexDirection: 'row'},
   transcriptionWord: {
     fontFamily: defaultLight.fontFamily,
     color: defaultLight.grayFont,

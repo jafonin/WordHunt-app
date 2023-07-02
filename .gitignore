@@ -64,3 +64,7 @@ buck-out/
 android/app/src/main/assets/www/*.db
 !android/app/src/main/assets/www/UserHistory.db
 !android/app/src/main/assets/www/UserDictionary.db
+
+#audio
+android/app/src/main/assets/www/uk
+android/app/src/main/assets/www/us

@@ -35,7 +35,7 @@ export const darkStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  transcriptions: {},
+  transcriptions: {flexDirection: 'row'},
   transcriptionWord: {
     fontFamily: defaultDark.fontFamily,
     color: defaultDark.grayFont,
