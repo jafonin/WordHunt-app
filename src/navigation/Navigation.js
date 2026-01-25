@@ -12,7 +12,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Search from '../Screens/Search';
 
 const Drawer = createDrawerNavigator();
 
@@ -34,7 +33,7 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
   // }, []);
 
   const drawerStyle = darkMode
-    ? {backgroudColor: '#242424', TintColor: '#fff3d6'}
+    ? {backgroudColor: '#1f1f1f', TintColor: '#fff3d6'}
     : {backgroudColor: '#ffffef', TintColor: '#583627'};
 
   const MainScreen = () => <Main darkMode={darkMode} />;
@@ -43,7 +42,6 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
   const ResultEnScreen = () => <ResultEn darkMode={darkMode} />;
   const ResultRuScreen = () => <ResultRu darkMode={darkMode} />;
   const SettingsScreen = () => <Settings darkMode={darkMode} />;
-  const SearchScreen = () => <Search darkMode={darkMode} />;
   // const Header = () => <Header darkMode={darkMode} />;
   return (
     <NavigationContainer>
@@ -59,7 +57,6 @@ export const Navigation = ({darkMode, setDarkMode, ...props}) => {
           drawerType: 'slide',
           swipeEdgeWidth: 60,
           headerShown: false,
-          // header: Header,
           drawerActiveBackgroundColor: drawerStyle.backgroudColor,
           drawerActiveTintColor: drawerStyle.TintColor,
           drawerInactiveTintColor: drawerStyle.TintColor,

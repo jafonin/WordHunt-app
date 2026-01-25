@@ -1,7 +1,7 @@
 const defaultDark = {
   rippleColor: '#000',
   header: '#17344a',
-  backgroundColor: '#1F1F1F',
+  backgroundColor: '#1f1f1f',
   fontColor: '#f5f5f5',
   grayFont: '#bbb',
   lightBlueFont: '#1696b6',

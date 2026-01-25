@@ -16,7 +16,7 @@ import Header from '../Components/Header';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 import {defaultDark, defaultLight} from '../Styles/Global';
-import Animated, {FadeInDown, FadeInUp, FadeOutDown, FadeOutUp} from 'react-native-reanimated';
+import Animated, {FadeInDown, FadeInUp, FadeOutDown, FadeOutUp, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 import Sound from 'react-native-sound';
 import sounds from '../Components/soundPath';
@@ -241,7 +241,7 @@ class ResultPage extends Component {
           </View>
           <View style={styles.transcriptions}>
             {item.transcription_us.length > 0 && (
-              <View style={{flexDirection: 'row', marginRight: 20}}>
+              <View style={{flexDirection: 'row', marginRight: 20, marginBottom: 20}}>
                 <StyledText
                   style={styles.transcriptionWord}
                   textStyles={{
@@ -259,7 +259,7 @@ class ResultPage extends Component {
               </View>
             )}
             {item.transcription_uk.length > 0 && (
-              <View style={{flexDirection: 'row'}}>
+              <View style={{flexDirection: 'row', marginBottom: 20}}>
                 <StyledText
                   style={styles.transcriptionWord}
                   textStyles={{
@@ -279,7 +279,7 @@ class ResultPage extends Component {
               </View>
             )}
           </View>
-          <View style={{marginVertical: 15}}>
+          <View style={{marginTop: 5}}>
             <Text style={styles.translation}>{item.t_inline}</Text>
           </View>
         </View>
@@ -288,7 +288,7 @@ class ResultPage extends Component {
 
     const section = ({item, index}) => {
       const isExists = this.state.expandedExamples.includes(item.id);
-      const example = isExists ? item.examples.join('\n') : null;
+
       return (
         <View style={{marginTop: 15}} key={index}>
           <Text>
@@ -327,12 +327,13 @@ class ResultPage extends Component {
                 marginLeft: 20,
                 flex: 1,
               }}>
-              <Text style={styles.translationSentence}>{example}</Text>
+              <Text style={styles.translationSentence}>{isExists ? item.examples.join('\n\n') : ''}</Text>
             </Animated.View>
           )}
         </View>
       );
     };
+    
     const sectionFooter = ({section}) => {
       const index = this.state.descriptionDataCrop.findIndex(sec => sec.title === section.title);
       const sectionLenght = [...section.data].length;
@@ -407,7 +408,6 @@ class ResultPage extends Component {
             color="#007AFF"
           />
         ) : (
-          <Animated.View style={styles.spacer} entering={FadeInDown} exiting={FadeOutDown}>
             <SectionList
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="always"
@@ -422,7 +422,6 @@ class ResultPage extends Component {
               keyExtractor={keyExtractor}
               contentContainerStyle={{flexGrow: 1, paddingVertical: 25, paddingHorizontal: 20}}
             />
-          </Animated.View>
         )}
       </View>
     );
@@ -434,5 +433,5 @@ export default function ResultEn({darkMode, ...props}) {
   const {word} = route.params;
   const {id} = route.params;
   const isFocused = useIsFocused();
-  return <ResultPage {...props} word={word} id={id} darkMode={darkMode} isFocused={isFocused} />;
+  return <ResultPage {...props} word={word} id={id} darkMode={darkMode} isFocused={isFocused}/>;
 }

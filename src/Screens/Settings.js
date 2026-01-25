@@ -11,14 +11,14 @@ class SettingsPage extends Component {
       <View style={ResultStyles.body}>
         <Header darkMode={this.props.darkMode} />
 
-        <ScrollView
+        {/* <ScrollView
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           style={{flex: 1}}>
           <View style={[ResultStyles.spacer]}>
             <Text> </Text>
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
     );
   }

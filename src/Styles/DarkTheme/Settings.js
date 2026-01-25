@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {lightStyles} from '../LightTheme/Settings';
 import {defaultLight} from '../Global';
+import { defaultDark } from '../Global';
 
 export const darkStyles = StyleSheet.create({
   body: {
