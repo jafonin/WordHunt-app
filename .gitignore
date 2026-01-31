@@ -34,6 +34,10 @@ local.properties
 *.keystore
 !debug.keystore
 .kotlin/
+*.mp3
+UserDictionary.db
+UserHistory.db
+wordhunt_temp.db
 
 # node.js
 #
