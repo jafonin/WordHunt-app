@@ -1,6 +1,6 @@
 import {openDatabase} from 'react-native-sqlite-storage';
 
-const dbHistory = openDatabase({name: 'UserHistory.db', createFromLocation: 1});
+const dbHistory = openDatabase({name: 'UserHistory.db', location: 'default'});
 
 export const setData = async (
   word,
@@ -17,13 +17,13 @@ export const setData = async (
         "UPDATE History SET time = '" + time + "' WHERE word = '" + word.toLowerCase() + "'",
         // console.log('updated: ' + {word}),
       ),
-        await tx.executeSql(
-          'INSERT OR IGNORE INTO History (word, t_inline, ' +
-            en_ru_id +
-            ', time, transcription_us, transcription_uk) VALUES (?,?,?,?,?,?)',
-          [word, t_inline, id, time, transcription_us, transcription_uk],
-          // console.log('insert: ' + {word}),
-        );
+      await tx.executeSql(
+        'INSERT OR IGNORE INTO History (word, t_inline, ' +
+          en_ru_id +
+          ', time, transcription_us, transcription_uk) VALUES (?,?,?,?,?,?)',
+        [word, t_inline, id, time, transcription_us, transcription_uk],
+        // console.log('insert: ' + {word}),
+      );
     });
   } catch (error) {
     console.log(error);

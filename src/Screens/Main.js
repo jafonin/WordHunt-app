@@ -4,13 +4,12 @@ import {lightStyles} from '../Styles/LightTheme/MainScreen';
 import {darkStyles} from '../Styles/DarkTheme/MainScreen';
 import Header from '../Components/Header';
 import {ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {StatusBar} from 'react-native';
 
 function Main({darkMode}) {
   const styles = darkMode ? darkStyles : lightStyles;
   return (
-    <SafeAreaView style={styles.body}>
+    <View style={styles.body}>
       <StatusBar translucent backgroundColor={'transparent'} />
       <Header darkMode={darkMode} />
       <ScrollView style={styles.spacer}>
@@ -26,7 +25,7 @@ function Main({darkMode}) {
           <Text style={styles.description}>Фразовые глаголы и формы слов.</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

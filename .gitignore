@@ -35,9 +35,8 @@ local.properties
 !debug.keystore
 .kotlin/
 *.mp3
-UserDictionary.db
-UserHistory.db
-wordhunt_temp.db
+*.db
+wordhunt.db
 
 # node.js
 #

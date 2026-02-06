@@ -83,7 +83,7 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
   return (
     <View style={{flex: 1}}>
       <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
-        <SafeAreaView style={{height: 150}}>
+        <View style={{height: 150}}>
           <View
             style={{
               flex: 1,
@@ -98,7 +98,7 @@ const CustomDrawer = ({darkMode, setDarkMode, ...props}) => {
               style={styles.image}
             />
           </View>
-        </SafeAreaView>
+        </View>
 
         <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 22}}>
           <DrawerItemList {...props} />

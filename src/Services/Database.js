@@ -9,6 +9,8 @@ const db = SQLite.openDatabase(
   (err) => { console.error("Error opening database:", err); }
 );
 
+
+
 const dbDic = SQLite.openDatabase(
     {
         name: 'UserDictionary.db',
@@ -23,6 +25,8 @@ const dbDic = SQLite.openDatabase(
     },
     error => console.error('User Dic DB Error', error),
 );
+
+
 
 export const searchWordsInDb = async (searchText) => {
   if (!searchText || searchText.trim() === '') {
@@ -65,6 +69,8 @@ export const searchWordsInDb = async (searchText) => {
     });
   });
 };
+
+
 
 export const getWordFullDetails = async (id, word) => {
     // console.log(`[DB] Запрос деталей для ID: ${id}, Word: ${word}`);
@@ -152,19 +158,44 @@ export const getWordFullDetails = async (id, word) => {
     
 
 export const getRuWordDetails = async (id, word) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const result = { main: null, dictionary: [], inDictionary: false };
     db.transaction(tx => {
-      tx.executeSql("SELECT * FROM ru_en_word WHERE id = ?", [id], (_, res) => { if (res.rows.length > 0) result.main = res.rows.item(0); });
-      tx.executeSql("SELECT ru_en_word_dic.*, en_ru_word.t_inline, en_ru_word.transcription_us, GROUP_CONCAT(en_ru_sentence.original, '~') as original, GROUP_CONCAT(en_ru_sentence.translation, '~') as translation FROM ru_en_word_dic LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word LEFT JOIN ru_en_word_dic_ex ON ru_en_word_dic.id=ru_en_word_dic_ex.ru_dic_id LEFT JOIN en_ru_sentence ON ru_en_word_dic_ex.ex_id=en_ru_sentence.id WHERE ru_en_word_dic.ru_word_id = ? AND en_ru_word.t_inline NOT NULL GROUP BY ru_en_word_dic.id ORDER BY section, word_order", [id], (_, res) => {
+      tx.executeSql(
+        "SELECT * FROM ru_en_word WHERE id = ?",
+        [id],
+        (_, res) => {
+          if (res.rows.length > 0) result.main = res.rows.item(0);
+        }
+      );
+      tx.executeSql(
+        `SELECT ru_en_word_dic.*, en_ru_word.t_inline, en_ru_word.transcription_us,
+                GROUP_CONCAT(en_ru_sentence.original, '~') as original,
+                GROUP_CONCAT(en_ru_sentence.translation, '~') as translation
+        FROM ru_en_word_dic
+        LEFT JOIN en_ru_word ON en_ru_word.word=ru_en_word_dic.en_word
+        LEFT JOIN ru_en_word_dic_ex ON ru_en_word_dic.id=ru_en_word_dic_ex.ru_dic_id
+        LEFT JOIN en_ru_sentence ON ru_en_word_dic_ex.ex_id=en_ru_sentence.id
+        WHERE ru_en_word_dic.ru_word_id = ? AND en_ru_word.t_inline NOT NULL
+        GROUP BY ru_en_word_dic.id
+        ORDER BY section, word_order`,
+        [id],
+        (_, res) => {
         for (let i = 0; i < res.rows.length; i++) result.dictionary.push(res.rows.item(i));
-      });
-    }, null, () => {
+      }
+    );
+    }, (err) => {
+      console.error("SQL Error:", err);
+        reject(err);
+    }, () => {
       dbDic.transaction(tx => {
-        tx.executeSql("SELECT id FROM dictionary WHERE word = ?", [word], (_, res) => {
-          if (res.rows.length > 0) result.inDictionary = true;
-          resolve(result);
-        }, () => resolve(result));
+        tx.executeSql(
+          "SELECT id FROM dictionary WHERE word = ?",
+          [word],
+          (_, res) => {
+            if (res.rows.length > 0) result.inDictionary = true;
+            resolve(result);
+          }, () => resolve(result));
       }, () => resolve(result));
     });
   });
