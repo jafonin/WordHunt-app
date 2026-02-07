@@ -6,10 +6,9 @@ import {openDatabase} from 'react-native-sqlite-storage';
 import {lightStyles} from '../Styles/LightTheme/UserCollections';
 import {darkStyles} from '../Styles/DarkTheme/UserCollections';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {setData} from './AddToHistory';
 import Animated from 'react-native-reanimated';
 
-const dbDic = openDatabase({name: 'UserDictionary.db', createFromLocation: 1});
+const dbDic = openDatabase({name: 'userdictionary.db', location: 'default' });
 
 class _renderDictionary extends PureComponent {
   constructor(props) {

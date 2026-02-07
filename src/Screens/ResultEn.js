@@ -14,12 +14,10 @@ import Sound from 'react-native-sound';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 
 import Header from '../Components/Header';
-import {setData} from '../Components/AddToHistory';
-import {deleteDictionaryData, setDictionaryData} from '../Components/AddToDictionary';
 import {lightStyles} from '../Styles/LightTheme/ResultScreen';
 import {darkStyles} from '../Styles/DarkTheme/ResultScreen';
 
-import { getWordFullDetails } from '../Services/Database';
+import { getWordFullDetails, saveToHistory, toggleDictionary } from '../Services/Database';
 
 const getSoundFileName = (word) => {
   if (!word) return null;
@@ -68,7 +66,7 @@ const ResultEn = ({ darkMode }) => {
 
         if (data.header) {
           setHeaderData(data.header);
-          setData(word, id, data.header.t_inline, data.header.transcription_us);
+          saveToHistory(word, id, data.header.t_inline, data.header.transcription_us);
         }
 
         processDescriptionData(data.sentences);
@@ -148,14 +146,14 @@ const ResultEn = ({ darkMode }) => {
     setFooterData(tempFooter);
   };
 
-  const handleDictionaryPress = () => {
+  const handleDictionaryPress = async () => {
     if (!headerData) return;
-    if (!inDictionary) {
-      setDictionaryData(word, id, headerData.t_inline, headerData.transcription_us);
-    } else {
-      deleteDictionaryData(word, id);
+    try {
+      const isNowInDictionary = await toggleDictionary(word, id, headerData.t_inline, headerData.transcription_us, headerData.transcription_uk);
+      setInDictionary(isNowInDictionary);
+    } catch (error) {
+      console.error("Error toggling dictionary status:", error);
     }
-    setInDictionary(prev => !prev);
   };
 
   const toggleExample = (itemId) => {

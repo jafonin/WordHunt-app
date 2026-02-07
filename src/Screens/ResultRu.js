@@ -11,9 +11,7 @@ import {useRoute, useIsFocused} from '@react-navigation/native';
 import StyledText from 'react-native-styled-text';
 
 import Header from '../Components/Header';
-import { getRuWordDetails } from '../Services/Database';
-import { deleteDictionaryData, setDictionaryData } from '../Components/AddToDictionary';
-
+import { getRuWordDetails, toggleDictionary, saveToHistory } from '../Services/Database';
 import { lightStyles } from '../Styles/LightTheme/ResultScreen';
 import { darkStyles } from '../Styles/DarkTheme/ResultScreen';
 import { defaultDark } from '../Styles/Global';
@@ -55,6 +53,10 @@ const ResultRu = ({darkMode}) => {
           return newItem;
         });
 
+        if (data.main) {
+          saveToHistory(word, id, data.main.t_inline);
+        }
+
         setState({
           main: data.main,
           s1: processedList.filter(i => i.section === 1),
@@ -73,14 +75,14 @@ const ResultRu = ({darkMode}) => {
       };
       }, [id, word, isFocused]);
 
-  const handleDictionaryPress = () => {
+  const handleDictionaryPress = async () => {
     if (!state.main) return;
-    if (!state.inDic) {
-      setDictionaryData(word, id, state.main.t_inline);
-    } else {
-      deleteDictionaryData(word, id);
+    try {
+      const isNowInDictionary = await toggleDictionary(word, id, state.main.t_inline);
+      setState(prev => ({...prev, inDic: isNowInDictionary}));
+    } catch (error) {
+      console.error("Error toggling dictionary status:", error);
     }
-    setState(prev => ({...prev, inDic: !prev.inDic}));
   };
 
   const renderLemma = (lemma) => (
